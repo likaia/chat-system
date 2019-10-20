@@ -1,29 +1,48 @@
-# chat-system
+项目名： chat-system，git仓库地址：https://github.com/likaia/chat-system.git 。本项目第一负责人为 `likai`。
 
-## Project setup
-```
-yarn install
+
+## 1. 如何运行
+
+> node版本 `[v10.15.3]`
+
+> Vue版本 `[3.6.2]`
+
+> yarn版本 `[1.15.2]`
+
+### 1.1 开发环境配置
+
+基于vue cli3脚手架搭建
+
+### 1.2 开发过程
+
+#### 1.2.1 命令
+
+```sh
+# 开发
+yarn start
+
+# 发布
+sudo yarn run build
 ```
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
+## 2. 业务介绍
 
-### Compiles and minifies for production
-```
-yarn run build
-```
+### 2.1 聊天系统业务入口
 
-### Run your tests
-```
-yarn run test
-```
+入口地址为 `App.vue`
 
-### Lints and fixes files
-```
-yarn run lint
-```
+| 页面目录    | 页面描述             | 页面链接                                                | 参数描述                                          |
+| ----------- | -------------------- | ------------------------------------------------------- | ------------------------------------------------- |
+| index     | 首页        |   |                                                 |
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+
+- - -
+
+
+
+## 3. 项目描述
+```使用websocket实现一对一聊天和群聊，后台使用SpringBoot```
+
+
+
+> 本项目仅用于学习使用
