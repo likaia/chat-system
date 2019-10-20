@@ -1,0 +1,116 @@
+$topColor: #E1E3E5;
+$leftWidth: 15%;
+$rightWidrh: 85%;
+
+/*图标样式*/
+.fillet-ico-panel {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  margin-right: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img{
+    width: 19px;
+    height: 19px;
+  }
+}
+.close-ico{
+  background: #F06C5A;
+}
+.mini-ico {
+  background: #F9BE45;
+}
+.max-ico {
+  background: #61C350;
+}
+#main-content {
+  width: 75%;
+  height: 80%;
+  background: #FDFCFC;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  border-radius: 5px;
+  overflow: hidden;
+
+  .top-panel {
+    width: 100%;
+    height: 55px;
+    background: $topColor;
+    display: flex;
+    align-items: center;
+
+    .left-panel{
+      width: $leftWidth;
+      height: 100%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+
+      .icon-panel{
+        width: 30%;
+        height: 30px;
+        display: flex;
+        align-items: center;
+      }
+      .search-panel{
+        width: 60%;
+        height: 30px;
+        display: flex;
+        align-items: center;
+
+        .search{
+          width: 92px;
+          height: 24px;
+          background: #FFFFFF;
+          border-radius: 15px;
+          overflow: hidden;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+
+          img{
+            width: 14px;
+            height: 14px;
+            position: absolute;
+            left: 11px;
+          }
+
+          input{
+            width: 80%;
+            height: 100%;
+            outline: none;
+            border: none;
+          }
+        }
+
+        .add-panel{
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #ffffff;
+          margin-left: 10px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          img{
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+    }
+
+    .right-panel{
+
+    }
+  }
+}
