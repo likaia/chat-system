@@ -54,7 +54,7 @@
             // 创建群聊
             createGroupChat: function(status){
                 if(status){
-                    this.addBackground = "#F0F0F0";
+                    this.addBackground = "#E1E3E5";
                 }else{
                     this.addBackground = "#ffffff";
                 }

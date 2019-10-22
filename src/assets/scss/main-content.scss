@@ -1,6 +1,6 @@
 $topColor: #E1E3E5;
 $leftWidth: 15%;
-$rightWidrh: 85%;
+$rightWidth: 85%;
 
 /*图标样式*/
 .fillet-ico-panel {
@@ -47,6 +47,7 @@ $rightWidrh: 85%;
     align-items: center;
 
     .left-panel{
+      min-width: 214px;
       width: $leftWidth;
       height: 100%;
       display: flex;
