@@ -13,8 +13,8 @@ $rightWidth: 85%;
   align-items: center;
 
   img{
-    width: 19px;
-    height: 19px;
+    width: 9px;
+    height: 9px;
   }
 }
 .close-ico{
@@ -22,9 +22,19 @@ $rightWidth: 85%;
 }
 .mini-ico {
   background: #F9BE45;
+
+  img{
+    width: 11px;
+    height: 11px;
+  }
 }
 .max-ico {
   background: #61C350;
+
+  img{
+    width: 11px;
+    height: 11px;
+  }
 }
 #main-content {
   width: 75%;
@@ -49,6 +59,7 @@ $rightWidth: 85%;
     .left-panel{
       min-width: 214px;
       width: $leftWidth;
+      min-width: 214px;
       height: 100%;
       display: flex;
       justify-content: flex-end;
@@ -111,7 +122,66 @@ $rightWidth: 85%;
     }
 
     .right-panel{
+      width: $rightWidth;
+      height: 100%;
+      display: flex;
+      align-items: center;
 
+      .function-switching-panel{
+        width: 90%;
+        min-width: 180px;
+        height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .main-ico-area{
+          width: 28px;
+          height: 28px;
+          margin-right: 38px;
+
+          img{
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+
+      .avatar-area-panel{
+        width: 10%;
+        min-width: 80px;
+        height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+
+        .status-panel{
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          overflow: hidden;
+          background: #73d546;
+          position: absolute;
+          bottom: -2px;
+          right: 44px;
+        }
+        .offline{
+          background: #B4B8BA;
+        }
+        .avatar-panel{
+          width: 30px;
+          height: 30px;
+          overflow: hidden;
+          border-radius: 50%;
+
+          img{
+            width: 100%;
+            height: 100%;
+          }
+        }
+
+      }
     }
   }
 }
