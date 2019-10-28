@@ -25,17 +25,23 @@
                 </div>
             </div>
             <div class="right-panel">
-                <!--功能切换-->
+                <!--功能切换 路由入口-->
                 <div class="function-switching-panel">
-                    <div class="main-ico-area" @click="menuSwitch(0)">
-                       <img src="../assets/img/menu-message-down@2x.png" />
-                    </div>
-                    <div class="main-ico-area" @click="menuSwitch(1)">
-                        <img src="../assets/img/menu-contact-normal@2x.png" />
-                    </div>
-                    <div class="main-ico-area" @click="menuSwitch(2)">
-                        <img src="../assets/img/menu-more-normal@2x.png" />
-                    </div>
+                    <router-link :to="{name:'mainBody',query:{thisStatus:'message'}}">
+                        <div class="main-ico-area">
+                            <img :src="this.$route.query.thisStatus==='message'?messageIcoActive:messageIco" />
+                        </div>
+                    </router-link>
+                    <router-link :to="{name:'mainBody',query:{thisStatus:'list'}}">
+                        <div class="main-ico-area">
+                            <img :src="this.$route.query.thisStatus==='list'?contactIcoActive:contactIco"/>
+                        </div>
+                    </router-link>
+                    <router-link :to="{name:'mainBody',query:{thisStatus:'more'}}">
+                        <div class="main-ico-area">
+                            <img :src="this.$route.query.thisStatus==='more'?moreIcoActive:moreIco"/>
+                        </div>
+                    </router-link>
                 </div>
                 <!--头像区域-->
                 <div class="avatar-area-panel">
@@ -46,6 +52,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <!--路由出口-->
+        <div class="main-content-view">
+            <router-view name="mainBody"/>
         </div>
     </div>
 </template>
@@ -59,9 +69,12 @@
                 searchContent:"",
                 addBackground:"#ffffff",
                 leftIco:"none",
-                messageIco:"../assets/img/menu-message-down@2x.png",
-                contactIco:"../assets/img/menu-contact-normal@2x.png",
-                moreIco:"../assets/img/menu-more-normal@2x.png"
+                messageIco:require("../assets/img/menu-message-normal@2x.png"),
+                messageIcoActive:require("../assets/img/menu-message-down@2x.png"),
+                contactIco:require("../assets/img/menu-contact-normal@2x.png"),
+                contactIcoActive:require("../assets/img/menu-contact-down@2x.png"),
+                moreIco:require("../assets/img/menu-more-normal@2x.png"),
+                moreIcoActive:require("../assets/img/menu-more-down@2x.png")
             }
         },
         methods:{
