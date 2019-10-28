@@ -1,6 +1,7 @@
 <template>
   <div id="app" :style="appStyleObj">
     <main-content/>
+    <router-view/>
   </div>
 </template>
 <script>
