@@ -6,9 +6,11 @@ Vue.use(VueRouter);
 
 const routes = [
   {
-    path:"/mainBody",
-    name:"mainBody",
-    component:mainBody
+    name:'contents',
+    path: '/contents',
+    components:{
+      mainArea:mainBody
+    }
   }
 ];
 
