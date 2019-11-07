@@ -7,6 +7,7 @@
                     <div class="fillet-ico-panel close-ico">
                         <img :style="{display:leftIco}" src="../assets/img/close.png"/>
                     </div>
+
                     <div class="fillet-ico-panel mini-ico">
                         <img :style="{display:leftIco}" src="../assets/img/min.png"/>
                     </div>
@@ -28,19 +29,19 @@
             <div class="right-panel">
                 <!--功能切换 路由入口-->
                 <div class="function-switching-panel">
-                    <router-link :to="{name:'contents',query:{thisStatus:'message'}}">
+                    <router-link :to="{name:'contents',params:{thisStatus:'message'}}">
                         <div class="main-ico-area">
-                            <img :src="this.$route.query.thisStatus==='message'?messageIcoActive:messageIco"/>
+                            <img :src="this.$route.params.thisStatus==='message'?messageIcoActive:messageIco"/>
                         </div>
                     </router-link>
-                    <router-link :to="{name:'contents',query:{thisStatus:'list'}}">
+                    <router-link :to="{name:'contents',params:{thisStatus:'list'}}">
                         <div class="main-ico-area">
-                            <img :src="this.$route.query.thisStatus==='list'?contactIcoActive:contactIco"/>
+                            <img :src="this.$route.params.thisStatus==='list'?contactIcoActive:contactIco"/>
                         </div>
                     </router-link>
-                    <router-link :to="{name:'contents',query:{thisStatus:'more'}}">
+                    <router-link :to="{name:'contents',params:{thisStatus:'more'}}">
                         <div class="main-ico-area">
-                            <img :src="this.$route.query.thisStatus==='more'?moreIcoActive:moreIco"/>
+                            <img :src="this.$route.params.thisStatus==='more'?moreIcoActive:moreIco"/>
                         </div>
                     </router-link>
                 </div>
