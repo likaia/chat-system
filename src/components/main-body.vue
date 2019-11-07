@@ -16,7 +16,10 @@
 <script>
     export default {
         name: "main-body",
-        props: ['thisStatus']
+        props: ['thisStatus'],
+        mounted() {
+
+        }
     }
 </script>
 

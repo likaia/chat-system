@@ -13,7 +13,7 @@ const routes = [
     },
     children:[
       {
-        path:"message",
+        path:"msgList",
         components:{
           msgList:MsgList
         }
