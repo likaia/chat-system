@@ -113,23 +113,6 @@
             onlineStatus: function () {
 
             },
-            // 功能切换
-            menuSwitch: function (item) {
-                console.log(item);
-                if (item === 0) {
-                    this.messageIco = "../assets/img/menu-message-down@2x.png";
-                    this.contactIco = "../assets/img/menu-contact-normal@2x.png";
-                    this.moreIco = "../assets/img/menu-more-normal@2x.png";
-                } else if (item === 1) {
-                    this.messageIco = "../assets/img/menu-contact-normal@2x.png";
-                    this.contactIco = "../assets/img/menu-contact-down@2x.png";
-                    this.moreIco = "../assets/img/menu-more-normal@2x.png";
-                } else if (item === 2) {
-                    this.messageIco = "../assets/img/menu-contact-normal@2x.png";
-                    this.contactIco = "../assets/img/menu-contact-normal@2x.png";
-                    this.moreIco = "../assets/img/menu-more-down@2x.png";
-                }
-            },
             // 非空判断
             isEmpty: (str) => {
                 str = str.trim();

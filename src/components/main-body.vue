@@ -5,11 +5,11 @@
     </div>
     <!--联系人组件-->
     <div v-else-if="thisStatus==='list'">
-        联系人
+        <router-view name="contactList"/>
     </div>
     <!--更多内容组件-->
     <div v-else>
-        更多内容
+        <router-view name="moreList"/>
     </div>
 </template>
 
@@ -17,7 +17,7 @@
     export default {
         name: "main-body",
         props: ['thisStatus'],
-        mounted() {
+        created() {
 
         }
     }

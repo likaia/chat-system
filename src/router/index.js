@@ -2,9 +2,15 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import MainBody from '../components/main-body'
 import MsgList from '../views/msg-list'
+import ContactList from '../views/contact-list'
+import MoreList from  '../views/more-list'
 Vue.use(VueRouter);
 
 const routes = [
+  {
+    path: '/',
+    redirect: '/contents/message/msgList'
+  },
   {
     name:'contents',
     path: '/contents/:thisStatus',
@@ -16,6 +22,18 @@ const routes = [
         path:"msgList",
         components:{
           msgList:MsgList
+        }
+      },
+      {
+        path:"contactList",
+        components:{
+          contactList:ContactList
+        }
+      },
+      {
+        path:"moreList",
+        components:{
+          moreList:MoreList
         }
       }
     ],
