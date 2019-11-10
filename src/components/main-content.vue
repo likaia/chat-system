@@ -31,17 +31,17 @@
                 <div class="function-switching-panel">
                     <router-link :to="{name:'contents',params:{thisStatus:'message'}}">
                         <div class="main-ico-area">
-                            <img :src="this.$route.params.thisStatus==='message'?messageIcoActive:messageIco"/>
+                            <img :src="this.$route.params.thisStatus==='message'?messageIcoActive:messageIco" alt="消息"/>
                         </div>
                     </router-link>
                     <router-link :to="{name:'contents',params:{thisStatus:'list'}}">
                         <div class="main-ico-area">
-                            <img :src="this.$route.params.thisStatus==='list'?contactIcoActive:contactIco"/>
+                            <img :src="this.$route.params.thisStatus==='list'?contactIcoActive:contactIco" alt="好友列表"/>
                         </div>
                     </router-link>
                     <router-link :to="{name:'contents',params:{thisStatus:'more'}}">
                         <div class="main-ico-area">
-                            <img :src="this.$route.params.thisStatus==='more'?moreIcoActive:moreIco"/>
+                            <img :src="this.$route.params.thisStatus==='more'?moreIcoActive:moreIco" alt="更多"/>
                         </div>
                     </router-link>
                 </div>
@@ -50,7 +50,7 @@
                     <!--在线状态-->
                     <div class="status-panel" @click="onlineStatus"></div>
                     <div class="avatar-panel">
-                        <img src="../assets/img/avatar.jpg"/>
+                        <img src="../assets/img/avatar.jpg" alt="在线状态"/>
                     </div>
                 </div>
             </div>

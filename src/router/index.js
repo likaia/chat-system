@@ -9,7 +9,7 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: '/',
-    redirect: '/contents/message/msgList'
+    redirect: '/contents'
   },
   {
     name:'contents',
@@ -19,28 +19,18 @@ const routes = [
     },
     children:[
       {
-        path:"msgList",
-        components:{
-          msgList:MsgList
-        }
+        path:'message',
+        component:MsgList
       },
       {
-        path:"contactList",
-        components:{
-          contactList:ContactList
-        }
+        path:"contact",
+        component:ContactList
       },
       {
-        path:"moreList",
-        components:{
-          moreList:MoreList
-        }
+        path:"more",
+        component:MoreList
       }
     ],
-    // 开启组件间的传参，有命名视图的路由必须为每个视图都设置
-    props:{
-      mainArea:true
-    }
   }
 ];
 

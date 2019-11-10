@@ -18,7 +18,7 @@
         name: "main-body",
         props: ['thisStatus'],
         created() {
-
+            console.log(this.$route.params.thisStatus)
         }
     }
 </script>
