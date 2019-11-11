@@ -1,0 +1,84 @@
+#mainBody{
+  width: 100%;
+  overflow-y: auto;
+  display: flex;
+
+  .list-panel{
+    min-width: 214px;
+    width: 15%;
+    height: 100%;
+    border-right: solid 2px #f6f7f9;
+
+    .row-panel{
+      width: 100%;
+      height: 70px;
+      background: #f3f3f3;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .item-subscript-panel{
+      width: 13px;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+
+      img{
+        width: 13px;
+        height: 13px;
+        position: absolute;
+        top: 0;
+      }
+    }
+
+    .item-avatar-panel{
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    .item-nickname-panel{
+      width: 35%;
+      min-width: 75px;
+      height: 40px;
+
+      p{
+        font-size: 15px;
+        overflow:hidden; /*溢出的部分隐藏*/
+        white-space: nowrap; /*文本不换行*/
+        text-overflow:ellipsis;
+
+        &.title{
+          font-weight: 400;
+        }
+        &.subtitle{
+          color: #7b7b7b;
+          font-size: 12px;
+        }
+      }
+    }
+
+    .item-time-panel{
+      min-width: 61px;
+      width: 28%;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+
+      & p{
+        font-size: 13px;
+        color: #7b7b7b;
+      }
+    }
+  }
+
+  .content-panel{
+    width: 85%;
+    height: 100%;
+    min-width: 180px;
+    overflow-y: auto;
+  }
+}

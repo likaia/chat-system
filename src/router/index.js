@@ -15,6 +15,7 @@ const routes = [
     {
         name: 'contents',
         path: '/contents/:thisStatus',
+        // 重定向到嵌套路由
         redirect: '/contents/:thisStatus/:thisStatus/',
         components: {
             mainArea: MainBody
