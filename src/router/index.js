@@ -4,6 +4,7 @@ import MainBody from '../components/main-body'
 import MsgList from '../views/msg-list'
 import ContactList from '../views/contact-list'
 import MoreList from '../views/more-list'
+import MessageDisplay from '../components/message-display'
 
 Vue.use(VueRouter);
 
@@ -28,7 +29,16 @@ const routes = [
                 path: 'message',
                 components: {
                     msgList: MsgList
-                }
+                },
+                children:[
+                    {
+                        name:"messageDisplay",
+                        path:'messageDisplay/:userId',
+                        components: {
+                            messageDisplay:MessageDisplay
+                        }
+                    }
+                ]
             },
             {
                 path: "list",
@@ -41,7 +51,7 @@ const routes = [
                 components: {
                     moreList: MoreList
                 }
-            }
+            },
         ],
     }
 ];
