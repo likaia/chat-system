@@ -2,10 +2,10 @@
     <div id="mainContent">
         <div class="top-panel">
             <div class="title-panel">
-                <p>用户id{{userId}}</p>
+                <p>用户id: {{userId}}</p>
                 <!--在线设备类型-->
                 <div class="equipmentType">
-
+                    <img :src="this.resourceObj.phoneNormal" alt="">
                 </div>
             </div>
             <div class="operate-panel">
@@ -34,7 +34,8 @@
                 resourceObj:{
                     createDisNormal:require("../assets/img/titlebar_function_createDis_normal@2x.png"),
                     createDisHover:require("../assets/img/titlebar_function_createDis_hover@2x.png"),
-                    createDisClick:require("../assets/img/titlebar_function_createDis_normal_p@2x.png")
+                    createDisClick:require("../assets/img/titlebar_function_createDis_normal_p@2x.png"),
+                    phoneNormal:require("../assets/img/phone_normal_ap@2x.png")
                 }
             }
         },
