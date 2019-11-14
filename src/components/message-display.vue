@@ -18,7 +18,14 @@
         </div>
         <!--消息显示-->
         <div class="messages-panel">
-
+            <div class="row-panel">
+                <!--对方消息样式-->
+                <div class="otherSide-panel">
+                    <div class="avatar-panel">
+                        <img :src="this.resourceObj.groupMsgImg" alt="">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -35,7 +42,8 @@
                     createDisNormal:require("../assets/img/titlebar_function_createDis_normal@2x.png"),
                     createDisHover:require("../assets/img/titlebar_function_createDis_hover@2x.png"),
                     createDisClick:require("../assets/img/titlebar_function_createDis_normal_p@2x.png"),
-                    phoneNormal:require("../assets/img/phone_normal_ap@2x.png")
+                    phoneNormal:require("../assets/img/phone_normal_ap@2x.png"),
+                    groupMsgImg:require("../assets/img/group-msg-img.png"),
                 }
             }
         },

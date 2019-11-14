@@ -58,6 +58,30 @@
   .messages-panel{
     width: 99%;
     min-height: 390px;
-    border: solid 1px #BDBDBD;
+
+    .row-panel{
+      width: 100%;
+      min-height: 50px;
+
+      /*对方消息样式*/
+      .otherSide-panel{
+        width: 93%;
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+
+        .avatar-panel{
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          overflow: hidden;
+
+          img{
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
   }
 }
