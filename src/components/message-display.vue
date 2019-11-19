@@ -106,7 +106,7 @@
                 </div>
             </div>
             <div class="input-panel">
-                <textarea v-model="messageContent"></textarea>
+                <textarea @keydown.enter.exact="sendMessage($event)" v-model="messageContent"></textarea>
             </div>
         </div>
     </div>
@@ -150,8 +150,12 @@
                         shakeDown: require("../assets/img/toolbar_shake_down@2x.png")
                     }
                 },
-                messageContent:""
+                messageContent:"",
+                InputContent:""
             }
+        },
+        mounted:function(){
+
         },
         methods: {
             createDisEventFun: function (status) {
@@ -163,8 +167,10 @@
                     this.createDisSrc = this.resourceObj.createDisClick
                 }
             },
-            sendMessage:function () {
-                alert("aa")
+            sendMessage:function (event) {
+                if(event.keyCode===13){
+                    console.log("消息发送");
+                }
             }
         },
         beforeRouteUpdate(to, form, next) {
