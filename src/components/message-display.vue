@@ -87,7 +87,7 @@
         <div class="user-input-panel">
             <div class="toolbar-panel">
                 <div class="item-panel">
-                    <img :src="resourceObj.toolbarBarIco.emoticonNormal" alt="">
+                    <img :src="resourceObj.toolbarBarIco.emoticon" @mouseenter="displayExpression('hover')" @mouseleave="displayExpression('leave')" @mousedown="displayExpression('down')" @mouseup="displayExpression('up')" alt="">
                 </div>
                 <div class="item-panel">
                     <img :src="resourceObj.toolbarBarIco.screenCaptureNormal" alt="">
@@ -108,7 +108,13 @@
             <div class="input-panel">
                 <textarea @keydown.enter.exact="sendMessage($event)" v-model="messageContent"></textarea>
             </div>
+            <!--表情面板-->
+            <div class="emoticon-panel">
+
+            </div>
         </div>
+
+
     </div>
 
 </template>
@@ -130,6 +136,7 @@
                     msgImgTest: require("../assets/img/msg-img-test.gif"),
                     msgImgTestB: require("../assets/img/msg-img-testB.gif"),
                     toolbarBarIco: {
+                        emoticon: require("../assets/img/toolbar_emoticon_normal@2x.png"),
                         emoticonNormal: require("../assets/img/toolbar_emoticon_normal@2x.png"),
                         emoticonHover: require("../assets/img/toolbar_emoticon_hover@2x.png"),
                         emoticonDown: require("../assets/img/toolbar_emoticon_down@2x.png"),
@@ -170,6 +177,16 @@
             sendMessage:function (event) {
                 if(event.keyCode===13){
                     console.log("消息发送");
+                }
+            },
+            // 显示表情
+            displayExpression:function (status) {
+                if(status==="hover" || status==="up"){
+                    this.resourceObj.toolbarBarIco.emoticon = this.resourceObj.toolbarBarIco.emoticonHover;
+                }else if(status==="leave"){
+                    this.resourceObj.toolbarBarIco.emoticon = this.resourceObj.toolbarBarIco.emoticonNormal;
+                }else{
+                    this.resourceObj.toolbarBarIco.emoticon = this.resourceObj.toolbarBarIco.emoticonDown;
                 }
             }
         },
