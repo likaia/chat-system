@@ -110,7 +110,9 @@
             </div>
             <!--表情面板-->
             <div class="emoticon-panel">
-
+                <div class="ico-panel">
+                    <img :src="resourceObj.emoticonIco" alt="">
+                </div>
             </div>
         </div>
 
@@ -155,7 +157,8 @@
                         shakeNormal: require("../assets/img/toolbar_shake_normal@2x.png"),
                         shakeHover: require("../assets/img/toolbar_shake_hover@2x.png"),
                         shakeDown: require("../assets/img/toolbar_shake_down@2x.png")
-                    }
+                    },
+                    emoticonIco: require("../assets/img/emoticonIco.png")
                 },
                 messageContent:"",
                 InputContent:""

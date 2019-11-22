@@ -227,7 +227,7 @@
     }
 
     /*表情面板*/
-    .emoticon-panel{
+    .emoticon-panel {
       width: 410px;
       height: 270px;
       border-radius: 5px;
@@ -235,6 +235,21 @@
       border: solid 1px #dfe0e0;
       position: absolute;
       top: -275px;
+      left: -198px;
+      display: flex;
+      justify-content: center;
+
+      .ico-panel{
+        width: 12px;
+        height: 12px;
+        position: absolute;
+        bottom: 0;
+
+        img{
+          width: 100%;
+          height: 100%;
+        }
+      }
     }
   }
 }
