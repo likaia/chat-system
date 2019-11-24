@@ -234,16 +234,19 @@
       background: white;
       border: solid 1px #dfe0e0;
       position: absolute;
-      top: -275px;
-      left: -198px;
+      top: -268px;
+      left: -194px;
       display: flex;
       justify-content: center;
 
       .ico-panel{
-        width: 12px;
-        height: 12px;
+        width: 0;
+        height: 0;
+        border-right: 6px solid transparent;
+        border-left: 6px solid transparent;
+        border-top: 6px solid #dfe0e0;
         position: absolute;
-        bottom: 0;
+        bottom: -6px;
 
         img{
           width: 100%;

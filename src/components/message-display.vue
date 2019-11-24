@@ -109,10 +109,8 @@
                 <textarea @keydown.enter.exact="sendMessage($event)" v-model="messageContent"></textarea>
             </div>
             <!--表情面板-->
-            <div class="emoticon-panel">
-                <div class="ico-panel">
-                    <img :src="resourceObj.emoticonIco" alt="">
-                </div>
+            <div class="emoticon-panel" :style="{display: emoticonShowStatus}">
+                <div class="ico-panel"></div>
             </div>
         </div>
 
@@ -161,11 +159,18 @@
                     emoticonIco: require("../assets/img/emoticonIco.png")
                 },
                 messageContent:"",
-                InputContent:""
+                InputContent:"",
+                emoticonShowStatus: "none"
             }
         },
         mounted:function(){
-
+            document.addEventListener('click',function (e) {
+                for (let i of e.path){
+                    if(i.getAttribute("class")==="emoticon-panel"){
+                     console.log("aa");
+                    }
+                }
+            });
         },
         methods: {
             createDisEventFun: function (status) {
@@ -190,6 +195,7 @@
                     this.resourceObj.toolbarBarIco.emoticon = this.resourceObj.toolbarBarIco.emoticonNormal;
                 }else{
                     this.resourceObj.toolbarBarIco.emoticon = this.resourceObj.toolbarBarIco.emoticonDown;
+                    this.emoticonShowStatus = "flex";
                 }
             }
         },
