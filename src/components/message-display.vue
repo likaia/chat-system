@@ -87,7 +87,7 @@
         <div class="user-input-panel">
             <div class="toolbar-panel">
                 <div class="item-panel">
-                    <img :src="resourceObj.toolbarBarIco.emoticon" @mouseenter="displayExpression('hover')" @mouseleave="displayExpression('leave')" @mousedown="displayExpression('down')" @mouseup="displayExpression('up')" alt="">
+                    <img class="emoticon" :src="resourceObj.toolbarBarIco.emoticon" @mouseenter="displayExpression('hover')" @mouseleave="displayExpression('leave')" @mousedown="displayExpression('down')" @mouseup="displayExpression('up')" alt="">
                 </div>
                 <div class="item-panel">
                     <img :src="resourceObj.toolbarBarIco.screenCaptureNormal" alt="">
@@ -164,15 +164,11 @@
             }
         },
         mounted:function(){
-            let that = this;
-            document.addEventListener('click',function (e) {
-                for (let i of e.path){
-                    // 判断当前dom是否为一个函数
-                    if(that.isFunction(i.getAttribute)){
-                        if(i.getAttribute("class")!=="emoticon-panel"){
-                            that.emoticonShowStatus = "none";
-                        }
-                    }
+            // 全局点击事件，点击表情框以外的地方，隐藏当前表情框
+            document.addEventListener('click',(e)=>{
+                let thisClassName = e.target.className;
+                if( thisClassName !== "emoticon-panel" && thisClassName !=="emoticon"){
+                    this.emoticonShowStatus = "none";
                 }
             });
         },
@@ -199,7 +195,11 @@
                     this.resourceObj.toolbarBarIco.emoticon = this.resourceObj.toolbarBarIco.emoticonNormal;
                 }else{
                     this.resourceObj.toolbarBarIco.emoticon = this.resourceObj.toolbarBarIco.emoticonDown;
-                    this.emoticonShowStatus = "flex";
+                    if(this.emoticonShowStatus ==="flex"){
+                        this.emoticonShowStatus = "none";
+                    }else{
+                        this.emoticonShowStatus = "flex";
+                    }
                 }
             },
             // 判断一个对象是否为函数类型

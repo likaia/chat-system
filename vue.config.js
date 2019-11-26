@@ -21,7 +21,8 @@ module.exports = {
         https: false,
         hotOnly: false,
         proxy: null,
+        // eslint-disable-next-line no-unused-vars
         before: app => {
         }
     }
-}
+};
