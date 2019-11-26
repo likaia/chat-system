@@ -164,10 +164,14 @@
             }
         },
         mounted:function(){
+            let that = this;
             document.addEventListener('click',function (e) {
                 for (let i of e.path){
-                    if(i.getAttribute("class")==="emoticon-panel"){
-                     console.log("aa");
+                    // 判断当前dom是否为一个函数
+                    if(that.isFunction(i.getAttribute)){
+                        if(i.getAttribute("class")!=="emoticon-panel"){
+                            that.emoticonShowStatus = "none";
+                        }
                     }
                 }
             });
@@ -197,6 +201,10 @@
                     this.resourceObj.toolbarBarIco.emoticon = this.resourceObj.toolbarBarIco.emoticonDown;
                     this.emoticonShowStatus = "flex";
                 }
+            },
+            // 判断一个对象是否为函数类型
+            isFunction:function (obj) {
+                return typeof obj === "function" && typeof obj.nodeType !== "number";
             }
         },
         beforeRouteUpdate(to, form, next) {
