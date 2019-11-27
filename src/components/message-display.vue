@@ -112,7 +112,7 @@
             <div class="emoticon-panel" :style="{display: emoticonShowStatus}">
                 <div class="row-panel">
                     <div class="item-panel" v-for="item in this.emojiList" :key="item.info">
-                        <img :src="require(item.src)" :alt="item.info">
+                        <img :src="require('../assets/img/emoji/'+item.src)" :alt="item.info">
                     </div>
                 </div>
                 <div class="ico-panel"></div>
