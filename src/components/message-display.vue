@@ -110,6 +110,20 @@
             </div>
             <!--表情面板-->
             <div class="emoticon-panel" :style="{display: emoticonShowStatus}">
+                <div class="row-panel">
+                    <div class="item-panel">
+                        <img :src="this.emojiSrc.smile" @mouseover="emojiConversion('over')" @mouseleave="emojiConversion('leave')" alt="">
+                    </div>
+                    <div class="item-panel">
+                        <img :src="this.emojiSrc.pout" @mouseover="emojiConversion('over')" @mouseleave="emojiConversion('leave')" alt="">
+                    </div>
+                    <div class="item-panel">
+                        <img :src="this.emojiSrc.porn" @mouseover="emojiConversion('over')" @mouseleave="emojiConversion('leave')" alt="">
+                    </div>
+                    <div class="item-panel">
+                        <img :src="this.emojiSrc.funny" @mouseover="emojiConversion('over')" @mouseleave="emojiConversion('leave')" alt="">
+                    </div>
+                </div>
                 <div class="ico-panel"></div>
             </div>
         </div>
@@ -160,7 +174,21 @@
                 },
                 messageContent:"",
                 InputContent:"",
-                emoticonShowStatus: "none"
+                emoticonShowStatus: "none",
+                emojiSrc:{
+                    "funny":require("../assets/img/emoji/178fix@2x.png"),
+                    "funnyNormal":require("../assets/img/emoji/178fix@2x.png"),
+                    "funnyHover":require("../assets/img/emoji/178@2x.gif"),
+                    "smile":require("../assets/img/emoji/14fix@2x.png"),
+                    "smileNormal":require("../assets/img/emoji/14fix@2x.png"),
+                    "smileHover":require("../assets/img/emoji/14@2x.gif"),
+                    "pout":require("../assets/img/emoji/1fix@2x.png"),
+                    "poutNormal":require("../assets/img/emoji/1fix@2x.png"),
+                    "poutHover":require("../assets/img/emoji/1@2x.gif"),
+                    "porn":require("../assets/img/emoji/2fix@2x.png"),
+                    "pornNormal":require("../assets/img/emoji/2fix@2x.png"),
+                    "pornHover":require("../assets/img/emoji/2@2x.gif"),
+                }
             }
         },
         mounted:function(){
@@ -205,6 +233,15 @@
             // 判断一个对象是否为函数类型
             isFunction:function (obj) {
                 return typeof obj === "function" && typeof obj.nodeType !== "number";
+            },
+            // 表情框鼠标悬浮显示动态表情
+            emojiConversion:function (status) {
+                if(status==="over"){
+                    this.emojiSrc.funny = this.emojiSrc.funnyHover;
+                }else{
+                    this.emojiSrc.funny = this.emojiSrc.funnyNormal;
+                }
+
             }
         },
         beforeRouteUpdate(to, form, next) {
