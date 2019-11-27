@@ -111,29 +111,19 @@
             <!--表情面板-->
             <div class="emoticon-panel" :style="{display: emoticonShowStatus}">
                 <div class="row-panel">
-                    <div class="item-panel">
-                        <img :src="this.emojiSrc.smile" @mouseover="emojiConversion('over')" @mouseleave="emojiConversion('leave')" alt="">
-                    </div>
-                    <div class="item-panel">
-                        <img :src="this.emojiSrc.pout" @mouseover="emojiConversion('over')" @mouseleave="emojiConversion('leave')" alt="">
-                    </div>
-                    <div class="item-panel">
-                        <img :src="this.emojiSrc.porn" @mouseover="emojiConversion('over')" @mouseleave="emojiConversion('leave')" alt="">
-                    </div>
-                    <div class="item-panel">
-                        <img :src="this.emojiSrc.funny" @mouseover="emojiConversion('over')" @mouseleave="emojiConversion('leave')" alt="">
+                    <div class="item-panel" v-for="item in this.emojiList" :key="item.info">
+                        <img :src="require(item.src)" :alt="item.info">
                     </div>
                 </div>
                 <div class="ico-panel"></div>
             </div>
         </div>
-
-
     </div>
 
 </template>
 
 <script>
+    import emoji from '../assets/json/emoji';
     export default {
         name: "message-display",
         data() {
@@ -188,7 +178,8 @@
                     "porn":require("../assets/img/emoji/2fix@2x.png"),
                     "pornNormal":require("../assets/img/emoji/2fix@2x.png"),
                     "pornHover":require("../assets/img/emoji/2@2x.gif"),
-                }
+                },
+                emojiList:emoji
             }
         },
         mounted:function(){

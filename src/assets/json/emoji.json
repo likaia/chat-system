@@ -1,8 +1,8 @@
 [
   {
     "name": "smile",
-    "src": "../assets/img/emoji/14fix@2x.png",
+    "src": "@/assets/img/emoji/14fix@2x.png",
     "info": "微笑",
-    "hover": "../assets/img/emoji/14@2x.gif"
+    "hover": "@/assets/img/emoji/14@2x.gif"
   }
 ]
