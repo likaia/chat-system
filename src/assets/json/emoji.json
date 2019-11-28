@@ -1,8 +1,26 @@
 [
   {
+    "name": "pout",
+    "src": "1fix@2x.png",
+    "info": "撇嘴",
+    "hover": "1@2x.gif"
+  },
+  {
+    "name": "porn",
+    "src": "2fix@2x.png",
+    "info": "色",
+    "hover": "2@2x.gif"
+  },
+  {
     "name": "smile",
     "src": "14fix@2x.png",
     "info": "微笑",
     "hover": "14@2x.gif"
+  },
+  {
+    "name": "smile",
+    "src": "178fix@2x.png",
+    "info": "滑稽",
+    "hover": "178@2x.gif"
   }
 ]

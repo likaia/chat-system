@@ -86,23 +86,8 @@
         <!--用户输入模块-->
         <div class="user-input-panel">
             <div class="toolbar-panel">
-                <div class="item-panel">
-                    <img class="emoticon" :src="resourceObj.toolbarBarIco.emoticon" @mouseenter="displayExpression('hover')" @mouseleave="displayExpression('leave')" @mousedown="displayExpression('down')" @mouseup="displayExpression('up')" alt="">
-                </div>
-                <div class="item-panel">
-                    <img :src="resourceObj.toolbarBarIco.screenCaptureNormal" alt="">
-                </div>
-                <div class="item-panel">
-                    <img :src="resourceObj.toolbarBarIco.shakeNormal" alt="">
-                </div>
-                <div class="item-panel">
-                    <img :src="resourceObj.toolbarBarIco.filesNormal" alt="">
-                </div>
-                <div class="item-panel">
-                    <img :src="resourceObj.toolbarBarIco.phoneNormal" alt="">
-                </div>
-                <div class="item-panel">
-                    <img :src="resourceObj.toolbarBarIco.historyNormal" alt="">
+                <div class="item-panel" v-for="item in toolbarList" :key="item.info">
+                    <img class="emoticon" :src="require(`../assets/img/${item.src}`)" @mouseenter="toolbarSwitch('hover',$event,item.src,item.hover,item.down,item.name)" @mouseleave="toolbarSwitch('leave',$event,item.src,item.hover,item.down,item.name)" @mousedown="toolbarSwitch('down',$event,item.src,item.hover,item.down,item.name)" @mouseup="toolbarSwitch('up',$event,item.src,item.hover,item.down,item.name)" :alt="item.info">
                 </div>
             </div>
             <div class="input-panel">
@@ -112,7 +97,7 @@
             <div class="emoticon-panel" :style="{display: emoticonShowStatus}">
                 <div class="row-panel">
                     <div class="item-panel" v-for="item in this.emojiList" :key="item.info">
-                        <img :src="require('../assets/img/emoji/'+item.src)" :alt="item.info">
+                        <img :src="require(`../assets/img/emoji/${item.src}`)" :alt="item.info" @mouseover="emojiConversion($event,'over',item.src,item.hover)" @mouseleave="emojiConversion($event,'leave',item.src,item.hover)">
                     </div>
                 </div>
                 <div class="ico-panel"></div>
@@ -124,6 +109,7 @@
 
 <script>
     import emoji from '../assets/json/emoji';
+    import toolbar from '../assets/json/toolbar';
     export default {
         name: "message-display",
         data() {
@@ -139,47 +125,12 @@
                     avatarImg: require("../assets/img/avatar.jpg"),
                     msgImgTest: require("../assets/img/msg-img-test.gif"),
                     msgImgTestB: require("../assets/img/msg-img-testB.gif"),
-                    toolbarBarIco: {
-                        emoticon: require("../assets/img/toolbar_emoticon_normal@2x.png"),
-                        emoticonNormal: require("../assets/img/toolbar_emoticon_normal@2x.png"),
-                        emoticonHover: require("../assets/img/toolbar_emoticon_hover@2x.png"),
-                        emoticonDown: require("../assets/img/toolbar_emoticon_down@2x.png"),
-                        screenCaptureNormal: require("../assets/img/toolbar_screenCapture_normal@2x.png"),
-                        screenCaptureHover: require("../assets/img/toolbar_screenCapture_hover@2x.png"),
-                        screenCaptureDown: require("../assets/img/toolbar_screenCapture_down@2x.png"),
-                        filesNormal: require("../assets/img/toolbar_files_normal@2x.png"),
-                        filesHover: require("../assets/img/toolbar_files_hover@2x.png"),
-                        filesDown: require("../assets/img/toolbar_files_down@2x.png"),
-                        phoneNormal: require("../assets/img/toolbar_phone_normal@2x.png"),
-                        phoneHover: require("../assets/img/toolbar_phone_hover@2x.png"),
-                        phoneDown: require("../assets/img/toolbar_phone_down@2x.png"),
-                        historyNormal: require("../assets/img/toolbar_history_normal@2x.png"),
-                        historyHover: require("../assets/img/toolbar_history_hover@2x.png"),
-                        historyDown: require("../assets/img/toolbar_history_down@2x.png"),
-                        shakeNormal: require("../assets/img/toolbar_shake_normal@2x.png"),
-                        shakeHover: require("../assets/img/toolbar_shake_hover@2x.png"),
-                        shakeDown: require("../assets/img/toolbar_shake_down@2x.png")
-                    },
-                    emoticonIco: require("../assets/img/emoticonIco.png")
                 },
                 messageContent:"",
                 InputContent:"",
                 emoticonShowStatus: "none",
-                emojiSrc:{
-                    "funny":require("../assets/img/emoji/178fix@2x.png"),
-                    "funnyNormal":require("../assets/img/emoji/178fix@2x.png"),
-                    "funnyHover":require("../assets/img/emoji/178@2x.gif"),
-                    "smile":require("../assets/img/emoji/14fix@2x.png"),
-                    "smileNormal":require("../assets/img/emoji/14fix@2x.png"),
-                    "smileHover":require("../assets/img/emoji/14@2x.gif"),
-                    "pout":require("../assets/img/emoji/1fix@2x.png"),
-                    "poutNormal":require("../assets/img/emoji/1fix@2x.png"),
-                    "poutHover":require("../assets/img/emoji/1@2x.gif"),
-                    "porn":require("../assets/img/emoji/2fix@2x.png"),
-                    "pornNormal":require("../assets/img/emoji/2fix@2x.png"),
-                    "pornHover":require("../assets/img/emoji/2@2x.gif"),
-                },
-                emojiList:emoji
+                emojiList:emoji,
+                toolbarList:toolbar
             }
         },
         mounted:function(){
@@ -207,17 +158,22 @@
                 }
             },
             // 显示表情
-            displayExpression:function (status) {
+            toolbarSwitch:function (status,event,path,hoverPath,downPath,toolItemName) {
                 if(status==="hover" || status==="up"){
-                    this.resourceObj.toolbarBarIco.emoticon = this.resourceObj.toolbarBarIco.emoticonHover;
+                    event.target.src = require(`../assets/img/${hoverPath}`);
                 }else if(status==="leave"){
-                    this.resourceObj.toolbarBarIco.emoticon = this.resourceObj.toolbarBarIco.emoticonNormal;
+                    event.target.src = require(`../assets/img/${path}`);
                 }else{
-                    this.resourceObj.toolbarBarIco.emoticon = this.resourceObj.toolbarBarIco.emoticonDown;
-                    if(this.emoticonShowStatus ==="flex"){
-                        this.emoticonShowStatus = "none";
+                    event.target.src = require(`../assets/img/${downPath}`);
+                    // 表情框显示条件
+                    if(toolItemName==="emoticon"){
+                        if(this.emoticonShowStatus ==="flex"){
+                            this.emoticonShowStatus = "none";
+                        }else{
+                            this.emoticonShowStatus = "flex";
+                        }
                     }else{
-                        this.emoticonShowStatus = "flex";
+                        this.emoticonShowStatus = "none";
                     }
                 }
             },
@@ -226,13 +182,12 @@
                 return typeof obj === "function" && typeof obj.nodeType !== "number";
             },
             // 表情框鼠标悬浮显示动态表情
-            emojiConversion:function (status) {
+            emojiConversion:function (event,status,path,hoverPath) {
                 if(status==="over"){
-                    this.emojiSrc.funny = this.emojiSrc.funnyHover;
+                    event.target.src = require(`../assets/img/emoji/${hoverPath}`);
                 }else{
-                    this.emojiSrc.funny = this.emojiSrc.funnyNormal;
+                    event.target.src = require(`../assets/img/emoji/${path}`);
                 }
-
             }
         },
         beforeRouteUpdate(to, form, next) {

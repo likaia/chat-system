@@ -1,0 +1,44 @@
+[
+  {
+    "name": "emoticon",
+    "src": "toolbar_emoticon_normal@2x.png",
+    "info": "表情图标",
+    "hover": "toolbar_emoticon_hover@2x.png",
+    "down": "toolbar_emoticon_down@2x.png"
+  },
+  {
+    "name": "screenCapture",
+    "src": "toolbar_screenCapture_normal@2x.png",
+    "info": "截图图标",
+    "hover": "toolbar_screenCapture_hover@2x.png",
+    "down": "toolbar_screenCapture_down@2x.png"
+  },
+  {
+    "name": "shake",
+    "src": "toolbar_shake_normal@2x.png",
+    "info": "抖动图标",
+    "hover": "toolbar_shake_hover@2x.png",
+    "down": "toolbar_shake_down@2x.png"
+  },
+  {
+    "name": "files",
+    "src": "toolbar_files_normal@2x.png",
+    "info": "文件图标",
+    "hover": "toolbar_files_hover@2x.png",
+    "down": "toolbar_files_down@2x.png"
+  },
+  {
+    "name": "phone",
+    "src": "toolbar_phone_normal@2x.png",
+    "info": "电话图标",
+    "hover": "toolbar_phone_hover@2x.png",
+    "down": "toolbar_phone_down@2x.png"
+  },
+  {
+    "name": "history",
+    "src": "toolbar_history_normal@2x.png",
+    "info": "消息记录图标",
+    "hover": "toolbar_history_hover@2x.png",
+    "down": "toolbar_history_down@2x.png"
+  }
+]
