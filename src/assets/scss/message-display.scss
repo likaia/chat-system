@@ -233,7 +233,7 @@
       border-radius: 5px;
       background: white;
       border: solid 1px #dfe0e0;
-      padding: 15px;
+      padding: 20px;
       box-sizing: border-box;
       position: absolute;
       top: -268px;
@@ -246,11 +246,18 @@
         height: 30px;
         display: flex;
         align-items: center;
+        flex-flow: row wrap;
 
         .item-panel{
           width: 25px;
           height: 25px;
-          margin-right: 5px;
+          margin-right: 6px;
+          margin-bottom: 7px;
+
+          // 取消12的倍数的元素的右外边距
+          &:nth-child(12n){
+            margin-right: 0;
+          }
 
           img{
             width: 100%;
