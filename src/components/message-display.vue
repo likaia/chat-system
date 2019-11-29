@@ -90,14 +90,15 @@
                     <img class="emoticon" :src="require(`../assets/img/${item.src}`)" @mouseenter="toolbarSwitch('hover',$event,item.src,item.hover,item.down,item.name)" @mouseleave="toolbarSwitch('leave',$event,item.src,item.hover,item.down,item.name)" @mousedown="toolbarSwitch('down',$event,item.src,item.hover,item.down,item.name)" @mouseup="toolbarSwitch('up',$event,item.src,item.hover,item.down,item.name)" :alt="item.info">
                 </div>
             </div>
-            <div class="input-panel">
-                <textarea @keydown.enter.exact="sendMessage($event)" v-model="messageContent"></textarea>
+            <div class="input-panel" @keydown.enter.exact="sendMessage($event)" contenteditable="true" spellcheck="false">
+               <!-- <textarea @keydown.enter.exact="sendMessage($event)" v-model="messageContent"></textarea>-->
+                {{messageContent}}
             </div>
             <!--表情面板-->
             <div class="emoticon-panel" :style="{display: emoticonShowStatus}">
                 <div class="row-panel">
                     <div class="item-panel" v-for="item in this.emojiList" :key="item.info">
-                        <img :src="require(`../assets/img/emoji/${item.src}`)" :alt="item.info" @mouseover="emojiConversion($event,'over',item.src,item.hover)" @mouseleave="emojiConversion($event,'leave',item.src,item.hover)">
+                        <img :src="require(`../assets/img/emoji/${item.src}`)" :alt="item.info" @mouseover="emojiConversion($event,'over',item.src,item.hover)" @mouseleave="emojiConversion($event,'leave',item.src,item.hover)" @click="emojiConversion($event,'click',item.src,item.hover)">
                     </div>
                 </div>
                 <div class="ico-panel"></div>
@@ -155,6 +156,7 @@
             sendMessage:function (event) {
                 if(event.keyCode===13){
                     console.log("消息发送");
+                    console.log(event.target.innerHTML);
                 }
             },
             // 显示表情
@@ -185,7 +187,10 @@
             emojiConversion:function (event,status,path,hoverPath) {
                 if(status==="over"){
                     event.target.src = require(`../assets/img/emoji/${hoverPath}`);
-                }else{
+                }else if(status==="click"){
+                    console.log(hoverPath);
+                    this.messageContent = hoverPath;
+                } else{
                     event.target.src = require(`../assets/img/emoji/${path}`);
                 }
             }
