@@ -87,18 +87,23 @@
         <div class="user-input-panel">
             <div class="toolbar-panel">
                 <div class="item-panel" v-for="item in toolbarList" :key="item.info">
-                    <img class="emoticon" :src="require(`../assets/img/${item.src}`)" @mouseenter="toolbarSwitch('hover',$event,item.src,item.hover,item.down,item.name)" @mouseleave="toolbarSwitch('leave',$event,item.src,item.hover,item.down,item.name)" @mousedown="toolbarSwitch('down',$event,item.src,item.hover,item.down,item.name)" @mouseup="toolbarSwitch('up',$event,item.src,item.hover,item.down,item.name)" :alt="item.info">
+                    <img class="emoticon" :src="require(`../assets/img/${item.src}`)"
+                         @mouseenter="toolbarSwitch('hover',$event,item.src,item.hover,item.down,item.name)"
+                         @mouseleave="toolbarSwitch('leave',$event,item.src,item.hover,item.down,item.name)"
+                         @mousedown="toolbarSwitch('down',$event,item.src,item.hover,item.down,item.name)"
+                         @mouseup="toolbarSwitch('up',$event,item.src,item.hover,item.down,item.name)" :alt="item.info">
                 </div>
             </div>
-            <div class="input-panel" @keydown.enter.exact="sendMessage($event)" contenteditable="true" spellcheck="false">
-               <!-- <textarea @keydown.enter.exact="sendMessage($event)" v-model="messageContent"></textarea>-->
-                {{messageContent}}
-            </div>
+            <div class="input-panel" ref="msgInputContainer" @keydown.enter.exact="sendMessage($event)"
+                 contenteditable="true" spellcheck="false"></div>
             <!--表情面板-->
             <div class="emoticon-panel" :style="{display: emoticonShowStatus}">
                 <div class="row-panel">
                     <div class="item-panel" v-for="item in this.emojiList" :key="item.info">
-                        <img :src="require(`../assets/img/emoji/${item.src}`)" :alt="item.info" @mouseover="emojiConversion($event,'over',item.src,item.hover)" @mouseleave="emojiConversion($event,'leave',item.src,item.hover)" @click="emojiConversion($event,'click',item.src,item.hover)">
+                        <img :src="require(`../assets/img/emoji/${item.src}`)" :alt="item.info"
+                             @mouseover="emojiConversion($event,'over',item.src,item.hover,item.info)"
+                             @mouseleave="emojiConversion($event,'leave',item.src,item.hover,item.info)"
+                             @click="emojiConversion($event,'click',item.src,item.hover,item.info)">
                     </div>
                 </div>
                 <div class="ico-panel"></div>
@@ -111,6 +116,7 @@
 <script>
     import emoji from '../assets/json/emoji';
     import toolbar from '../assets/json/toolbar';
+
     export default {
         name: "message-display",
         data() {
@@ -127,18 +133,18 @@
                     msgImgTest: require("../assets/img/msg-img-test.gif"),
                     msgImgTestB: require("../assets/img/msg-img-testB.gif"),
                 },
-                messageContent:"",
-                InputContent:"",
+                messageContent: "",
+                InputContent: "",
                 emoticonShowStatus: "none",
-                emojiList:emoji,
-                toolbarList:toolbar
+                emojiList: emoji,
+                toolbarList: toolbar
             }
         },
-        mounted:function(){
+        mounted: function () {
             // 全局点击事件，点击表情框以外的地方，隐藏当前表情框
-            document.addEventListener('click',(e)=>{
+            document.addEventListener('click', (e) => {
                 let thisClassName = e.target.className;
-                if( thisClassName !== "emoticon-panel" && thisClassName !=="emoticon"){
+                if (thisClassName !== "emoticon-panel" && thisClassName !== "emoticon") {
                     this.emoticonShowStatus = "none";
                 }
             });
@@ -153,44 +159,51 @@
                     this.createDisSrc = this.resourceObj.createDisClick
                 }
             },
-            sendMessage:function (event) {
-                if(event.keyCode===13){
+            sendMessage: function (event) {
+                if (event.keyCode === 13) {
                     console.log("消息发送");
                     console.log(event.target.innerHTML);
                 }
             },
             // 显示表情
-            toolbarSwitch:function (status,event,path,hoverPath,downPath,toolItemName) {
-                if(status==="hover" || status==="up"){
+            toolbarSwitch: function (status, event, path, hoverPath, downPath, toolItemName) {
+                if (status === "hover" || status === "up") {
                     event.target.src = require(`../assets/img/${hoverPath}`);
-                }else if(status==="leave"){
+                } else if (status === "leave") {
                     event.target.src = require(`../assets/img/${path}`);
-                }else{
+                } else {
                     event.target.src = require(`../assets/img/${downPath}`);
                     // 表情框显示条件
-                    if(toolItemName==="emoticon"){
-                        if(this.emoticonShowStatus ==="flex"){
+                    if (toolItemName === "emoticon") {
+                        if (this.emoticonShowStatus === "flex") {
                             this.emoticonShowStatus = "none";
-                        }else{
+                        } else {
                             this.emoticonShowStatus = "flex";
                         }
-                    }else{
+                    } else {
                         this.emoticonShowStatus = "none";
                     }
                 }
             },
             // 判断一个对象是否为函数类型
-            isFunction:function (obj) {
+            isFunction: function (obj) {
                 return typeof obj === "function" && typeof obj.nodeType !== "number";
             },
             // 表情框鼠标悬浮显示动态表情
-            emojiConversion:function (event,status,path,hoverPath) {
-                if(status==="over"){
+            emojiConversion: function (event, status, path, hoverPath, info) {
+                if (status === "over") {
                     event.target.src = require(`../assets/img/emoji/${hoverPath}`);
-                }else if(status==="click"){
+                } else if (status === "click") {
                     console.log(hoverPath);
-                    this.messageContent = hoverPath;
-                } else{
+                    // 表情输入
+                    const imgSrc = require(`../assets/img/emoji/${hoverPath}`);
+                    const imgTag = document.createElement("img");
+                    imgTag.src = imgSrc;
+                    imgTag.alt = info;
+                    imgTag.width = 28;
+                    imgTag.height = 28;
+                    this.$refs.msgInputContainer.appendChild(imgTag);
+                } else {
                     event.target.src = require(`../assets/img/emoji/${path}`);
                 }
             }
