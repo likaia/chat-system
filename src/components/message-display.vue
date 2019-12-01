@@ -161,8 +161,22 @@
             },
             sendMessage: function (event) {
                 if (event.keyCode === 13) {
-                    console.log("消息发送");
-                    console.log(event.target.innerHTML);
+                    let msgText = "";
+                    // 获取输入框下的所有子元素
+                    let allNodes = event.target.childNodes;
+                    for(let item of allNodes){
+                        // 判断当前元素是否为img元素
+                        if(item.nodeName==="IMG"){
+                            msgText += `/${item.alt}`;
+                        }
+                        else{
+                            // 获取text节点的值
+                            msgText += item.nodeValue;
+                        }
+                    }
+                    console.log("消息捕获成功:");
+                    console.info(msgText);
+                    // TODO: 正确的解析表情字符串，渲染到我方发送消息容器
                 }
             },
             // 显示表情
@@ -194,15 +208,21 @@
                 if (status === "over") {
                     event.target.src = require(`../assets/img/emoji/${hoverPath}`);
                 } else if (status === "click") {
-                    console.log(hoverPath);
                     // 表情输入
                     const imgSrc = require(`../assets/img/emoji/${hoverPath}`);
-                    const imgTag = document.createElement("img");
-                    imgTag.src = imgSrc;
-                    imgTag.alt = info;
-                    imgTag.width = 28;
-                    imgTag.height = 28;
-                    this.$refs.msgInputContainer.appendChild(imgTag);
+                    // const imgTag = document.createElement("img");
+                    // imgTag.src = imgSrc;
+                    // imgTag.alt = info;
+                    // imgTag.width = 28;
+                    // imgTag.height = 28;
+                    // this.$refs.msgInputContainer.appendChild(imgTag);
+                    /**
+                     * 推荐使用document暴露的execCommand 方法来操作此处
+                     * 可以在当前焦点处插入元素
+                     * 感谢评论区掘友的建议
+                     */
+                    const imgTag = `<img src="${imgSrc}" width="28" height="28" alt="${info}">`;
+                    document.execCommand("insertHTML", false, imgTag);
                 } else {
                     event.target.src = require(`../assets/img/emoji/${path}`);
                 }
