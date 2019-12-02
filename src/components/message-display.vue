@@ -167,16 +167,21 @@
                     for(let item of allNodes){
                         // 判断当前元素是否为img元素
                         if(item.nodeName==="IMG"){
-                            msgText += `/${item.alt}`;
+                            msgText += `/${item.alt}/`;
                         }
                         else{
                             // 获取text节点的值
-                            msgText += item.nodeValue;
+                            if(item.nodeValue!==null){
+                                msgText += item.nodeValue;
+                            }
                         }
                     }
                     console.log("消息捕获成功:");
                     console.info(msgText);
                     // TODO: 正确的解析表情字符串，渲染到我方发送消息容器
+                    let separateReg = /(\/[^/]+\/)/g;
+                    const finalStr = msgText.match(separateReg)
+                    console.log(finalStr);
                 }
             },
             // 显示表情
