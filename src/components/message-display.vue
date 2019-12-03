@@ -61,7 +61,7 @@
             </div>
             <div class="row-panel">
                 <!--发送者消息样式-->
-                <div class="sender-panel">
+                <div class="sender-panel" v-for="item in senderMessageList" :key="item.msgId">
                     <!--消息-->
                     <div class="msg-body">
                         <!--消息尾巴-->
@@ -71,12 +71,11 @@
                             </svg>
                         </div>
                         <!--消息内容-->
-                        <p>已收到 👌</p>
-
+                        <p>{{item.msgText}}</p>
                     </div>
                     <!--头像-->
                     <div class="avatar-panel">
-                        <img :src="this.resourceObj.avatarImg" alt="">
+                        <img :src="item.avatarSrc" alt="">
                     </div>
                 </div>
             </div>
@@ -137,7 +136,14 @@
                 InputContent: "",
                 emoticonShowStatus: "none",
                 emojiList: emoji,
-                toolbarList: toolbar
+                toolbarList: toolbar,
+                senderMessageList:[
+                    {
+                        "msgText":"你好",
+                        "msgId":"1",
+                        "avatarSrc":require("../assets/img/avatar.jpg")
+                    }
+                ]
             }
         },
         mounted: function () {
@@ -178,10 +184,54 @@
                     }
                     console.log("消息捕获成功:");
                     console.info(msgText);
-                    // TODO: 正确的解析表情字符串，渲染到我方发送消息容器
+                    // 接口调用，发送消息至服务端
+
+                        // 此处省略...
+
+                    //
+                    // 解析接口返回的数据进行渲染
+                    /**
+                     * 使用正则表达式解析特定字符串
+                     *     找到特定字符串出现的位置
+                     *     遍历配置文件中的json数据，
+                     *     判断当前关键字是否在配置文件中
+                     *     获取配置文件中的属性，生成img标签
+                     *     替换特定字符串为所生成的img标签
+                     * */
                     let separateReg = /(\/[^/]+\/)/g;
-                    const finalStr = msgText.match(separateReg)
-                    console.log(finalStr);
+                    let finalMsgText = "";
+                    // 将符合条件的字符串放到数组里
+                    const resultArray = msgText.match(separateReg);
+                    if(resultArray!==null){
+                        for (let item of resultArray){
+                            // 删除字符串中的/符号
+                            item = item.replace(/\//g,"");
+                            for (let emojiItem of this.emojiList){
+                                // 判断捕获到的字符串与配置文件中的字符串是否相同
+                                if(emojiItem.info === item){
+                                    const imgSrc = require(`../assets/img/emoji/${emojiItem.hover}`);
+                                    const imgTag = `<img src="${imgSrc}" width="28" height="28" alt="${item}">`;
+                                    // 替换匹配的字符串为img标签
+                                    finalMsgText = msgText.replace(separateReg,imgTag);
+                                }
+                            }
+                        }
+                    }else{
+                        finalMsgText = msgText;
+                    }
+                    console.log("消息解析成功:");
+                    console.log(finalMsgText);
+                    const thisSenderMessageObj = {
+                        "msgText": finalMsgText,
+                        "msgId": Date.parse(new Date()),
+                        "avatarSrc": require("../assets/img/avatar.jpg")
+                    };
+                    // 渲染页面
+                    this.senderMessageList.push(thisSenderMessageObj);
+                    // 清空输入框中的内容
+                    for (let nodesItem of allNodes){
+                        event.target.removeChild(nodesItem);
+                    }
                 }
             },
             // 显示表情
