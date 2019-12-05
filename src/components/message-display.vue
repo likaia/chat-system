@@ -189,11 +189,12 @@
                                 if(emojiItem.info === item){
                                     const imgSrc = require(`../assets/img/emoji/${emojiItem.hover}`);
                                     const imgTag = `<img src="${imgSrc}" width="28" height="28" alt="${item}">`;
-                                    // 替换匹配的字符串为img标签
-                                    finalMsgText = msgText.replace(separateReg,imgTag);
+                                    // 替换匹配的字符串为img标签:全局替换
+                                    msgText = msgText.replace(new RegExp(`/${item}/`,'g'),imgTag);
                                 }
                             }
                         }
+                        finalMsgText = msgText;
                     }else{
                         finalMsgText = msgText;
                     }
