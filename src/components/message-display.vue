@@ -40,26 +40,6 @@
                 </div>
             </div>
             <div class="row-panel">
-                <!--对方消息样式-->
-                <div class="otherSide-panel">
-                    <!--头像-->
-                    <div class="avatar-panel">
-                        <img :src="this.resourceObj.groupMsgImg" alt="">
-                    </div>
-                    <!--消息-->
-                    <div class="msg-body">
-                        <!--消息尾巴-->
-                        <div class="tail-panel">
-                            <svg class="icon" aria-hidden="true">
-                                <use xlink:href="#icon-zbds30duihuakuangzuo"></use>
-                            </svg>
-                        </div>
-                        <!--消息内容-->
-                        <p>新文件注意查收</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row-panel">
                 <!--发送者消息样式-->
                 <div class="sender-panel" v-for="item in senderMessageList" :key="item.msgId">
                     <!--消息-->
@@ -71,7 +51,7 @@
                             </svg>
                         </div>
                         <!--消息内容-->
-                        <p>{{item.msgText}}</p>
+                        <p v-html="item.msgText"/>
                     </div>
                     <!--头像-->
                     <div class="avatar-panel">
@@ -138,11 +118,7 @@
                 emojiList: emoji,
                 toolbarList: toolbar,
                 senderMessageList:[
-                    {
-                        "msgText":"你好",
-                        "msgId":"1",
-                        "avatarSrc":require("../assets/img/avatar.jpg")
-                    }
+
                 ]
             }
         },
@@ -167,6 +143,8 @@
             },
             sendMessage: function (event) {
                 if (event.keyCode === 13) {
+                    // 阻止编辑框默认生成div事件
+                    event.preventDefault();
                     let msgText = "";
                     // 获取输入框下的所有子元素
                     let allNodes = event.target.childNodes;
@@ -223,15 +201,13 @@
                     console.log(finalMsgText);
                     const thisSenderMessageObj = {
                         "msgText": finalMsgText,
-                        "msgId": Date.parse(new Date()),
+                        "msgId": Date.now(),
                         "avatarSrc": require("../assets/img/avatar.jpg")
                     };
                     // 渲染页面
                     this.senderMessageList.push(thisSenderMessageObj);
                     // 清空输入框中的内容
-                    for (let nodesItem of allNodes){
-                        event.target.removeChild(nodesItem);
-                    }
+                    event.target.innerHTML = "";
                 }
             },
             // 显示表情

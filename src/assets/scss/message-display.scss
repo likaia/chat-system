@@ -68,10 +68,11 @@
         width: 96%;
         min-height: 50px;
         display: flex;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
 
         .avatar-panel{
           width: 30px;
+          min-width: 30px;
           height: 30px;
           border-radius: 50%;
           overflow: hidden;
@@ -112,6 +113,7 @@
             font-size: 15px;
             /*自动换行*/
             word-wrap: break-word;
+            overflow: hidden;
 
             img{
               width: 100%;
@@ -129,10 +131,11 @@
         margin-right: 12px;
         display: flex;
         justify-content: flex-end;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
 
         .avatar-panel{
           width: 30px;
+          min-width: 30px;
           height: 30px;
           border-radius: 50%;
           overflow: hidden;
@@ -173,6 +176,7 @@
             font-size: 15px;
             /*自动换行*/
             word-wrap: break-word;
+            overflow: hidden;
 
             img{
               width: 100%;
