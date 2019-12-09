@@ -18,7 +18,7 @@
             </div>
         </div>
         <!--消息显示-->
-        <div class="messages-panel">
+        <div class="messages-panel" ref="messagesContainer">
             <div class="row-panel">
                 <!--对方消息样式-->
                 <div class="otherSide-panel">
@@ -101,6 +101,7 @@
         data() {
             return {
                 userId: this.$route.params.userId,
+                messagesContainerTimer:"",
                 createDisSrc: require("../assets/img/titlebar_function_createDis_normal@2x.png"),
                 resourceObj: {
                     createDisNormal: require("../assets/img/titlebar_function_createDis_normal@2x.png"),
@@ -160,22 +161,8 @@
                             }
                         }
                     }
-                    console.log("消息捕获成功:");
-                    console.info(msgText);
-                    // 接口调用，发送消息至服务端
 
-                        // 此处省略...
-
-                    //
                     // 解析接口返回的数据进行渲染
-                    /**
-                     * 使用正则表达式解析特定字符串
-                     *     找到特定字符串出现的位置
-                     *     遍历配置文件中的json数据，
-                     *     判断当前关键字是否在配置文件中
-                     *     获取配置文件中的属性，生成img标签
-                     *     替换特定字符串为所生成的img标签
-                     * */
                     let separateReg = /(\/[^/]+\/)/g;
                     let finalMsgText = "";
                     // 将符合条件的字符串放到数组里
@@ -198,8 +185,6 @@
                     }else{
                         finalMsgText = msgText;
                     }
-                    console.log("消息解析成功:");
-                    console.log(finalMsgText);
                     const thisSenderMessageObj = {
                         "msgText": finalMsgText,
                         "msgId": Date.now(),
@@ -207,6 +192,10 @@
                     };
                     // 渲染页面
                     this.senderMessageList.push(thisSenderMessageObj);
+                    // 修改滚动条位置
+                    this.$nextTick(function () {
+                        this.$refs.messagesContainer.scrollTop = this.$refs.messagesContainer.scrollHeight;
+                    });
                     // 清空输入框中的内容
                     event.target.innerHTML = "";
                 }
@@ -242,17 +231,6 @@
                 } else if (status === "click") {
                     // 表情输入
                     const imgSrc = require(`../assets/img/emoji/${hoverPath}`);
-                    // const imgTag = document.createElement("img");
-                    // imgTag.src = imgSrc;
-                    // imgTag.alt = info;
-                    // imgTag.width = 28;
-                    // imgTag.height = 28;
-                    // this.$refs.msgInputContainer.appendChild(imgTag);
-                    /**
-                     * 推荐使用document暴露的execCommand 方法来操作此处
-                     * 可以在当前焦点处插入元素
-                     * 感谢评论区掘友的建议
-                     */
                     const imgTag = `<img src="${imgSrc}" width="28" height="28" alt="${info}">`;
                     document.execCommand("insertHTML", false, imgTag);
                 } else {
