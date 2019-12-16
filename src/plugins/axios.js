@@ -2,20 +2,26 @@
 
 import Vue from 'vue';
 import axios from "axios";
-
-// Full config:  https://github.com/axios/axios#request-config
-// axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
-// axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
-// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+// 设置baseURL
+axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || 'https://www.kaisir.cn';
+// 请求头添加token
+axios.defaults.headers.common['Authorization'] = "";
+// 设置get请求头
+axios.defaults.headers.get['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+// 设置post请求头
+axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
 
 let config = {
-  // baseURL: process.env.baseURL || process.env.apiUrl || ""
-  // timeout: 60 * 1000, // Timeout
+  baseURL: process.env.baseURL || process.env.apiUrl || "",
+  // 请求超时时间
+  timeout: 60 * 1000,
+  // 跨域请求时是否需要凭证
   // withCredentials: true, // Check cross-site Access-Control
 };
 
 const _axios = axios.create(config);
-
+console.log(process.env.baseURL);
+// 请求拦截器
 _axios.interceptors.request.use(
   function(config) {
     // Do something before request is sent
@@ -23,11 +29,13 @@ _axios.interceptors.request.use(
   },
   function(error) {
     // Do something with request error
+    error.data = {};
+    error.data.msg = "服务器异常";
     return Promise.reject(error);
   }
 );
 
-// Add a response interceptor
+// 响应拦截器
 _axios.interceptors.response.use(
   function(response) {
     // Do something with response data
@@ -35,6 +43,8 @@ _axios.interceptors.response.use(
   },
   function(error) {
     // Do something with response error
+    error.data = {};
+    error.data.msg = "请求超时或服务器异常";
     return Promise.reject(error);
   }
 );
