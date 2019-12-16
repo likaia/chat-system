@@ -12,15 +12,25 @@ axios.defaults.headers.get['Content-Type'] = 'application/x-www-form-urlencoded;
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
 
 let config = {
-  baseURL: process.env.baseURL || process.env.apiUrl || "",
+  baseURL: "localhost/user",
   // 请求超时时间
   timeout: 60 * 1000,
   // 跨域请求时是否需要凭证
   // withCredentials: true, // Check cross-site Access-Control
 };
 
+// 根据环境当前变量更改baseURL
+switch (process.env.NODE_ENV) {
+  case 'development':
+    // 开发环境
+    config.baseURL = "https://www.kaisir.cn/user";
+    break;
+  case 'production':
+    // 生产环境
+    config.baseURL = "https://www.kaisir.cn/api";
+}
+
 const _axios = axios.create(config);
-console.log(process.env.baseURL);
 // 请求拦截器
 _axios.interceptors.request.use(
   function(config) {

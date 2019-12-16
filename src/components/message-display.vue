@@ -162,6 +162,15 @@
                         }
                     }
 
+                    console.trace("请求头的token为:"+this.axios.defaults.headers.common['Authorization']);
+
+                    this.axios.post("/getter/postJSON",{name:"likai",age:"19"}).then((res)=>{
+                        console.log("接口请求成功");
+                        console.log(res);
+                    }).catch((err)=>{
+                        console.log("接口请求失败");
+                        console.log(err)
+                    });
                     // 解析接口返回的数据进行渲染
                     let separateReg = /(\/[^/]+\/)/g;
                     let finalMsgText = "";

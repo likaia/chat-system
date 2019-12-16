@@ -25,6 +25,19 @@
       // 页面创建完成后调用获取当前屏幕高度方法
       let thisHeight = this.getThisWindowHeight();
       console.log(thisHeight);
+      // 设置token
+      let userInfo = {
+        username: "李凯",
+        password:"likai0414"
+      };
+      this.axios.post("/login",userInfo).then((response)=>{
+        const data = response.data;
+        // 设置token
+        this.axios.defaults.headers.common['Authorization'] = data.token;
+        console.log("请求头token设置成功:"+data.token);
+      }).catch((error)=>{
+        console.log(error);
+      });
     },
     methods:{
       // 获取当前屏幕高度
