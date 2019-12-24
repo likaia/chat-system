@@ -5,6 +5,7 @@
 </template>
 <script>
   import mainContent from '@/components/main-content.vue';
+  import lodash from 'lodash'
   export default {
     // 当前组件名
     name:'app',
@@ -22,22 +23,17 @@
       }
     },
     created: function(){
-      // 页面创建完成后调用获取当前屏幕高度方法
-      let thisHeight = this.getThisWindowHeight();
-      console.log(thisHeight);
-      // 设置token
-      let userInfo = {
-        username: "李凯",
-        password:"likai0414"
-      };
-      this.axios.post("/login",userInfo).then((response)=>{
-        const data = response.data;
-        // 设置token
-        this.axios.defaults.headers.common['Authorization'] = data.token;
-        console.log("请求头token设置成功:"+data.token);
-      }).catch((error)=>{
-        console.log(error);
-      });
+      // 页面创建完成后，从localstorage中获取token更新vuex
+      const token = localStorage.getItem("token");
+      if(lodash.isEmpty(token)){
+        // 重定向到登录页
+        this.$router.replace({
+          path: '/login'
+        });
+      }else{
+        // 更新vuex中的token
+        this.$store.state.token = token;
+      }
     },
     methods:{
       // 获取当前屏幕高度

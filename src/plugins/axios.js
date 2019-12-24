@@ -2,39 +2,42 @@
 
 import Vue from 'vue';
 import axios from "axios";
-// 设置baseURL
-axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || 'https://www.kaisir.cn';
-// 请求头添加token
-axios.defaults.headers.common['Authorization'] = "";
-// 设置get请求头
-axios.defaults.headers.get['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
-// 设置post请求头
-axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
-
+import store from '../store/index';
 let config = {
-  baseURL: "localhost/user",
+  baseURL: process.env.NODE_ENV === 'development' ? '/user' : '/api',
   // 请求超时时间
   timeout: 60 * 1000,
   // 跨域请求时是否需要凭证
   // withCredentials: true, // Check cross-site Access-Control
+  heards:{
+    get:{
+      'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+      // 将普适性的请求头作为基础配置。当需要特殊请求头时，将特殊请求头作为参数传入，覆盖基础配置
+    },
+    post:{
+      'Content-Type': 'application/json;charset=utf-8'
+      // 将普适性的请求头作为基础配置。当需要特殊请求头时，将特殊请求头作为参数传入，覆盖基础配置
+    }
+  },
+  // 在向服务器发送请求前，对数据进行处理，axios默认会序列化数据
+  // transformRequest:[function(data){
+  //
+  // }],
+  // 在传递给 then/catch 前，修改响应数据
+  // transformResponse:[function(data){
+  //
+  // }]
 };
 
-// 根据环境当前变量更改baseURL
-switch (process.env.NODE_ENV) {
-  case 'development':
-    // 开发环境
-    config.baseURL = "https://www.kaisir.cn/user";
-    break;
-  case 'production':
-    // 生产环境
-    config.baseURL = "https://www.kaisir.cn/api";
-}
-
+// 创建实例
 const _axios = axios.create(config);
 // 请求拦截器
 _axios.interceptors.request.use(
   function(config) {
-    // Do something before request is sent
+    // 从vuex里获取token
+    const token = store.state.token;
+    // 如果token存在就在请求头里添加
+    token && (config.headers.Authorization = token);
     return config;
   },
   function(error) {
@@ -48,8 +51,8 @@ _axios.interceptors.request.use(
 // 响应拦截器
 _axios.interceptors.response.use(
   function(response) {
-    // Do something with response data
-    return response;
+    // 只返回response中的data数据
+    return response.data;
   },
   function(error) {
     // Do something with response error
