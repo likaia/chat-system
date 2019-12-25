@@ -124,6 +124,15 @@
             }
         },
         mounted: function () {
+            // 测试其他接口能否调用成功
+            // const params = {
+            //     "name":"李凯",
+            //     "age":"19"
+            // };
+            this.$api.websiteManageAPI.getJSON(1,3).then((res)=>{
+                console.log("接口调用成功");
+                console.log(res)
+            });
             // 全局点击事件，点击表情框以外的地方，隐藏当前表情框
             document.addEventListener('click', (e) => {
                 let thisClassName = e.target.className;

@@ -26,11 +26,19 @@
       // 页面创建完成后，从localstorage中获取token更新vuex
       const token = localStorage.getItem("token");
       if(lodash.isEmpty(token)){
-        // 重定向到登录页
-       /* this.$router.replace({
-          path: '/login'
-        });*/
-
+        // 跳转登录页
+        const userInfo = {
+          "username":"李凯",
+          "password":"likai0414"
+        };
+        // 调用登录api
+        this.$api.websiteManageAPI.login(userInfo).then((res)=>{
+          console.log(res);
+          localStorage.setItem("token",res.token);
+          // 更新vuex中的token
+          this.$store.state.token = token;
+          console.log("token设置成功");
+        });
       }else{
         // 更新vuex中的token
         this.$store.state.token = token;
