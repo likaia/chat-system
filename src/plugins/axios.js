@@ -4,7 +4,7 @@ import Vue from 'vue';
 import axios from "axios";
 import store from '../store/index';
 let config = {
-  baseURL: process.env.NODE_ENV === 'development' ? '/user' : '/api',
+  baseURL: process.env.NODE_ENV === 'development' ? 'https://www.kaisir.cn/user' : 'https://www.kaisir.cn/api',
   // 请求超时时间
   timeout: 60 * 1000,
   // 跨域请求时是否需要凭证

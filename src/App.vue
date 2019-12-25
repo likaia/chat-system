@@ -27,9 +27,10 @@
       const token = localStorage.getItem("token");
       if(lodash.isEmpty(token)){
         // 重定向到登录页
-        this.$router.replace({
+       /* this.$router.replace({
           path: '/login'
-        });
+        });*/
+
       }else{
         // 更新vuex中的token
         this.$store.state.token = token;
