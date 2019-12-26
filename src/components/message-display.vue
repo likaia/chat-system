@@ -124,15 +124,6 @@
             }
         },
         mounted: function () {
-            // 测试其他接口能否调用成功
-            // const params = {
-            //     "name":"李凯",
-            //     "age":"19"
-            // };
-            this.$api.websiteManageAPI.getJSON(1,3).then((res)=>{
-                console.log("接口调用成功");
-                console.log(res)
-            });
             // 全局点击事件，点击表情框以外的地方，隐藏当前表情框
             document.addEventListener('click', (e) => {
                 let thisClassName = e.target.className;
@@ -154,6 +145,7 @@
             sendMessage: function (event) {
                 if (event.keyCode === 13) {
                     // 阻止编辑框默认生成div事件
+
                     event.preventDefault();
                     let msgText = "";
                     // 获取输入框下的所有子元素
@@ -171,14 +163,9 @@
                         }
                     }
 
-                    console.trace("请求头的token为:"+this.axios.defaults.headers.common['Authorization']);
-
-                    this.axios.post("/getter/postJSON",{name:"likai",age:"19"}).then((res)=>{
-                        console.log("接口请求成功");
-                        console.log(res);
-                    }).catch((err)=>{
-                        console.log("接口请求失败");
-                        console.log(err)
+                    this.$api.websiteManageAPI.getJSON(1,3).then((res)=>{
+                        console.log("接口调用成功");
+                        console.log(res)
                     });
                     // 解析接口返回的数据进行渲染
                     let separateReg = /(\/[^/]+\/)/g;
