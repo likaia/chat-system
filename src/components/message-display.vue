@@ -95,6 +95,7 @@
 <script>
     import emoji from '../assets/json/emoji';
     import toolbar from '../assets/json/toolbar';
+    import base from "../api/base";
 
     export default {
         name: "message-display",
@@ -145,7 +146,6 @@
             sendMessage: function (event) {
                 if (event.keyCode === 13) {
                     // 阻止编辑框默认生成div事件
-
                     event.preventDefault();
                     let msgText = "";
                     // 获取输入框下的所有子元素
@@ -162,11 +162,15 @@
                             }
                         }
                     }
-
-                    this.$api.websiteManageAPI.getJSON(1,3).then((res)=>{
-                        console.log("接口调用成功");
-                        console.log(res)
-                    });
+                    // 消息发送
+                    let ws = null;
+                    // 判断当前浏览器是否支持websocket
+                    if('WebSocket' in window){
+                        ws = new WebSocket(base.lkWebSocket);
+                        ws.send(msgText);
+                    }else{
+                        alert("当前浏览器不支持websocket");
+                    }
                     // 解析接口返回的数据进行渲染
                     let separateReg = /(\/[^/]+\/)/g;
                     let finalMsgText = "";

@@ -4,6 +4,7 @@
 * */
 const base = {
     lk:"https://www.kaisir.cn/user",
+    lkWebSocket:"wss://www.kaisir.cn/websocket",
     other:"https://kf.kaisir.cn/api"
 };
 

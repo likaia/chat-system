@@ -26,7 +26,7 @@
       // 页面创建完成后，从localstorage中获取token更新vuex
       const token = localStorage.getItem("token");
       if(lodash.isEmpty(token)){
-       /* const userInfo = {
+        const userInfo = {
           "username":"李凯",
           "password":"likai0414"
         };
@@ -35,10 +35,10 @@
           localStorage.setItem("token",res.token);
           // 更新vuex中的token
           this.$store.state.token = res.token;
-        });*/
+        });
 
         // 跳转登录页
-        let windowOBJ = this.openWin("https://www.kaisir.cn/login","loginWindow",800,675);
+      /*  let windowOBJ = this.openWin("https://www.kaisir.cn/login","loginWindow",800,675);
         // 使用定时器判断当前窗口是否关闭
         let loop = setInterval(()=>{
           if(windowOBJ.closed){
@@ -46,7 +46,7 @@
             // 刷新当前页
             parent.location.reload();
           }
-        },1);
+        },1);*/
 
       }else{
         // 更新vuex中的token

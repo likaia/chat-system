@@ -78,6 +78,8 @@ _axios.interceptors.response.use(
    // 清除本地存储中的token,如果需要刷新token，在这里通过旧的token跟服务器换新token，将新的token设置的vuex中
     if(response.data.code===401){
       localStorage.removeItem("token");
+      // 页面刷新
+      parent.location.reload();
     }
     // 只返回response中的data数据
     return response.data;
