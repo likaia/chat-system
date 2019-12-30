@@ -8027,6 +8027,11 @@ vue-loader@^15.7.0:
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
 
+vue-native-websocket@^2.0.13:
+  version "2.0.13"
+  resolved "https://registry.npm.taobao.org/vue-native-websocket/download/vue-native-websocket-2.0.13.tgz#5eaba0e7ba08749d7bff331e3290cdf5e61ca918"
+  integrity sha1-Xqug57oIdJ17/zMeMpDN9eYcqRg=
+
 vue-router@^3.0.6:
   version "3.1.3"
   resolved "https://registry.npm.taobao.org/vue-router/download/vue-router-3.1.3.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fvue-router%2Fdownload%2Fvue-router-3.1.3.tgz#e6b14fabc0c0ee9fda0e2cbbda74b350e28e412b"

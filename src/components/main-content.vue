@@ -50,7 +50,7 @@
                     <!--在线状态-->
                     <div class="status-panel" @click="onlineStatus"></div>
                     <div class="avatar-panel">
-                        <img src="../assets/img/avatar.jpg" alt="在线状态"/>
+                        <img :src="profilePicture" alt="在线状态"/>
                     </div>
                 </div>
             </div>
@@ -76,7 +76,8 @@
                 contactIco: require("../assets/img/menu-contact-normal@2x.png"),
                 contactIcoActive: require("../assets/img/menu-contact-down@2x.png"),
                 moreIco: require("../assets/img/menu-more-normal@2x.png"),
-                moreIcoActive: require("../assets/img/menu-more-down@2x.png")
+                moreIcoActive: require("../assets/img/menu-more-down@2x.png"),
+                profilePicture:this.$store.state.profilePicture
             }
         },
         methods: {
