@@ -25,7 +25,11 @@
     created: function(){
       // 页面创建完成后，从localstorage中获取token更新vuex
       const token = localStorage.getItem("token");
-      if(lodash.isEmpty(token)){
+      const username = localStorage.getItem("username");
+      if(this.isMobile()){
+        window.location.href = "https://www.kaisir.cn/chat-system/index.html#/contents/message/message/messageDisplay/5309190090";
+      }
+      if(lodash.isEmpty(token) || lodash.isEmpty(username)){
      /*   const userInfo = {
           "username":"李凯",
           "password":"likai0414"
@@ -42,7 +46,7 @@
         });*/
 
         // 跳转登录页
-        let windowOBJ = this.openWin("https://www.kaisir.cn/login","loginWindow",800,675);
+       /* let windowOBJ = this.openWin("https://www.kaisir.cn/login","loginWindow",800,675);
         // 使用定时器判断当前窗口是否关闭
         let loop = setInterval(()=>{
           if(windowOBJ.closed){
@@ -50,13 +54,15 @@
             // 刷新当前页
             parent.location.reload();
           }
-        },1);
-
+        },1);*/
+        localStorage.removeItem("msgArray");
+        window.location.href = "https://www.kaisir.cn/login";
       }else{
         // 更新vuex中的token
         this.$store.state.token = token;
         this.$store.state.profilePicture = localStorage.getItem("profilePicture");
         this.$store.state.userID = localStorage.getItem("userID");
+        this.$store.state.username = localStorage.getItem("username");
       }
     },
     methods:{
@@ -69,6 +75,9 @@
         // //获得窗口的水平位置
         const iLeft = (window.screen.availWidth - 10 - iWidth) / 2;
         return window.open(url, name, `width=${iWidth},height=${iHeight},top=${iTop},left=${iLeft},toolbar:0`);
+      },
+      isMobile:()=>{
+        return !!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i));
       }
     }
   }
@@ -84,7 +93,6 @@
   #app{
     width: 100%;
     height: 100%;
-    background: #0C9A9A;
   }
   .icon {
     width: 1em;

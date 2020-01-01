@@ -57,7 +57,7 @@
 
   .messages-panel{
     width: 100%;
-    height: 460px;
+    min-height: 260px;
     overflow-y: auto;
 
     .row-panel{
@@ -69,6 +69,7 @@
         min-height: 50px;
         display: flex;
         margin-bottom: 15px;
+        position: relative;
 
         .avatar-panel{
           width: 30px;
@@ -83,6 +84,24 @@
           }
         }
 
+        .user-name-panel{
+          width: 240px;
+          height: 20px;
+          position: absolute;
+          left: 42px;
+          top: 2px;
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+
+          p{
+            color: #9da9c6;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+
         .msg-body{
           max-width: 95%;
           min-height: 40px;
@@ -92,7 +111,7 @@
           align-items: center;
           padding: 10px;
           box-sizing: border-box;
-          margin-top: 6px;
+          margin-top: 28px;
           margin-left: 16px;
           position: relative;
 
@@ -132,6 +151,7 @@
         display: flex;
         justify-content: flex-end;
         margin-bottom: 15px;
+        position: relative;
 
         .avatar-panel{
           width: 30px;
@@ -146,6 +166,26 @@
           }
         }
 
+        .user-name-panel{
+          width: 240px;
+          height: 20px;
+          position: absolute;
+          right: 42px;
+          top: 2px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+
+          p{
+            color: #9da9c6;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+
         .msg-body{
           max-width: 95%;
           min-height: 40px;
@@ -155,7 +195,7 @@
           align-items: center;
           padding: 10px;
           box-sizing: border-box;
-          margin-top: 6px;
+          margin-top: 28px;
           margin-right: 16px;
           position: relative;
 
@@ -214,6 +254,17 @@
           width: 100%;
           height: 100%;
         }
+      }
+
+      .send-panel{
+        width: 70px;
+        height: 30px;
+        background-image: linear-gradient(-90deg, #29bdd9 0%, #276ace 100%);
+        text-align: center;
+        color: white;
+        border-radius: 5px;
+        line-height: 30px;
+        display: none;
       }
     }
 

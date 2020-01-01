@@ -1,23 +1,6 @@
 <template>
     <div id="mainBody" :style="{height:this.$store.state.thisWindowHeight+'px'}">
-        <div class="list-panel">
-            <router-link :to="{name:'messageDisplay',params:{userId:'5309190088'}}" tag="div">
-                <div class="row-panel topping">
-                    <div class="item-subscript-panel">
-                        <img :src="msgSubscriptIco" alt="角标">
-                    </div>
-                    <div class="item-avatar-panel">
-                        <img :src="avatarIco" alt="用户头像">
-                    </div>
-                    <div class="item-nickname-panel">
-                        <p class="title">神奇的程序员</p>
-                        <p class="subtitle">消息内容</p>
-                    </div>
-                    <div class="item-time-panel">
-                        <p>下午10:22</p>
-                    </div>
-                </div>
-            </router-link>
+        <div class="list-panel" ref="listPanel">
             <router-link :to="{name:'messageDisplay',params:{userId:'5309190090'}}" tag="div">
                 <div class="row-panel">
                     <div class="item-subscript-panel">
@@ -27,39 +10,19 @@
                         <img :src="groupMsgImg" alt="用户头像">
                     </div>
                     <div class="item-nickname-panel">
-                        <p class="title">全栈交流群</p>
-                        <p class="subtitle">好人一生平胸:要不</p>
+                        <p class="title">掘金摸鱼群</p>
+                        <p class="subtitle">暂无消息</p>
                     </div>
                     <div class="item-time-panel">
-                        <p>下午10:22</p>
+                        <!--<p>下午10:22</p>
                         <div class="msg-count-panel msg-count-more-panel">
-                            <p>99+</p>
-                        </div>
-                    </div>
-                </div>
-            </router-link>
-            <router-link :to="{name:'messageDisplay',params:{userId:'5309190089'}}" tag="div">
-                <div class="row-panel">
-                    <div class="item-subscript-panel">
-
-                    </div>
-                    <div class="item-avatar-panel">
-                        <img :src="otherMsgImg" alt="用户头像">
-                    </div>
-                    <div class="item-nickname-panel">
-                        <p class="title">前端交流群</p>
-                        <p class="subtitle">hello:Mess</p>
-                    </div>
-                    <div class="item-time-panel">
-                        <p>下午10:22</p>
-                        <div class="doNotDisturb-panel">
-                            <img :src="GroupBlocked" alt="">
-                        </div>
+                            <p></p>
+                        </div>-->
                     </div>
                 </div>
             </router-link>
         </div>
-        <div class="content-panel">
+        <div class="content-panel" ref="contentPanel">
             <!--公用组件(消息展示)-->
             <router-view name="messageDisplay"/>
         </div>
@@ -69,6 +32,16 @@
 <script>
     export default {
         name: "msg-list",
+        mounted() {
+            if(this.getThisWindowWidth()<500){
+                // 手机端打开
+                this.$refs.listPanel.style.display = "none";
+                this.$refs.contentPanel.style.width = "100%";
+            }
+        },
+        methods: {
+            getThisWindowWidth:()=>window.innerWidth,
+        },
         data(){
             return{
                 msgSubscriptIco:require("../assets/img/msg-subscript.png"),

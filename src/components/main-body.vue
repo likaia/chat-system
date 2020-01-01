@@ -20,7 +20,6 @@
         // 导航守卫: 路由发生改变时执行
         beforeRouteUpdate(to,from,next){
             // to.fullPath = to.fullPath+"/"+to.params.thisStatus;
-            console.log(to.params.thisStatus);
             next();
         },
     }

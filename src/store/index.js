@@ -9,6 +9,9 @@ export default new Vuex.Store({
     userID:"",
     // 用户头像
     profilePicture: "",
+    username: "",
+    // 在线人数
+    onlineUsers:"",
     socket: {
       // 连接状态
       isConnected: false,

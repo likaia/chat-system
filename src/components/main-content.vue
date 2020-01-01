@@ -1,6 +1,6 @@
 <template>
-    <div id="main-content">
-        <div class="top-panel">
+    <div id="main-content" ref="mainContent">
+        <div class="top-panel" ref="topPanel">
             <!--左侧图标-->
             <div class="left-panel">
                 <div class="icon-panel" @mouseover="showLeftIco(true)" @mouseleave="showLeftIco(false)">
@@ -80,6 +80,16 @@
                 profilePicture:this.$store.state.profilePicture
             }
         },
+        mounted() {
+            if(this.getThisWindowWidth()<500){
+                // 手机端打开
+                this.$refs.mainContent.style.height = "100%";
+                this.$refs.mainContent.style.width = "100%";
+                this.$refs.mainContent.style.borderRadius = "0";
+                this.$refs.topPanel.style.display = "none";
+            }
+
+        },
         methods: {
             // 显示搜索图标
             showSearchImg: function () {
@@ -90,6 +100,8 @@
                     this.searchImg = "none";
                 }
             },
+            getThisWindowHeight:()=>window.innerHeight,
+            getThisWindowWidth:()=>window.innerWidth,
             // 隐藏搜索图标
             hideSearchImg: function () {
                 this.searchImg = "none";
