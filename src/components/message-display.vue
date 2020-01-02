@@ -131,10 +131,17 @@
                 senderMessageList:[
 
                 ],
-                userID:this.$store.state.userID
+                userID:this.$store.state.userID,
+                audioCtx:new AudioContext(),
+                // 声音频率
+                arrFrequency: [
+                    196.00, 220.00, 246.94, 261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50
+                ]
             }
         },
         mounted: function () {
+            // webAudioAPI兼容性处理
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
             // 设置列容器高度
             this.$refs.messagesContainer.style.height = this.getThisWindowHeight()-450+"px";
             // 判断移动端打开
@@ -199,6 +206,34 @@
                         userID: data.userID,
                         username: data.username
                     };
+                    // 播放消息提示音:判断当前消息是否为对方发送
+                    if(msgObj.userID !==this.$store.state.userID){
+                        // 非当前用户发送的消息
+                        // 当前频率: 随机产生
+                        let frequency = this.arrFrequency[(Math.floor(Math.random()*this.arrFrequency.length))];
+                        // 创建音调控制对象
+                        let oscillator = this.audioCtx.createOscillator();
+                        // 创建音量控制对象
+                        let gainNode = this.audioCtx.createGain();
+                        // 音调音量关联
+                        oscillator.connect(gainNode);
+                        // 音量和设备关联
+                        gainNode.connect(this.audioCtx.destination);
+                        // 音调类型指定为正弦波
+                        oscillator.type = 'sine';
+                        // 设置音调频率: 最终播放的声音
+                        oscillator.frequency.value = frequency;
+                        // 先把当前音量设为0
+                        gainNode.gain.setValueAtTime(0, this.audioCtx.currentTime);
+                        // 0.01秒时间内音量从刚刚的0变成1，线性变化
+                        gainNode.gain.linearRampToValueAtTime(1, this.audioCtx.currentTime + 0.01);
+                        // 声音走起
+                        oscillator.start(this.audioCtx.currentTime);
+                        // 2秒时间内音量从刚刚的1变成0.001，指数变化
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 2);
+                        // 2秒后停止声音
+                        oscillator.stop(this.audioCtx.currentTime + 2);
+                    }
                     // 渲染页面:如果msgArray存在则转json
                     if(lodash.isEmpty(localStorage.getItem("msgArray"))){
                         this.renderPage([],msgObj,0);
@@ -222,7 +257,6 @@
             getThisWindowWidth:()=>window.innerWidth,
             sendMessage: function (event) {
                 if (event.keyCode === 13) {
-                    console.log(event);
                     // 阻止编辑框默认生成div事件
                     event.preventDefault();
                     let msgText = "";
@@ -231,14 +265,12 @@
                     for(let item of allNodes){
                         // 判断当前元素是否为img元素
                         if(item.nodeName==="IMG"){
-                            console.log(item.src.length);
                             if(item.alt===""){
                                 // 是图片
                                 msgText += `[图片]`;
                             }else{
                                 msgText += `/${item.alt}/`;
                             }
-
                         }
                         else{
                             // 获取text节点的值
