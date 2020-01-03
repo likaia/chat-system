@@ -4,10 +4,10 @@
  * */
 // 网站管理接口
 import websiteManageAPI from './websiteManageAPI';
-// 其他模块接口
-
+// 文件管理接口
+import fileManageAPI from './fileManageAPI';
 // 导出接口
 export default {
     websiteManageAPI,
-    // ...
+    fileManageAPI
 }

@@ -268,6 +268,10 @@
                             if(item.alt===""){
                                 // 是图片
                                 msgText += `[图片]`;
+                                // 将图片上传至服务器
+                                this.$api.fileManageAPI.baseFileUpload(item.src).then((res)=>{
+                                    console.log(res)
+                                })
                             }else{
                                 msgText += `/${item.alt}/`;
                             }
