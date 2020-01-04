@@ -104,13 +104,14 @@
     import emoji from '../assets/json/emoji';
     import toolbar from '../assets/json/toolbar';
     import lodash from 'lodash';
+    import base from "../api/base";
 
     export default {
         name: "message-display",
         data() {
             return {
                 userId: this.$route.params.userId,
-                messagesContainerTimer:"",
+                messagesContainerTimer: "",
                 onlineUsers: this.$store.state.onlineUsers,
                 createDisSrc: require("../assets/img/titlebar_function_createDis_normal@2x.png"),
                 resourceObj: {
@@ -128,11 +129,9 @@
                 emoticonShowStatus: "none",
                 emojiList: emoji,
                 toolbarList: toolbar,
-                senderMessageList:[
-
-                ],
-                userID:this.$store.state.userID,
-                audioCtx:new AudioContext(),
+                senderMessageList: [],
+                userID: this.$store.state.userID,
+                audioCtx: new AudioContext(),
                 // 声音频率
                 arrFrequency: [
                     196.00, 220.00, 246.94, 261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50
@@ -143,9 +142,9 @@
             // webAudioAPI兼容性处理
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
             // 设置列容器高度
-            this.$refs.messagesContainer.style.height = this.getThisWindowHeight()-450+"px";
+            this.$refs.messagesContainer.style.height = this.getThisWindowHeight() - 450 + "px";
             // 判断移动端打开
-            if(this.getThisWindowWidth()<500){
+            if (this.getThisWindowWidth() < 500) {
                 this.createDisSrc = this.$store.state.profilePicture;
                 this.$refs.createDisSrcPanel.style.width = "40px";
                 this.$refs.createDisSrcPanel.style.height = "40px";
@@ -153,9 +152,9 @@
                 this.$refs.createDisSrcPanel.style.overflow = "hidden";
                 this.resourceObj.createDisClick = this.$store.state.profilePicture;
                 this.$refs.topPanel.style.height = "45px";
-                this.$refs.messagesContainer.style.height = this.getThisWindowHeight()-240+"px";
+                this.$refs.messagesContainer.style.height = this.getThisWindowHeight() - 240 + "px";
                 this.$refs.emoticonPanel.style.left = "0";
-                this.$refs.emoticonPanel.style.width = this.getThisWindowWidth()+"px";
+                this.$refs.emoticonPanel.style.width = this.getThisWindowWidth() + "px";
                 this.$refs.sendPanel.style.display = "block";
             }
             /**
@@ -185,17 +184,17 @@
                 }
             });
             //从本地存储中获取数据渲染页面
-            this.renderPage("","",1);
+            this.renderPage("", "", 1);
             // 监听消息接收
-            this.$options.sockets.onmessage = (res)=>{
+            this.$options.sockets.onmessage = (res) => {
                 const data = JSON.parse(res.data);
-                if(data.code===200){
+                if (data.code === 200) {
                     // 连接建立成功
                     console.log(data.msg);
                     this.$store.state.onlineUsers = data.onlineUsers;
                     // 更新在线人数
                     this.onlineUsers = data.onlineUsers;
-                }else{
+                } else {
                     this.$store.state.onlineUsers = data.onlineUsers;
                     // 更新在线人数
                     this.onlineUsers = data.onlineUsers;
@@ -207,10 +206,10 @@
                         username: data.username
                     };
                     // 播放消息提示音:判断当前消息是否为对方发送
-                    if(msgObj.userID !==this.$store.state.userID){
+                    if (msgObj.userID !== this.$store.state.userID) {
                         // 非当前用户发送的消息
                         // 当前频率: 随机产生
-                        let frequency = this.arrFrequency[(Math.floor(Math.random()*this.arrFrequency.length))];
+                        let frequency = this.arrFrequency[(Math.floor(Math.random() * this.arrFrequency.length))];
                         // 创建音调控制对象
                         let oscillator = this.audioCtx.createOscillator();
                         // 创建音量控制对象
@@ -235,10 +234,10 @@
                         oscillator.stop(this.audioCtx.currentTime + 2);
                     }
                     // 渲染页面:如果msgArray存在则转json
-                    if(lodash.isEmpty(localStorage.getItem("msgArray"))){
-                        this.renderPage([],msgObj,0);
-                    }else{
-                        this.renderPage(JSON.parse(localStorage.getItem("msgArray")),msgObj,0);
+                    if (lodash.isEmpty(localStorage.getItem("msgArray"))) {
+                        this.renderPage([], msgObj, 0);
+                    } else {
+                        this.renderPage(JSON.parse(localStorage.getItem("msgArray")), msgObj, 0);
                     }
                 }
             };
@@ -253,8 +252,8 @@
                     this.createDisSrc = this.resourceObj.createDisClick
                 }
             },
-            getThisWindowHeight:()=>window.innerHeight,
-            getThisWindowWidth:()=>window.innerWidth,
+            getThisWindowHeight: () => window.innerHeight,
+            getThisWindowWidth: () => window.innerWidth,
             sendMessage: function (event) {
                 if (event.keyCode === 13) {
                     // 阻止编辑框默认生成div事件
@@ -262,49 +261,71 @@
                     let msgText = "";
                     // 获取输入框下的所有子元素
                     let allNodes = event.target.childNodes;
-                    for(let item of allNodes){
+                    for (let item of allNodes) {
                         // 判断当前元素是否为img元素
-                        if(item.nodeName==="IMG"){
-                            if(item.alt===""){
+                        if (item.nodeName === "IMG") {
+                            if (item.alt === "") {
                                 // 是图片
-                                msgText += `[图片]`;
+                                let base64Img = item.src;
+                                // 删除base64图片的前缀
+                                base64Img = base64Img.replace(/^data:image\/\w+;base64,/, "");
+                                //随机文件名
+                                let fileName = (new Date()).getTime() + ".jpeg";
+                                //将base64转换成file
+                                let imgFile = this.convertBase64UrlToImgFile(base64Img, fileName, 'image/jpeg');
+                                let formData = new FormData();
+                                // 此处的file与后台取值时的属性一样,append时需要添加文件名，否则一直时blob
+                                formData.append('file', imgFile, fileName);
                                 // 将图片上传至服务器
-                                this.$api.fileManageAPI.baseFileUpload(item.src).then((res)=>{
-                                    console.log(res)
-                                })
-                            }else{
+                                this.$api.fileManageAPI.baseFileUpload(formData).then((res) => {
+                                    const msgImgName = `/${res.fileName}/`;
+                                    // 消息发送: 发送图片
+                                    this.$socket.sendObj({
+                                        msg: msgImgName,
+                                        code: 0,
+                                        username: this.$store.state.username,
+                                        avatarSrc: this.$store.state.profilePicture,
+                                        userID: this.$store.state.userID
+                                    });
+                                    // 清空输入框中的内容
+                                    event.target.innerHTML = "";
+                                });
+                            } else {
                                 msgText += `/${item.alt}/`;
                             }
-                        }
-                        else{
+                        } else {
                             // 获取text节点的值
-                            if(item.nodeValue!==null){
+                            if (item.nodeValue !== null) {
                                 msgText += item.nodeValue;
                             }
                         }
                     }
-                    if(msgText.trim().length === 0){
-                        alert("不能发送空内容");
-                    }else{
-                        // 消息发送
-                        this.$socket.sendObj({msg: msgText,code: 0,username: this.$store.state.username,avatarSrc: this.$store.state.profilePicture,userID: this.$store.state.userID});
+                    // 消息发送: 发送文字，为空则不发送
+                    if (msgText.trim().length > 0) {
+                        this.$socket.sendObj({
+                            msg: msgText,
+                            code: 0,
+                            username: this.$store.state.username,
+                            avatarSrc: this.$store.state.profilePicture,
+                            userID: this.$store.state.userID
+                        });
                         // 清空输入框中的内容
                         event.target.innerHTML = "";
                     }
                 }
             },
-            mobileSend:function(){
+            mobileSend: function () {
                 // 模拟触发回车事件
                 this.fireKeyEvent(this.$refs.msgInputContainer, 'keydown', 13);
             },
             //  渲染页面
-            renderPage: function(msgArray,msgObj,status){
-                if(status===1){
+            renderPage: function (msgArray, msgObj, status) {
+                if (status === 1) {
                     // 页面第一次加载，如果本地存储中有数据则渲染至页面
                     let msgArray = [];
-                    if(localStorage.getItem("msgArray")!==null){
+                    if (localStorage.getItem("msgArray") !== null) {
                         msgArray = JSON.parse(localStorage.getItem("msgArray"));
-                        for (let i = 0; i<msgArray.length;i++){
+                        for (let i = 0; i < msgArray.length; i++) {
                             const thisSenderMessageObj = {
                                 "msgText": msgArray[i].msg,
                                 "msgId": i,
@@ -316,13 +337,13 @@
                             this.messageParsing(thisSenderMessageObj);
                         }
                     }
-                }else{
+                } else {
                     // 判断本地存储中是否有数据
-                    if(localStorage.getItem("msgArray")===null){
+                    if (localStorage.getItem("msgArray") === null) {
                         // 新增记录
                         msgArray.push(msgObj);
-                        localStorage.setItem("msgArray",JSON.stringify(msgArray));
-                        for (let i = 0; i <msgArray.length; i++){
+                        localStorage.setItem("msgArray", JSON.stringify(msgArray));
+                        for (let i = 0; i < msgArray.length; i++) {
                             const thisSenderMessageObj = {
                                 "msgText": msgArray[i].msg,
                                 "msgId": i,
@@ -333,11 +354,11 @@
                             // 解析并渲染
                             this.messageParsing(thisSenderMessageObj);
                         }
-                    }else{
+                    } else {
                         // 更新记录
                         msgArray = JSON.parse(localStorage.getItem("msgArray"));
                         msgArray.push(msgObj);
-                        localStorage.setItem("msgArray",JSON.stringify(msgArray));
+                        localStorage.setItem("msgArray", JSON.stringify(msgArray));
                         const thisSenderMessageObj = {
                             "msgText": msgObj.msg,
                             "msgId": Date.now(),
@@ -351,61 +372,71 @@
                 }
             },
             // 模拟触发事件
-            fireKeyEvent:function(el, evtType, keyCode){
+            fireKeyEvent: function (el, evtType, keyCode) {
                 let doc = el.ownerDocument,
                     win = doc.defaultView || doc.parentWindow,
                     evtObj;
-                if(doc.createEvent){
-                    if(win.KeyEvent) {
+                if (doc.createEvent) {
+                    if (win.KeyEvent) {
                         evtObj = doc.createEvent('KeyEvents');
-                        evtObj.initKeyEvent( evtType, true, true, win, false, false, false, false, keyCode, 0 );
-                    }
-                    else {
+                        evtObj.initKeyEvent(evtType, true, true, win, false, false, false, false, keyCode, 0);
+                    } else {
                         evtObj = doc.createEvent('UIEvents');
                         Object.defineProperty(evtObj, 'keyCode', {
-                            get : function() { return this.keyCodeVal; }
+                            get: function () {
+                                return this.keyCodeVal;
+                            }
                         });
                         Object.defineProperty(evtObj, 'which', {
-                            get : function() { return this.keyCodeVal; }
+                            get: function () {
+                                return this.keyCodeVal;
+                            }
                         });
-                        evtObj.initUIEvent( evtType, true, true, win, 1 );
+                        evtObj.initUIEvent(evtType, true, true, win, 1);
                         evtObj.keyCodeVal = keyCode;
                         if (evtObj.keyCode !== keyCode) {
                             console.log("keyCode " + evtObj.keyCode + " 和 (" + evtObj.which + ") 不匹配");
                         }
                     }
                     el.dispatchEvent(evtObj);
-                }
-                else if(doc.createEventObject){
+                } else if (doc.createEventObject) {
                     evtObj = doc.createEventObject();
                     evtObj.keyCode = keyCode;
                     el.fireEvent('on' + evtType, evtObj);
                 }
             },
             // 消息解析
-            messageParsing: function(msgObj){
+            messageParsing: function (msgObj) {
                 // 解析接口返回的数据进行渲染
                 let separateReg = /(\/[^/]+\/)/g;
                 let msgText = msgObj.msgText;
                 let finalMsgText = "";
                 // 将符合条件的字符串放到数组里
                 const resultArray = msgText.match(separateReg);
-                if(resultArray!==null){
-                    for (let item of resultArray){
+                if (resultArray !== null) {
+                    for (let item of resultArray) {
                         // 删除字符串中的/符号
-                        item = item.replace(/\//g,"");
-                        for (let emojiItem of this.emojiList){
+                        item = item.replace(/\//g, "");
+                        // 判断是否为图片: 后缀为.jpeg
+                        if(this.isImg(item)){
+                            // 解析为img标签
+                            const imgTag = `<img src="${base.lkBaseURL}/upload/image/${item}" alt="聊天图片">`;
+                            // 替换匹配的字符串为img标签:全局替换
+                            msgText = msgText.replace(new RegExp(`/${item}/`, 'g'), imgTag);
+                        }
+                        // 表情渲染: 遍历表情配置文件
+                        for (let emojiItem of this.emojiList) {
                             // 判断捕获到的字符串与配置文件中的字符串是否相同
-                            if(emojiItem.info === item){
+                            if (emojiItem.info === item) {
                                 const imgSrc = require(`../assets/img/emoji/${emojiItem.hover}`);
                                 const imgTag = `<img src="${imgSrc}" width="28" height="28" alt="${item}">`;
                                 // 替换匹配的字符串为img标签:全局替换
-                                msgText = msgText.replace(new RegExp(`/${item}/`,'g'),imgTag);
+                                msgText = msgText.replace(new RegExp(`/${item}/`, 'g'), imgTag);
                             }
                         }
                     }
                     finalMsgText = msgText;
-                }else{
+                } else {
                     finalMsgText = msgText;
                 }
                 msgObj.msgText = finalMsgText;
@@ -452,6 +483,27 @@
                 } else {
                     event.target.src = require(`../assets/img/emoji/${path}`);
                 }
+            },
+            // base64转file
+            convertBase64UrlToImgFile: function (urlData, fileName, fileType) {
+                // 转换为byte
+                let bytes = window.atob(urlData);
+                // 处理异常,将ascii码小于0的转换为大于0
+                let ab = new ArrayBuffer(bytes.length);
+                let ia = new Int8Array(ab);
+                for (let i = 0; i < bytes.length; i++) {
+                    ia[i] = bytes.charCodeAt(i);
+                }
+                // 转换成文件，添加文件的type，name，lastModifiedDate属性
+                let blob = new Blob([ab], {type: fileType});
+                blob.lastModifiedDate = new Date();
+                blob.name = fileName;
+                return blob;
+            },
+            // 判断是否为图片
+            isImg: function (str) {
+                let objReg = new RegExp("[.]+(jpg|jpeg|swf|gif)$", "gi");
+                return objReg.test(str);
             }
         },
         beforeRouteUpdate(to, form, next) {

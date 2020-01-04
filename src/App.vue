@@ -56,7 +56,7 @@
           }
         },1);*/
         localStorage.removeItem("msgArray");
-        // window.location.href = "https://www.kaisir.cn/login";
+        window.location.href = "https://www.kaisir.cn/login";
       }else{
         // 更新vuex中的token
         this.$store.state.token = token;
