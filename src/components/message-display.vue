@@ -82,7 +82,7 @@
                 </div>
             </div>
             <div class="input-panel" ref="msgInputContainer" @keydown.enter.exact="sendMessage($event)"
-                 contenteditable="true" spellcheck="false"></div>
+                 contenteditable="true" spellcheck="false" tabindex="0"></div>
             <!--表情面板-->
             <div class="emoticon-panel" :style="{display: emoticonShowStatus}" ref="emoticonPanel">
                 <div class="row-panel">
@@ -252,6 +252,9 @@
                     this.createDisSrc = this.resourceObj.createDisClick
                 }
             },
+            /*
+            * TODO: 1.调高输入框高度 2.调整发送的图片高度和宽度 3.表情面板显示时，可编辑div自动获取焦点
+            * */
             getThisWindowHeight: () => window.innerHeight,
             getThisWindowWidth: () => window.innerWidth,
             sendMessage: function (event) {
@@ -274,7 +277,7 @@
                                 //将base64转换成file
                                 let imgFile = this.convertBase64UrlToImgFile(base64Img, fileName, 'image/jpeg');
                                 let formData = new FormData();
-                                // 此处的file与后台取值时的属性一样,append时需要添加文件名，否则一直时blob
+                                // 此处的file与后台取值时的属性一样,append时需要添加文件名，否则一直是blob
                                 formData.append('file', imgFile, fileName);
                                 // 将图片上传至服务器
                                 this.$api.fileManageAPI.baseFileUpload(formData).then((res) => {
@@ -454,6 +457,8 @@
                 } else if (status === "leave") {
                     event.target.src = require(`../assets/img/${path}`);
                 } else {
+                    // 可编辑div获取焦点
+                    this.getEditableDivFocus();
                     event.target.src = require(`../assets/img/${downPath}`);
                     // 表情框显示条件
                     if (toolItemName === "emoticon") {
@@ -504,6 +509,13 @@
             isImg: function (str) {
                 let objReg = new RegExp("[.]+(jpg|jpeg|swf|gif)$", "gi");
                 return objReg.test(str);
+            },
+            // 可编辑div获取焦点
+            getEditableDivFocus: function () {
+                console.log("触发tab事件");
+                this.$refs.msgInputContainer;
+                const thisRange = document.createRange();
+                console.log(thisRange);
             }
         },
         beforeRouteUpdate(to, form, next) {
