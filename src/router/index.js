@@ -5,7 +5,7 @@ import MsgList from '../views/msg-list'
 import ContactList from '../views/contact-list'
 import MoreList from '../views/more-list'
 import MessageDisplay from '../components/message-display'
-
+import Login from "../views/login";
 Vue.use(VueRouter);
 
 const routes = [
@@ -53,11 +53,19 @@ const routes = [
                 }
             },
         ],
+    },
+    {
+        name: 'login',
+        path: "/login",
+        components: {
+            login:Login
+        }
     }
 ];
 
 const router = new VueRouter({
-    routes
+    mode: 'history',
+    routes,
 });
 
 export default router

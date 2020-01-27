@@ -1,5 +1,10 @@
 <template>
-    <div id="main-content" ref="mainContent">
+    <!--登录页面-->
+    <div v-if="currentComponentName==='login'">
+        <router-view name="login"/>
+    </div>
+    <!--登录后的页面-->
+    <div id="main-content" ref="mainContent" v-else>
         <div class="top-panel" ref="topPanel">
             <!--左侧图标-->
             <div class="left-panel">
@@ -77,7 +82,8 @@
                 contactIcoActive: require("../assets/img/menu-contact-down@2x.png"),
                 moreIco: require("../assets/img/menu-more-normal@2x.png"),
                 moreIcoActive: require("../assets/img/menu-more-down@2x.png"),
-                profilePicture:this.$store.state.profilePicture
+                profilePicture:this.$store.state.profilePicture,
+                currentComponentName:null
             }
         },
         mounted() {
@@ -89,6 +95,14 @@
                 this.$refs.topPanel.style.display = "none";
             }
 
+        },
+        watch: {
+            $route:{
+                handler: function (route) {
+                    this.currentComponentName=route.name;
+                },
+                immediate: true
+            }
         },
         methods: {
             // 显示搜索图标
@@ -135,4 +149,4 @@
     }
 </script>
 
-<style scoped lang="scss" src="../assets/scss/main-content.scss"></style>
+<style scoped lang="scss" src="../assets/scss/main-content.scss"/>

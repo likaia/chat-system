@@ -5,7 +5,7 @@
 </template>
 <script>
   import mainContent from '@/components/main-content.vue';
-  import lodash from 'lodash'
+  import lodash from 'lodash';
   export default {
     // 当前组件名
     name:'app',
@@ -56,7 +56,7 @@
           }
         },1);*/
         localStorage.removeItem("msgArray");
-        window.location.href = "https://www.kaisir.cn/login";
+        // window.location.href = "https://www.kaisir.cn/login";
       }else{
         // 更新vuex中的token
         this.$store.state.token = token;
