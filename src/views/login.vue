@@ -1,5 +1,8 @@
 <template>
     <div id="login-panel" ref="loginPanel">
+        <div class="loading-box">
+            <span>loading...</span>
+        </div>
         <div class="top-panel">
             <div class="qrCode-panel">
                 <img src="../assets/img/login/code_normal@2x.png"/>
@@ -8,11 +11,28 @@
         <!--头像区域-->
         <div class="headPortrait-panel">
             <!--加载层-->
-            <div class="load-panel loadWhirl">
-                <!--头像显示层-->
+            <div class="load-panel loadWhirl" v-if="isLoginStatus==='loggingIn'">
+                <!--头像显示层:登录中-->
                 <div class="headPortrait-img-panel avatarRotation">
                     <img src="../assets/img/login/LoginWindow_BigDefaultHeadImage@2x.png"/>
                 </div>
+            </div>
+            <!--头像显示层:注册-->
+            <div class="headPortrait-img-panel" v-else-if="isLoginStatus===false">
+                <!--灰色蒙层:默认头像-->
+                <div class="cover-panel" v-if="isDefaultAvatar===true">
+                    <p>上传头像</p>
+                    <input class="file" name="file" type="file" accept="image/png,image/gif,image/jpeg" @change="uploadAvatar($event)"/>
+                </div>
+                <!--头像已上传：取消灰色蒙层-->
+                <div class="cover-panel" v-else style="background: rgba(0,0,0,.0);">
+                    <input class="file" name="file" type="file" accept="image/png,image/gif,image/jpeg" @change="uploadAvatar($event)"/>
+                </div>
+                <img :src="avatarSrc"/>
+            </div>
+            <!--头像显示层:登录-->
+            <div class="headPortrait-img-panel" v-else>
+                <img src="../assets/img/login/LoginWindow_BigDefaultHeadImage@2x.png"/>
             </div>
         </div>
         <!--输入区域:登录-->
@@ -62,6 +82,8 @@
 </template>
 
 <script>
+    import base from '../api/base'
+
     export default {
         name: "login",
         data(){
@@ -70,10 +92,12 @@
                 loginBtnNormal: require("../assets/img/login/icon-enter-undo@2x.png"),
                 loginBtnHover: require("../assets/img/login/icon-enter-hover@2x.png"),
                 loginBtnDown: require("../assets/img/login/icon-enter-down@2x.png"),
-                userName: "神奇的程序员",
+                userName: "",
                 password: "",
                 confirmPassword:"",
-                isLoginStatus: true
+                isLoginStatus: true,
+                isDefaultAvatar: true,
+                avatarSrc:require("../assets/img/login/LoginWindow_BigDefaultHeadImage@2x.png")
             }
         },
         methods: {
@@ -137,6 +161,23 @@
                 this.password = "";
                 this.isLoginStatus = true;
                 this.$refs.cancelBtn.style.background = "";
+            },
+            uploadAvatar:function (e) {
+                console.log("上传点击了");
+                let file = e.target.files[0];
+                // 构造form对象
+                let formData = new FormData();
+                // 后台取值字段 | blob文件数据 | 文件名称
+                formData.append("file",file,file.name);
+                // 调用上传api
+                this.$api.fileManageAPI.baseFileUpload(formData).then((res)=>{
+                    const fileName = `${base.lkBaseURL}/uploads/${res.fileName}`;
+                    // 更改默认头像状态
+                    this.isDefaultAvatar = false;
+                    // 头像赋值
+                    this.avatarSrc = fileName;
+                });
+                console.log(e);
             }
         },
         watch: {

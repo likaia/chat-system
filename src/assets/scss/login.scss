@@ -75,6 +75,48 @@
       }
     }
 
+    /*头像显示层*/
+    .headPortrait-img-panel{
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: solid 1px #ebeced;
+      position: relative;
+      img{
+        width: 100%;
+        height: 100%;
+      }
+
+      .cover-panel{
+        width: 200px;
+        height: 200px;
+        background: rgba(0,0,0,.6);
+        position: absolute;
+        top: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+
+        input[type="file"]{
+          width: 200px;
+          height: 200px;
+          opacity: 0;
+          position: absolute;
+          top: 0;
+          left: 0;
+          cursor: pointer;
+        }
+
+        p{
+          color: white;
+          font-size: 20px;
+          font-weight: 600;
+        }
+      }
+    }
+
     // 外部旋转动画
     .loadWhirl{
       animation: externalHalo 3s linear;
@@ -173,6 +215,60 @@
       &:hover{
         color: #276ace;
       }
+    }
+  }
+
+  // 加载层动画
+  .loading-box{
+    width: 200px;
+    height: 200px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    border-top: 10px solid #3888fa;
+    position:relative;
+    animation: a1 2s linear infinite;  //动画名为a1，在下面定义
+    //设置圆角再设置边框就会有弧线的效果
+  }
+  .loading-box:before,.loading-box:after{
+    content: '';
+    width: 200px;
+    height: 200px;
+    position: absolute;
+    left: 0;
+    top: -10px;   //反复调节得到的数值
+    box-sizing: border-box;
+    border-radius: 50%;
+    //在盒子的左边加两个伪类元素
+  }
+  .loading-box:before{
+    border-top:10px solid #e67e22;
+    transform: rotate(120deg);  //让其中一个伪类元素旋转至右边
+  }
+  .loading-box:after{
+    border-top:10px solid #ff005a;
+    transform: rotate(240deg);  //旋转至左边
+  }
+  .loading-box span{
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    color: #000;
+    font-size: 15px;
+    text-align: center;
+    line-height: 200px;
+    animation: a2 2s linear infinite;
+    //给文字也定义一个动画
+  }
+  //让盒子旋转起来
+  @keyframes a1 {
+    to{
+      transform: rotate(360deg)
+    }
+  }
+  //让文字反方向旋转，实现文字不动的效果
+  @keyframes a2 {
+    to{
+      transform: rotate(-360deg)
     }
   }
 
