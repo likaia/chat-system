@@ -7,15 +7,15 @@ import base from './base'; // 导入接口域名列表
 const websiteManageAPI = {
     // 登录
     login(params){
-        return services._axios.post(`${base.lk}/login`,params);
+        return services._axios.post(`${base.lk}/user/login`,params);
     },
-    // 测试post接口
-    postJSON(params){
-        return services._axios.post(`${base.lk}/getter/postJSON`,params);
+    // 注册接口
+    registered(params){
+        return services._axios.post(`${base.lk}/user/registered`,params)
     },
-    // 测试get接口
-    getJSON(pageNo,pageSize){
-        return services._axios.get(`${base.lk}/getter/getJSON`,{params:{pageNo:pageNo,pageSize:pageSize}});
+    // 获取用户头像
+    getUserAvatar(params){
+        return services._axios.post(`${base.lk}/user/getUserAvatarSrc`,params)
     }
 };
 

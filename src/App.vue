@@ -6,6 +6,7 @@
 <script>
   import mainContent from '@/components/main-content.vue';
   import lodash from 'lodash';
+
   export default {
     // 当前组件名
     name:'app',
@@ -30,33 +31,9 @@
         window.location.href = "https://www.kaisir.cn/chat-system/index.html#/contents/message/message/messageDisplay/5309190090";
       }
       if(lodash.isEmpty(token) || lodash.isEmpty(username)){
-     /*   const userInfo = {
-          "username":"李凯",
-          "password":"likai0414"
-        };
-        // 调用登录api
-        this.$api.websiteManageAPI.login(userInfo).then((res)=>{
-          localStorage.setItem("token",res.token);
-          localStorage.setItem("profilePicture",res.avatarSrc);
-          localStorage.setItem("userID",res.userID);
-          // 更新vuex中的token
-          this.$store.state.token = res.token;
-          this.$store.state.profilePicture = res.avatarSrc;
-          this.$store.state.userID = res.userID;
-        });*/
-
-        // 跳转登录页
-       /* let windowOBJ = this.openWin("https://www.kaisir.cn/login","loginWindow",800,675);
-        // 使用定时器判断当前窗口是否关闭
-        let loop = setInterval(()=>{
-          if(windowOBJ.closed){
-            clearInterval(loop);
-            // 刷新当前页
-            parent.location.reload();
-          }
-        },1);*/
+        // 跳转登录路由
         localStorage.removeItem("msgArray");
-        // window.location.href = "https://www.kaisir.cn/login";
+        this.$router.push({path:"/login"})
       }else{
         // 更新vuex中的token
         this.$store.state.token = token;

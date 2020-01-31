@@ -746,6 +746,11 @@
     cssnano-preset-default "^4.0.0"
     postcss "^7.0.0"
 
+"@likaia/vue-fullscreenloading@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@likaia/vue-fullscreenloading/-/vue-fullscreenloading-1.0.0.tgz#af2b8d15f186a488280131f18ca99f849225bd62"
+  integrity sha512-pPvA4y7PSwezzf/f4YA2BuTLdnzRVhwQqSGjKuUf3vMv+D9VIKll6x/vVygNCHSv3aWjc/Zlb3+yQnc5jDlFsg==
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.npm.taobao.org/@mrmlnc/readdir-enhanced/download/@mrmlnc/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"

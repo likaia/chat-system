@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@likaia/vue-fullscreenloading": "^1.0.0",
     "core-js": "^3.1.2",
     "lodash": "^4.17.15",
     "view-design": "^4.1.1",

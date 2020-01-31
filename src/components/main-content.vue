@@ -94,7 +94,10 @@
                 this.$refs.mainContent.style.borderRadius = "0";
                 this.$refs.topPanel.style.display = "none";
             }
-
+            console.log(this.$store.state.profilePicture);
+        },
+        updated() {
+            this.profilePicture = this.$store.state.profilePicture;
         },
         watch: {
             $route:{

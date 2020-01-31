@@ -6,8 +6,10 @@ import store from './store'
 import api from './api/index';
 import VueNativeSock from 'vue-native-websocket'
 import base from "./api/base";
+import FullScreenLoading from '@likaia/vue-fullscreenloading'
 
 Vue.config.productionTip = false;
+Vue.use(FullScreenLoading);
 // 使用VueNativeSock插件，并进行相关配置
 Vue.use(VueNativeSock,base.lkWebSocket,{
   // 启用Vuex集成
