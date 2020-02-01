@@ -14,6 +14,7 @@
 </template>
 
 <script>
+    import lodash from 'lodash'
     export default {
         name: "main-body",
         props: ['thisStatus'],
@@ -22,6 +23,17 @@
             // to.fullPath = to.fullPath+"/"+to.params.thisStatus;
             next();
         },
+        // 页面加载时执行
+        created() {
+            // Vuex中token不存在则更新
+            if(lodash.isEmpty(this.$store.state.token)){
+                // 更新vuex中的token
+                this.$store.state.token = localStorage.getItem("token");
+                this.$store.state.profilePicture = localStorage.getItem("profilePicture");
+                this.$store.state.userID = localStorage.getItem("userID");
+                this.$store.state.username = localStorage.getItem("username");
+            }
+        }
     }
 </script>
 

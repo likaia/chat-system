@@ -189,8 +189,6 @@
             this.$options.sockets.onmessage = (res) => {
                 const data = JSON.parse(res.data);
                 if (data.code === 200) {
-                    // 连接建立成功
-                    console.log(data.msg);
                     this.$store.state.onlineUsers = data.onlineUsers;
                     // 更新在线人数
                     this.onlineUsers = data.onlineUsers;

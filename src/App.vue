@@ -19,7 +19,8 @@
       return{
         appStyleObj: {
           height: window.innerHeight+"px",
-          background: "#0C9A9A"
+          background: "#0C9A9A",
+          currentComponentName: null
         }
       }
     },
@@ -31,9 +32,12 @@
         window.location.href = "https://www.kaisir.cn/chat-system/index.html#/contents/message/message/messageDisplay/5309190090";
       }
       if(lodash.isEmpty(token) || lodash.isEmpty(username)){
-        // 跳转登录路由
-        localStorage.removeItem("msgArray");
-        this.$router.push({path:"/login"})
+        // 判断当前路由参数是否为登录页面
+        if(this.currentComponentName!=="login"){
+          // 跳转登录路由
+          localStorage.removeItem("msgArray");
+          this.$router.push({name:"login"})
+        }
       }else{
         // 更新vuex中的token
         this.$store.state.token = token;
@@ -56,7 +60,15 @@
       isMobile:()=>{
         return !!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i));
       }
-    }
+    },
+    watch: {
+      $route:{
+        handler: function (route) {
+          this.currentComponentName=route.name;
+        },
+        immediate: true
+      }
+    },
   }
 </script>
 <style lang="scss">
