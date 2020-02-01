@@ -131,7 +131,7 @@
                 toolbarList: toolbar,
                 senderMessageList: [],
                 userID: this.$store.state.userID,
-                audioCtx: new AudioContext(),
+                audioCtx: null,
                 // 声音频率
                 arrFrequency: [
                     196.00, 220.00, 246.94, 261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50
@@ -205,6 +205,7 @@
                     };
                     // 播放消息提示音:判断当前消息是否为对方发送
                     if (msgObj.userID !== this.$store.state.userID) {
+                        this.audioCtx = new AudioContext();
                         // 非当前用户发送的消息
                         // 当前频率: 随机产生
                         let frequency = this.arrFrequency[(Math.floor(Math.random() * this.arrFrequency.length))];
@@ -271,7 +272,7 @@
                                 // 删除base64图片的前缀
                                 base64Img = base64Img.replace(/^data:image\/\w+;base64,/, "");
                                 //随机文件名
-                                let fileName = (new Date()).getTime() + ".jpeg";
+                                let fileName = (new Date()).getTime()+"chatImg" + ".jpeg";
                                 //将base64转换成file
                                 let imgFile = this.convertBase64UrlToImgFile(base64Img, fileName, 'image/jpeg');
                                 let formData = new FormData();
@@ -421,7 +422,7 @@
                         // 判断是否为图片: 后缀为.jpeg
                         if(this.isImg(item)){
                             // 解析为img标签
-                            const imgTag = `<img src="${base.lkBaseURL}/upload/image/${item}" alt="聊天图片">`;
+                            const imgTag = `<img src="${base.lkBaseURL}/uploads/chatImg/${item}" alt="聊天图片">`;
                             // 替换匹配的字符串为img标签:全局替换
                             msgText = msgText.replace(new RegExp(`/${item}/`, 'g'), imgTag);
                         }

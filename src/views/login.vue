@@ -142,7 +142,9 @@
                                     localStorage.setItem("userID",res.data.userID);
                                     localStorage.setItem("username",res.data.username);
                                     // 跳转主界面路由
-                                    this.$router.push({name:"contents",params:{thisStatus:"message"}})
+                                    this.$router.push({name:"contents",params:{thisStatus:"message"}});
+                                    // 连接websocket服务器
+                                    this.$connect(`${base.lkWebSocket}/${localStorage.getItem("userID")}`);
                                 }else{
                                     // 返回登录界面
                                     this.isLoginStatus = true;

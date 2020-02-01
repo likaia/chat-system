@@ -68,6 +68,8 @@
 </template>
 
 <script>
+    import base from "../api/base";
+
     export default {
         name: "main-content",
         data() {
@@ -93,6 +95,11 @@
                 this.$refs.mainContent.style.width = "100%";
                 this.$refs.mainContent.style.borderRadius = "0";
                 this.$refs.topPanel.style.display = "none";
+            }
+            // 判断websocket是否连接
+            if(this.$store.state.socket.isConnected!==true){
+                // 连接websocket服务器
+                this.$connect(`${base.lkWebSocket}/${localStorage.getItem("userID")}`);
             }
         },
         updated() {

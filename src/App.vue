@@ -61,6 +61,11 @@
         return !!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i));
       }
     },
+    beforeDestroy() {
+      // 页面销毁时,断开连接
+      console.log("页面销毁，断开websocket连接");
+      this.$disconnect();
+    },
     watch: {
       $route:{
         handler: function (route) {
