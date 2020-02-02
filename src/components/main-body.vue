@@ -26,12 +26,17 @@
         // 页面加载时执行
         created() {
             // Vuex中token不存在则更新
-            if(lodash.isEmpty(this.$store.state.token)){
+            if(lodash.isEmpty(this.$store.state.token)&&localStorage.getItem("userID")!==null){
                 // 更新vuex中的token
                 this.$store.state.token = localStorage.getItem("token");
                 this.$store.state.profilePicture = localStorage.getItem("profilePicture");
                 this.$store.state.userID = localStorage.getItem("userID");
                 this.$store.state.username = localStorage.getItem("username");
+            }
+            // 判断本地存储中userID是否存在
+            if(localStorage.getItem("userID")===null){
+                // 跳转登录路由
+                this.$router.push({name:"login"})
             }
         }
     }

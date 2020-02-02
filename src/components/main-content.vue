@@ -96,8 +96,8 @@
                 this.$refs.mainContent.style.borderRadius = "0";
                 this.$refs.topPanel.style.display = "none";
             }
-            // 判断websocket是否连接
-            if(this.$store.state.socket.isConnected!==true){
+            // 判断websocket是否连接: 当前为未连接状态并且本地存储中有userID
+            if(this.$store.state.socket.isConnected!==true&&localStorage.getItem("userID")!==null){
                 // 连接websocket服务器
                 this.$connect(`${base.lkWebSocket}/${localStorage.getItem("userID")}`);
             }

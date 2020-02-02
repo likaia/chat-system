@@ -511,10 +511,7 @@
             },
             // 可编辑div获取焦点
             getEditableDivFocus: function () {
-                console.log("触发tab事件");
-                this.$refs.msgInputContainer;
-                const thisRange = document.createRange();
-                console.log(thisRange);
+                console.log("可编辑div获取焦点");
             }
         },
         beforeRouteUpdate(to, form, next) {
