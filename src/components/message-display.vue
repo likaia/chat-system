@@ -81,8 +81,8 @@
                     <p>发送</p>
                 </div>
             </div>
-            <div class="input-panel" ref="msgInputContainer" @keydown.enter.exact="sendMessage($event)"
-                 contenteditable="true" spellcheck="false" tabindex="0"></div>
+            <div id="msgInputContainer" class="input-panel" ref="msgInputContainer" @keydown.enter.exact="sendMessage($event)"
+                 contenteditable="true" spellcheck="false"></div>
             <!--表情面板-->
             <div class="emoticon-panel" :style="{display: emoticonShowStatus}" ref="emoticonPanel">
                 <div class="row-panel">
@@ -511,7 +511,8 @@
             },
             // 可编辑div获取焦点
             getEditableDivFocus: function () {
-                console.log("可编辑div获取焦点");
+                // 开头获取焦点
+                document.querySelector('#msgInputContainer').focus();
             }
         },
         beforeRouteUpdate(to, form, next) {
