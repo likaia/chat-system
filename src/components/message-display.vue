@@ -158,23 +158,68 @@
                 this.$refs.sendPanel.style.display = "block";
             }
             /**
-             * 设置粘贴监听事件: 实现图片粘贴
+             * 监听剪切板粘贴事件: 实现图片粘贴
              */
-            let that = this;
-            document.body.addEventListener('paste', function (e) {
-                let reader = new FileReader();//监听文件流
-                let clipboard = e.clipboardData;
-                reader.onload = function (evt) {
-                    let img = document.createElement('img');//创建一个img
-                    //$(img).css({'width': '65px', 'height': '65px'});
-                    img.src = evt.target.result;//设置链接
-                    // 图片渲染
-                    that.$refs.msgInputContainer.append(img);
-                };
-                let file = clipboard.items[0];
-                if (file.kind == 'file') {
-                    reader.readAsDataURL(file.getAsFile());//启动文件流事件
+            const that = this;
+            document.body.addEventListener('paste', function (event) {
+                that.$fullScreenLoading.show("读取图片中");
+                // 获取当前输入框内的文字
+                const oldText = that.$refs.msgInputContainer.textContent;
+                // 读取图片
+                let items = event.clipboardData && event.clipboardData.items;
+                let file = null;
+                if (items && items.length) {
+                    // 检索剪切板items
+                    for (let i = 0; i < items.length; i++) {
+                        if (items[i].type.indexOf('image') !== -1) {
+                            file = items[i].getAsFile();
+                            break;
+                        }
+                    }
                 }
+                // 预览图片
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    // 图片内容
+                    const imgContent = event.target.result;
+                    // 创建img标签
+                    let img = document.createElement('img');//创建一个img
+                    // 获取当前base64图片信息，计算当前图片宽高以及压缩比例
+                    let imgObj = new Image();
+                    let imgWidth = "";
+                    let imgHeight = "";
+                    let scale = 1;
+                    imgObj.src = imgContent;
+                    imgObj.onload = function() {
+                        // 计算img宽高
+                        if(this.width<400){
+                            imgWidth = this.width;
+                            imgHeight = this.height;
+                        }else{
+                            // 输入框图片显示缩小10倍
+                            imgWidth = this.width/10;
+                            imgHeight = this.height/10;
+                            // 图片宽度大于1920，图片压缩5倍
+                            if(this.width>1920){
+                                // 真实比例缩小5倍
+                                scale = 5;
+                            }
+                        }
+                        // 设置可编辑div中图片宽高
+                        img.width = imgWidth;
+                        img.height = imgHeight;
+                        // 压缩图片，渲染页面
+                        that.compressPic(imgContent,scale,function (newBlob,newBase) {
+                            // 删除可编辑div中的图片名称
+                            that.$refs.msgInputContainer.textContent = oldText;
+                            img.src = newBase; //设置链接
+                            // 图片渲染
+                            that.$refs.msgInputContainer.append(img);
+                            that.$fullScreenLoading.hide();
+                        });
+                    };
+                };
+                reader.readAsDataURL(file);
             });
             // 全局点击事件，点击表情框以外的地方，隐藏当前表情框
             document.addEventListener('click', (e) => {
@@ -319,6 +364,43 @@
             mobileSend: function () {
                 // 模拟触发回车事件
                 this.fireKeyEvent(this.$refs.msgInputContainer, 'keydown', 13);
+            },
+            // base图片压缩
+            compressPic:function(base64, scale, callback){
+                const that = this;
+                let _img = new Image();
+                _img.src = base64;
+                _img.onload = function() {
+                    let _canvas = document.createElement("canvas");
+                    let w = this.width / scale;
+                    let h = this.height / scale;
+                    _canvas.setAttribute("width", w);
+                    _canvas.setAttribute("height", h);
+                    _canvas.getContext("2d").drawImage(this, 0, 0, w, h);
+                    let base64 = _canvas.toDataURL("image/jpeg");
+                    // 当canvas对象的原型中没有toBlob方法的时候，手动添加该方法
+                    if (!HTMLCanvasElement.prototype.toBlob) {
+                        Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
+                            value: function (callback, type, quality) {
+                                let binStr = atob(this.toDataURL(type, quality).split(',')[1]),
+                                    len = binStr.length,
+                                    arr = new Uint8Array(len);
+                                for (let i = 0; i < len; i++) {
+                                    arr[i] = binStr.charCodeAt(i);
+                                }
+                                callback(new Blob([arr], {type: type || 'image/png'}));
+                            }
+                        });
+                    }else{
+                        _canvas.toBlob(function(blob) {
+                            if(blob.size > 1024*1024){
+                                that.compressPic(base64, scale, callback);
+                            }else{
+                                callback(blob, base64);
+                            }
+                        }, "image/jpeg");
+                    }
+                }
             },
             //  渲染页面
             renderPage: function (msgArray, msgObj, status) {
