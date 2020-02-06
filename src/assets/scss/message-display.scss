@@ -134,6 +134,7 @@
             /*自动换行*/
             word-wrap: break-word;
             overflow: hidden;
+            cursor: pointer;
 
             img{
               width: 100%;
@@ -221,6 +222,7 @@
             word-break: break-all;
             display: flex;
             align-items: center;
+            cursor: pointer;
 
             img{
               width: 100%;

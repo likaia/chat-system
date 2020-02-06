@@ -1,8 +1,12 @@
+const TerserPlugin = require('terser-webpack-plugin');
+
 module.exports = {
     // 项目打包生成目录
     outputDir: 'dist',
     // 静态资源生成目录（相对于outputDir
     assetsDir: 'static',
+    // 关闭线上源码
+    productionSourceMap:false,
     // css相关配置
     // 图片在10kb以内使用内联base64图片
     chainWebpack: config => {
@@ -23,6 +27,11 @@ module.exports = {
         proxy: null,
         // eslint-disable-next-line no-unused-vars
         before: app => {
+        }
+    },
+    configureWebpack:{
+        optimization:{
+            minimizer: [new TerserPlugin({ terserOptions: { compress: { drop_console: true } } })]
         }
     }
 };

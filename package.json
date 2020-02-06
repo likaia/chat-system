@@ -11,6 +11,8 @@
     "@likaia/vue-fullscreenloading": "^1.0.0",
     "core-js": "^3.1.2",
     "lodash": "^4.17.15",
+    "terser-webpack-plugin": "^2.3.4",
+    "uglifyjs-webpack-plugin": "^2.2.0",
     "view-design": "^4.1.1",
     "vue": "^2.6.10",
     "vue-native-websocket": "^2.0.13",

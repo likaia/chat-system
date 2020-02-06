@@ -532,7 +532,7 @@
                         // 判断是否为图片: 后缀为.jpeg
                         if(this.isImg(item)){
                             const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${item}`;
-
+                            console.log(imgSrc);
                             // 获取图片宽高
                             let imgInfo = {
                                 "imgWidth":this.getQueryVariable(imgSrc,"width"),
