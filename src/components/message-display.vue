@@ -325,15 +325,43 @@
                                 formData.append('file', imgFile, fileName);
                                 // 将图片上传至服务器
                                 this.$api.fileManageAPI.baseFileUpload(formData).then((res) => {
-                                    const msgImgName = `/${res.fileName}/`;
-                                    // 消息发送: 发送图片
-                                    this.$socket.sendObj({
-                                        msg: msgImgName,
-                                        code: 0,
-                                        username: this.$store.state.username,
-                                        avatarSrc: this.$store.state.profilePicture,
-                                        userID: this.$store.state.userID
-                                    });
+                                    let msgImgName = "";
+                                    const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${res.fileName}`;
+                                    // 获取图片大小
+                                    let img = new Image();
+                                    let that = this;
+                                    let imgWidth = 0;
+                                    let imgHeight = 0;
+                                    // 判断参数是否为url
+                                    img.src = imgSrc;
+                                    // 判断图片是否有缓存
+                                    if(img.complete){
+                                        imgWidth = img.width;
+                                        imgHeight = img.height;
+                                        msgImgName = `/${res.fileName}?width:${imgWidth}&height:${imgHeight}/`;
+                                        // 消息发送: 发送图片
+                                        that.$socket.sendObj({
+                                            msg: msgImgName,
+                                            code: 0,
+                                            username: that.$store.state.username,
+                                            avatarSrc: that.$store.state.profilePicture,
+                                            userID: that.$store.state.userID
+                                        });
+                                    }else{
+                                        img.onload = function () {
+                                            imgWidth = img.width;
+                                            imgHeight = img.height;
+                                            msgImgName = `/${res.fileName}?width=${imgWidth}&height=${imgHeight}/`;
+                                            // 消息发送: 发送图片
+                                            that.$socket.sendObj({
+                                                msg: msgImgName,
+                                                code: 0,
+                                                username: that.$store.state.username,
+                                                avatarSrc: that.$store.state.profilePicture,
+                                                userID: that.$store.state.userID
+                                            });
+                                        }
+                                    }
                                     // 清空输入框中的内容
                                     event.target.innerHTML = "";
                                 });
@@ -503,10 +531,31 @@
                         item = item.replace(/\//g, "");
                         // 判断是否为图片: 后缀为.jpeg
                         if(this.isImg(item)){
+                            const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${item}`;
+
+                            // 获取图片宽高
+                            let imgInfo = {
+                                "imgWidth":this.getQueryVariable(imgSrc,"width"),
+                                "imgHeight":this.getQueryVariable(imgSrc,"height")
+                            };
+                            let thisImgWidth = 0;
+                            let thisImgHeight = 0;
+                            if(imgInfo.imgWidth<400){
+                                thisImgWidth = imgInfo.imgWidth;
+                                thisImgHeight = imgInfo.imgHeight;
+                            }else{
+                                // 缩放四倍
+                                thisImgWidth = imgInfo.imgWidth / 4 ;
+                                thisImgHeight = imgInfo.imgHeight / 4;
+                            }
+                            // 找到item中?位置，在?之前添加\\进行转义，解决正则无法匹配特殊字符问题
+                            const charIndex = item.indexOf("?");
+                            // 生成正则表达式条件，添加\\用于对？的转义
+                            const regularItem = this.insertStr(item,charIndex,"\\");
                             // 解析为img标签
-                            const imgTag = `<img src="${base.lkBaseURL}/uploads/chatImg/${item}" alt="聊天图片">`;
+                            const imgTag = `<img width="${thisImgWidth}" height="${thisImgHeight}" src="${imgSrc}" alt="聊天图片">`;
                             // 替换匹配的字符串为img标签:全局替换
-                            msgText = msgText.replace(new RegExp(`/${item}/`, 'g'), imgTag);
+                            msgText = msgText.replace(new RegExp(`/${regularItem}/`, 'g'), imgTag);
                         }
                         // 表情渲染: 遍历表情配置文件
                         for (let emojiItem of this.emojiList) {
@@ -588,8 +637,23 @@
             },
             // 判断是否为图片
             isImg: function (str) {
-                let objReg = new RegExp("[.]+(jpg|jpeg|swf|gif)$", "gi");
-                return objReg.test(str);
+                return str.indexOf(".jpeg") !== -1;
+            },
+            // 获取url参数
+            getQueryVariable:function(url,variable){
+                // 对url进行截取
+                url = url.substring(url.indexOf("?"),url.length);
+                var query = url.substring(1);
+                var vars = query.split("&");
+                for (var i=0;i<vars.length;i++) {
+                    var pair = vars[i].split("=");
+                    if(pair[0] == variable){return pair[1];}
+                }
+                return false;
+            },
+            // 字符串指定位置添加字符
+            insertStr: function(source,start, newStr){
+                return source.slice(0, start) + newStr + source.slice(start);
             },
             // 可编辑div获取焦点
             getEditableDivFocus: function () {
