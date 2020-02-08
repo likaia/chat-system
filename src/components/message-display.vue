@@ -35,7 +35,7 @@
                         <!--消息尾巴-->
                         <div class="tail-panel">
                             <svg class="icon" aria-hidden="true">
-                                <use xlink:href="#icon-zbds30duihuakuangyou"></use>
+                                <use xlink:href="#icon-zbds30duihuakuangyou" color="#dce7dc"></use>
                             </svg>
                         </div>
                         <!--消息内容-->
