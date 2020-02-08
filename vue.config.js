@@ -1,5 +1,3 @@
-const TerserPlugin = require('terser-webpack-plugin');
-
 module.exports = {
     // 项目打包生成目录
     outputDir: 'dist',
@@ -29,9 +27,10 @@ module.exports = {
         before: app => {
         }
     },
-    configureWebpack:{
-        optimization:{
-            minimizer: [new TerserPlugin({ terserOptions: { compress: { drop_console: true } } })]
+    // 关闭生产环境console
+    configureWebpack(config) {
+        if (process.env.NODE_ENV === 'production') {
+            config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
         }
-    }
+    },
 };
