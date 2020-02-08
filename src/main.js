@@ -7,9 +7,13 @@ import api from './api/index';
 import VueNativeSock from 'vue-native-websocket'
 import base from "./api/base";
 import FullScreenLoading from '@likaia/vue-fullscreenloading'
+import 'viewerjs/dist/viewer.css'
+import Viewer from 'v-viewer'
 
 Vue.config.productionTip = false;
 Vue.use(FullScreenLoading);
+// 图片加载插件
+Vue.use(Viewer,{name: 'viewer'});
 // 使用VueNativeSock插件，并进行相关配置
 Vue.use(VueNativeSock,`${base.lkWebSocket}/${localStorage.getItem("userID")}`,{
   // 启用Vuex集成

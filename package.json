@@ -13,6 +13,7 @@
     "lodash": "^4.17.15",
     "terser-webpack-plugin": "^2.3.4",
     "uglifyjs-webpack-plugin": "^2.2.0",
+    "v-viewer": "^1.5.1",
     "view-design": "^4.1.1",
     "vue": "^2.6.10",
     "vue-native-websocket": "^2.0.13",

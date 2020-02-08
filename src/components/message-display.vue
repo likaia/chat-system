@@ -1,5 +1,9 @@
 <template>
     <div id="mainContent">
+        <!--图片查看插件-->
+        <div class="images" v-viewer="{movable: false}" style="display: none">
+            <img v-for="src in images" :src="src" :key="src">
+        </div>
         <div class="top-panel" ref="topPanel">
             <div class="title-panel">
                 <p>当前在线人数: {{onlineUsers}}</p>
@@ -35,7 +39,7 @@
                             </svg>
                         </div>
                         <!--消息内容-->
-                        <p v-html="item.msgText"/>
+                        <p v-html="item.msgText" @click="viewLargerImage($event)"/>
                     </div>
                     <!--头像-->
                     <div class="avatar-panel">
@@ -61,7 +65,7 @@
                             </svg>
                         </div>
                         <!--消息内容-->
-                        <p v-html="item.msgText"/>
+                        <p v-html="item.msgText" @click="viewLargerImage($event)"/>
                     </div>
                 </div>
             </div>
@@ -110,6 +114,7 @@
         name: "message-display",
         data() {
             return {
+                images:[],
                 userId: this.$route.params.userId,
                 messagesContainerTimer: "",
                 onlineUsers: this.$store.state.onlineUsers,
@@ -532,7 +537,6 @@
                         // 判断是否为图片: 后缀为.jpeg
                         if(this.isImg(item)){
                             const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${item}`;
-                            console.log(imgSrc);
                             // 获取图片宽高
                             let imgInfo = {
                                 "imgWidth":this.getQueryVariable(imgSrc,"width"),
@@ -639,6 +643,15 @@
             isImg: function (str) {
                 return str.indexOf(".jpeg") !== -1;
             },
+            viewLargerImage: function(event){
+                const imgSrc = event.target.src;
+                if(typeof imgSrc !=="undefined"){
+                    // 清空图片数组
+                    this.images = [];
+                    this.images.push(imgSrc);
+                    this.show();
+                }
+            },
             // 获取url参数
             getQueryVariable:function(url,variable){
                 // 对url进行截取
@@ -659,6 +672,11 @@
             getEditableDivFocus: function () {
                 // 开头获取焦点
                 document.querySelector('#msgInputContainer').focus();
+            },
+            // 图片查看插件
+            show () {
+                const viewer = this.$el.querySelector('.images').$viewer
+                viewer.show()
             }
         },
         beforeRouteUpdate(to, form, next) {
