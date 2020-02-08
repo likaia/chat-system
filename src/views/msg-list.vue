@@ -1,7 +1,7 @@
 <template>
     <div id="mainBody" :style="{height:this.$store.state.thisWindowHeight+'px'}">
         <div class="list-panel" ref="listPanel">
-            <router-link :to="{name:'messageDisplay',params:{userId:'5309190090'}}" tag="div">
+            <router-link :to="{name:'messageDisplay',params:{userId:this.$store.state.userID}}" tag="div">
                 <div class="row-panel">
                     <div class="item-subscript-panel">
 
@@ -11,7 +11,8 @@
                     </div>
                     <div class="item-nickname-panel">
                         <p class="title">掘金摸鱼群</p>
-                        <p class="subtitle">暂无消息</p>
+                        <p class="subtitle">{{lastMessageContent}}</p>
+                        <messageDisplay @updateLastMessage="updateLastMessage($event)" style="display: none"></messageDisplay>
                     </div>
                     <div class="item-time-panel">
                         <!--<p>下午10:22</p>
@@ -30,6 +31,8 @@
 </template>
 
 <script>
+    import messageDisplay from '../components/message-display';
+
     export default {
         name: "msg-list",
         mounted() {
@@ -41,6 +44,9 @@
         },
         methods: {
             getThisWindowWidth:()=>window.innerWidth,
+            updateLastMessage:function (data) {
+                this.lastMessageContent = data;
+            }
         },
         data(){
             return{
@@ -48,9 +54,11 @@
                 avatarIco:require("../assets/img/avatar-ico.png"),
                 groupMsgImg:require("../assets/img/group-msg-img.png"),
                 GroupBlocked:require("../assets/img/Group_Blocked@2x.png"),
-                otherMsgImg:require("../assets/img/other-msg-img.jpg")
+                otherMsgImg:require("../assets/img/other-msg-img.jpg"),
+                lastMessageContent: ""
             }
-        }
+        },
+        components: {messageDisplay}
     }
 </script>
 

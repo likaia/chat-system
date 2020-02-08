@@ -70,7 +70,6 @@
                 </div>
             </div>
         </div>
-
         <!--用户输入模块-->
         <div class="user-input-panel" @click="getEditableDivFocus()">
             <div class="toolbar-panel">

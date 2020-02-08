@@ -22,6 +22,7 @@ export default {
                 msgImgTest: require("../img/msg-img-test.gif"),
                 msgImgTestB: require("../img/msg-img-testB.gif"),
             },
+            // 消息内容
             messageContent: "",
             InputContent: "",
             emoticonShowStatus: "none",
@@ -33,7 +34,7 @@ export default {
             // 声音频率
             arrFrequency: [
                 196.00, 220.00, 246.94, 261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50
-            ]
+            ],
         }
     },
     mounted: function () {
@@ -340,6 +341,10 @@ export default {
                             "userID": msgArray[i].userID,
                             "username": msgArray[i].username
                         };
+                        // 更新消息内容
+                        this.messageContent = thisSenderMessageObj.msgText;
+                        // 向父组件传值
+                        this.$emit('updateLastMessage',this.messageContent);
                         // 解析并渲染
                         this.messageParsing(thisSenderMessageObj);
                     }
@@ -349,6 +354,10 @@ export default {
                 if (localStorage.getItem("msgArray") === null) {
                     // 新增记录
                     msgArray.push(msgObj);
+                    // 更新消息内容
+                    this.messageContent = msgObj.msg;
+                    // 向父组件传值
+                    this.$emit('updateLastMessage',this.messageContent);
                     localStorage.setItem("msgArray", JSON.stringify(msgArray));
                     for (let i = 0; i < msgArray.length; i++) {
                         const thisSenderMessageObj = {
@@ -366,6 +375,10 @@ export default {
                     msgArray = JSON.parse(localStorage.getItem("msgArray"));
                     msgArray.push(msgObj);
                     localStorage.setItem("msgArray", JSON.stringify(msgArray));
+                    // 更新消息内容
+                    this.messageContent = msgObj.msg;
+                    // 向父组件传值
+                    this.$emit('updateLastMessage',this.messageContent);
                     const thisSenderMessageObj = {
                         "msgText": msgObj.msg,
                         "msgId": Date.now(),
