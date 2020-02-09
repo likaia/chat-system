@@ -574,7 +574,7 @@ export default {
         // 可编辑div获取焦点
         getEditableDivFocus: function () {
             // 开头获取焦点
-            document.querySelector('#msgInputContainer').focus();
+            this.$refs.msgInputContainer.focus();
         },
         // 图片查看插件
         show () {
