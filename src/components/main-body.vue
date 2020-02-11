@@ -1,3 +1,4 @@
+<!--公用组件：主体内容控制，用于控制3个选项卡之间的路由切换-->
 <template>
     <!--消息列表组件-->
     <div v-if="thisStatus==='message'">
@@ -43,5 +44,7 @@
 </script>
 
 <style scoped>
-
+div{
+    height: 100%;
+}
 </style>

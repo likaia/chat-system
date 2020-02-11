@@ -1,3 +1,4 @@
+<!--消息选项卡-->
 <template>
     <div id="mainBody" :style="{height:this.$store.state.thisWindowHeight+'px'}">
         <div class="list-panel" ref="listPanel">

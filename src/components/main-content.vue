@@ -1,3 +1,4 @@
+<!--主体内容区域：用于控制登录页面和登录后页面的显示-->
 <template>
     <!--登录页面-->
     <div v-if="currentComponentName==='login'">
