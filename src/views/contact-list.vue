@@ -99,7 +99,7 @@
         </div>
         <!--信息资料-->
         <div class="info-panel">
-
+            <router-view name="dataPanel"></router-view>
         </div>
     </div>
 </template>

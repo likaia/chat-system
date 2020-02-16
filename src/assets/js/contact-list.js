@@ -55,11 +55,16 @@ export default {
         }
     },
     mounted:function(){
-
+        if(lodash.isEmpty(this.$route.params.userId)===false){
+            this.$router.push({name: "list"}).then();
+        }
     },
     methods:{
         // 分组状态切换
         groupingStatus:function (index) {
+            if(lodash.isEmpty(this.$route.params.userId)===false){
+                this.$router.push({name: "list"}).then();
+            }
             // 获取transform的值
             let transformVal = this.$refs.groupArrow[index].style.transform;
             if(lodash.isEmpty(transformVal)===false){
@@ -81,7 +86,10 @@ export default {
         },
         // 获取列表好友信息
         getBuddyInfo:function (userId) {
-            console.log(userId);
+            // 判断当前路由params与当前点击项的userId是否相等
+            if(!lodash.isEqual(this.$route.params.userId,userId)){
+                this.$router.push({name: "dataPanel", params: {userId: userId}}).then();
+            }
         }
     }
 }

@@ -16,6 +16,10 @@ const websiteManageAPI = {
     // 获取用户头像
     getUserAvatar(params){
         return services._axios.post(`${base.lk}/user/getUserAvatarSrc`,params)
+    },
+    // 根据用户id获取用户信息
+    getUserDataByUid(params){
+        return services._axios.post(`${base.lk}/user/getUserDataByUid`,params)
     }
 };
 

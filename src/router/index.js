@@ -6,6 +6,7 @@ import ContactList from '../views/contact-list'
 import MoreList from '../views/more-list'
 import MessageDisplay from '../components/message-display'
 import Login from "../views/login";
+import DataPanel from '../components/data-panel'
 Vue.use(VueRouter);
 
 const routes = [
@@ -42,9 +43,19 @@ const routes = [
             },
             {
                 path: "list",
+                name:"list",
                 components: {
                     contactList: ContactList
-                }
+                },
+                children:[
+                    {
+                        name: "dataPanel",
+                        path: "dataPanel/:userId",
+                        components: {
+                            "dataPanel": DataPanel
+                        }
+                    }
+                ]
             },
             {
                 path: "more",
