@@ -35,6 +35,8 @@ sudo yarn run build
 
 关于当前项目的详细描述，请移步：[Vue模仿Mac版本QQ开源啦 | 掘金优秀开源推荐](https://juejin.im/post/5e0cbef4e51d454158734bf4)
 
+## 3. 写在最后
+![](https://www.jetbrains.com/shop/static/images/jetbrains-logo-inv.svg)
+感谢[JetBrains](https://www.jetbrains.com/?from=chat-system)公司提供的的软件[开源许可证](https://www.jetbrains.com/shop/eform/opensource)。
 
-## 写在最后
 > 本项目仅用于学习使用，请勿用于商业用途，如若用作商业用途，产生的法律后果与作者无关。
