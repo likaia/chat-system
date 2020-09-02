@@ -20,6 +20,10 @@ const websiteManageAPI = {
     // 根据用户id获取用户信息
     getUserDataByUid(params){
         return services._axios.post(`${base.lk}/user/getUserDataByUid`,params)
+    },
+    // 获取家里电量信息
+    getRoomBatteryInfo(params){
+        return services._axios.post(`${base.lkBaseURL}/other/getRoomBatteryInfo`,params)
     }
 };
 

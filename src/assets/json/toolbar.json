@@ -14,13 +14,6 @@
     "down": "toolbar_screenCapture_down@2x.png"
   },
   {
-    "name": "shake",
-    "src": "toolbar_shake_normal@2x.png",
-    "info": "抖动图标",
-    "hover": "toolbar_shake_hover@2x.png",
-    "down": "toolbar_shake_down@2x.png"
-  },
-  {
     "name": "files",
     "src": "toolbar_files_normal@2x.png",
     "info": "文件图标",

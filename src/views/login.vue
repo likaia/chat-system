@@ -204,6 +204,9 @@
                                             this.isLoginStatus = true;
                                             this.$fullScreenLoading.hide();
                                         },1000);
+                                    } else {
+                                      this.$fullScreenLoading.hide();
+                                      alert(res.msg)
                                     }
                                 })
                             }else{

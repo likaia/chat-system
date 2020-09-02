@@ -39,7 +39,7 @@
                             <p>群组</p>
                         </div>
                         <div class="quantity-panel">
-                            <p>10</p>
+                            <p>0</p>
                         </div>
                     </div>
                 </div>
