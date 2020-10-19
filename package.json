@@ -1,6 +1,6 @@
 {
-  "name": "chat-system-vue3",
-  "version": "0.1.0",
+  "name": "chat-system",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -35,5 +35,6 @@
     "prettier": "^1.19.1",
     "sass-loader": "^8.0.2",
     "typescript": "~3.9.3"
-  }
+  },
+  "license": "MIT"
 }
