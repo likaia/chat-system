@@ -1,6 +1,7 @@
 # chat-system
 本项目是一个在线聊天系统，最大程度的还原了Mac客户端QQ。
 
+线上地址：[chat-system](https://www.kaisir.cn/chat-system/index.html#/login)
 ## 前言
 使用Vue3+TypeScript作为项目主体架构，有关项目的更多介绍以及重构过程请移步：[Vue模仿Mac版本QQ开源啦 | 掘金优秀开源推荐](https://juejin.im/post/6844904036177543176) & [使用Vue3重构vue2项目](https://juejin.im/post/6885376102596870158/)
 
