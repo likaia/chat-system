@@ -202,7 +202,6 @@ export default defineComponent({
   data<T>(): messageDisplayDataType<T> {
     return {
       images: [],
-      onlineUsers: this.$store.state.onlineUsers,
       createDisSrc: require("@/assets/img/titlebar_function_createDis_normal@2x.png"),
       resourceObj: {
         createDisNormal: require("@/assets/img/titlebar_function_createDis_normal@2x.png"),
@@ -219,7 +218,6 @@ export default defineComponent({
       emojiList: require("@/assets/json/emoji.json"),
       toolbarList: require("@/assets/json/toolbar.json"),
       senderMessageList: [],
-      userID: this.$store.state.userID,
       audioCtx: 0,
       // 声音频率
       arrFrequency: [
@@ -682,6 +680,14 @@ export default defineComponent({
     getEditableDivFocus: function() {
       // 开头获取焦点
       this.$refs.msgInputContainer.focus();
+    }
+  },
+  computed: {
+    userID(): string {
+      return this.$store.state.userID;
+    },
+    onlineUsers(): number {
+      return this.$store.state.onlineUsers;
     }
   }
 });

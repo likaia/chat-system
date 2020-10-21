@@ -47,7 +47,6 @@ export type mainContentDateType<T> = {
 // 消息展示组件Data对象属性定义
 export type messageDisplayDataType<T> = {
   images: string[]; // 聊天图片展示
-  onlineUsers: string; // 在线人数
   createDisSrc: T; // 创建群聊图标
   resourceObj: {
     [key: string]: T;
@@ -57,7 +56,6 @@ export type messageDisplayDataType<T> = {
   emojiList: {}; // 表情列表，从json文件中获取
   toolbarList: {}; // 工具栏列表，从json文件中获取
   senderMessageList: T[]; // 已发送消息列表
-  userID: string; // 当前用户id
   audioCtx: number; // 当前要播放的音频频率
   arrFrequency: number[]; // 音频频率列表
 };

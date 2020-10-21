@@ -71,8 +71,8 @@
             >
               <img
                 :src="
-                  this.$store.state.currentComponentName === 'message' ||
-                  this.$store.state.currentComponentName === 'messageDisplay'
+                  currentComponentName === 'message' ||
+                  currentComponentName === 'messageDisplay'
                     ? messageIcoActive
                     : messageIco
                 "
@@ -89,8 +89,8 @@
             >
               <img
                 :src="
-                  this.$store.state.currentComponentName === 'list' ||
-                  this.$store.state.currentComponentName === 'dataPanel'
+                  currentComponentName === 'list' ||
+                  currentComponentName === 'dataPanel'
                     ? contactIcoActive
                     : contactIco
                 "
@@ -106,11 +106,7 @@
               role="link"
             >
               <img
-                :src="
-                  this.$store.state.currentComponentName === 'more'
-                    ? moreIcoActive
-                    : moreIco
-                "
+                :src="currentComponentName === 'more' ? moreIcoActive : moreIco"
                 alt="更多"
               />
             </div>
@@ -121,7 +117,7 @@
           <!--在线状态-->
           <div class="status-panel"></div>
           <div class="avatar-panel">
-            <img :src="this.$store.state.profilePicture" alt="头像" />
+            <img :src="profilePicture" alt="头像" />
           </div>
         </div>
       </div>
@@ -215,6 +211,16 @@ export default defineComponent({
       );
       // 在线状态
       // onlineStatus: function() {}
+    }
+  },
+  computed: {
+    // 当前组件名
+    currentComponentName(): string {
+      return this.$store.state.currentComponentName;
+    },
+    // 用户头像
+    profilePicture(): string {
+      return this.$store.state.profilePicture;
     }
   }
 });
