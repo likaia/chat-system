@@ -133,6 +133,7 @@
 import _ from "lodash";
 import { mainContentDateType } from "@/type/ComponentDataType";
 import { defineComponent } from "vue";
+import base from "@/api/base";
 
 export default defineComponent({
   name: "MainContent",
@@ -171,6 +172,16 @@ export default defineComponent({
         userID: localStorage.getItem("userID"),
         username: localStorage.getItem("username")
       });
+    }
+  },
+  mounted() {
+    // 判断websocket是否连接: 当前为未连接状态并且本地存储中有userID
+    if (
+      !this.$store.state.socket.isConnected &&
+      localStorage.getItem("userID") !== null
+    ) {
+      // 连接websocket服务器
+      this.$connect(`${base.lkWebSocket}/${localStorage.getItem("userID")}`);
     }
   },
   methods: {

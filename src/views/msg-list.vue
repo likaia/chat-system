@@ -41,7 +41,6 @@ export default defineComponent({
   methods: {
     getThisWindowWidth: () => window.innerWidth,
     updateLastMessage: function(data: string) {
-      console.log("事件触发");
       this.lastMessageContent = data;
     }
   },

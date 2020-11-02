@@ -192,12 +192,14 @@ import {
   senderMessageType
 } from "@/type/ComponentDataType";
 import base from "@/api/base";
+import _ from "lodash";
 
 export default defineComponent({
   name: "message-display",
   props: {
     listId: String,
-    messageStatus: Number
+    messageStatus: Number,
+    updateLastMessage: Function
   },
   data<T>(): messageDisplayDataType<T> {
     return {
@@ -249,7 +251,73 @@ export default defineComponent({
     // 执行剪切板监听与全局点击事件监听
     this.pasteHandle();
     this.globalClick();
-    this.$emit("update-last-message", "传值测试");
+    // 从本地存储中获取数据渲染页面
+    this.renderPage("", "", 1);
+    // 监听消息接收
+    this.$options.sockets.onmessage = (res: { data: string }) => {
+      const data = JSON.parse(res.data);
+      if (data.code === 200) {
+        // 更新在线人数
+        this.$store.commit("updateOnlineUsers", data.onlineUsers);
+      } else {
+        // 更新在线人数
+        this.$store.commit("updateOnlineUsers", data.onlineUsers);
+        // 获取服务端推送的消息
+        const msgObj = {
+          msg: data.msg,
+          avatarSrc: data.avatarSrc,
+          userID: data.userID,
+          username: data.username
+        };
+        // 播放消息提示音:判断当前消息是否为对方发送
+        if (msgObj.userID !== this.$store.state.userID) {
+          this.audioCtx = new AudioContext();
+          // 非当前用户发送的消息
+          // 当前频率: 随机产生
+          const frequency = this.arrFrequency[
+            Math.floor(Math.random() * this.arrFrequency.length)
+          ];
+          // 创建音调控制对象
+          const oscillator = this.audioCtx.createOscillator();
+          // 创建音量控制对象
+          const gainNode = this.audioCtx.createGain();
+          // 音调音量关联
+          oscillator.connect(gainNode);
+          // 音量和设备关联
+          gainNode.connect(this.audioCtx.destination);
+          // 音调类型指定为正弦波
+          oscillator.type = "sine";
+          // 设置音调频率: 最终播放的声音
+          oscillator.frequency.value = frequency;
+          // 先把当前音量设为0
+          gainNode.gain.setValueAtTime(0, this.audioCtx.currentTime);
+          // 0.01秒时间内音量从刚刚的0变成1，线性变化
+          gainNode.gain.linearRampToValueAtTime(
+            1,
+            this.audioCtx.currentTime + 0.01
+          );
+          // 声音走起
+          oscillator.start(this.audioCtx.currentTime);
+          // 2秒时间内音量从刚刚的1变成0.001，指数变化
+          gainNode.gain.exponentialRampToValueAtTime(
+            0.001,
+            this.audioCtx.currentTime + 2
+          );
+          // 2秒后停止声音
+          oscillator.stop(this.audioCtx.currentTime + 2);
+        }
+        // 渲染页面:如果msgArray存在则转json
+        if (_.isEmpty(localStorage.getItem("msgArray"))) {
+          this.renderPage([], msgObj, 0);
+        } else {
+          this.renderPage(
+            JSON.parse(localStorage.getItem("msgArray") as string),
+            msgObj,
+            0
+          );
+        }
+      }
+    };
   },
   methods: {
     // 处理剪切板粘贴
@@ -445,6 +513,13 @@ export default defineComponent({
         }
         // 消息发送: 发送文字，为空则不发送
         if (msgText.trim().length > 0) {
+          this.$socket.sendObj({
+            msg: msgText,
+            code: 0,
+            username: this.$store.state.username,
+            avatarSrc: this.$store.state.profilePicture,
+            userID: this.$store.state.userID
+          });
           // 清空输入框中的内容
           (event.target as Element).innerHTML = "";
         }

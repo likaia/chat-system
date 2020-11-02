@@ -9023,6 +9023,11 @@ vue-loader@^15.9.2:
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
 
+vue-native-websocket-vue3@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/vue-native-websocket-vue3/-/vue-native-websocket-vue3-3.0.0.tgz#fb4e4a62ec6fa5f340c34d6197e9a65f76990b62"
+  integrity sha512-plC/lxsu2Sikt3Y18mlYPXTvcUFmdMAUZk5TV2JXcWgkh7HHz9JdIdkNKJrWMrKGzSDCo2dChSJNjD2cBlIMmg==
+
 vue-router@^4.0.0-0:
   version "4.0.0-beta.13"
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-4.0.0-beta.13.tgz#4611d09a9e44f231cc401ecc294a7f2dcb30e6a6"

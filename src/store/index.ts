@@ -80,11 +80,5 @@ export default createStore({
       state.onlineUsers = number;
     }
   },
-  actions: {
-    customerAdded(context) {
-      console.log("action received: customerAdded");
-      console.log(context);
-    }
-  },
   modules: {}
 });
