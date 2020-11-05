@@ -11,7 +11,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     name: "contents",
     path: "/contents",
-    component: () => MainContent,
+    component: MainContent,
     children: [
       {
         path: "message",
@@ -48,7 +48,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     name: "login",
     path: "/login",
-    component: () => Login
+    component: Login
   }
 ];
 
