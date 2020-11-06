@@ -82,6 +82,8 @@ export type contactListDataType<V> = {
   friendsList: Array<V>; // 好友列表
   groupArrow: Element[]; // 分组箭头dom
   groupList: Element[]; // 分组列表dom
+  paramsID: string; // 好友列表的用户id
+  widgetIsNull: boolean; // 组件是否为空
 };
 
 // 联系人列表类型定义

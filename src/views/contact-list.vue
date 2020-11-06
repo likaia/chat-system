@@ -120,7 +120,14 @@
     </div>
     <!--信息资料-->
     <div class="info-panel">
-      <router-view />
+      <img
+        src="@/assets/img/list/contact_non_selected@2x.png"
+        width="280"
+        height="280"
+        alt="空组件"
+        v-if="widgetIsNull"
+      />
+      <data-panel :params-id="paramsID" v-else></data-panel>
     </div>
   </div>
 </template>
@@ -128,6 +135,7 @@
 <script lang="ts">
 import _ from "lodash";
 import { defineComponent } from "vue";
+import dataPanel from "@/components/data-panel.vue";
 import {
   contactListDataType,
   friendsListType,
@@ -182,20 +190,25 @@ export default defineComponent({
         }
       ],
       groupArrow: [],
-      groupList: []
+      groupList: [],
+      paramsID: "",
+      widgetIsNull: true
     };
   },
-  mounted: function() {
-    if (!_.isEmpty(this.$route.params.userId)) {
-      this.$router.push({ name: "list" }).then();
-    }
+  components: {
+    dataPanel
   },
   methods: {
     // 获取列表好友信息
-    getBuddyInfo: function(userId: string) {
-      this.$router
-        .push({ name: "dataPanel", params: { userId: userId } })
-        .then();
+    getBuddyInfo: function(paramsID: string) {
+      // id为空时显示空组件状态
+      if (_.isEmpty(paramsID)) {
+        this.widgetIsNull = true;
+        return false;
+      }
+      // 显示好友详情组件
+      this.widgetIsNull = false;
+      this.paramsID = paramsID;
     },
     // 设置分组箭头Dom
     setGroupArrow: function(el: Element) {
@@ -207,9 +220,6 @@ export default defineComponent({
     },
     // 列表状态切换
     groupingStatus: function(index: number) {
-      if (!_.isEmpty(this.$route.params.userId)) {
-        this.$router.push({ name: "list" }).then();
-      }
       // 获取transform的值
       let transformVal = this.groupArrow[index].style.transform;
       if (!_.isEmpty(transformVal)) {
@@ -219,6 +229,8 @@ export default defineComponent({
         if (parseInt(transformVal) === 90) {
           this.groupArrow[index].style.transform = "rotate(0deg)";
           this.groupList[index].style.display = "none";
+          // 好友详情组件显示为空
+          this.widgetIsNull = true;
         } else {
           this.groupArrow[index].style.transform = "rotate(90deg)";
           this.groupList[index].style.display = "block";

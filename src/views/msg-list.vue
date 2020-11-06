@@ -8,7 +8,7 @@
           <img :src="groupMsgImg" alt="用户头像" />
         </div>
         <div class="item-nickname-panel">
-          <p class="title">掘金摸鱼群</p>
+          <p class="title">官方测试群</p>
           <p class="subtitle">{{ lastMessageContent }}</p>
         </div>
         <div class="item-time-panel">
@@ -20,7 +20,15 @@
       </li>
     </ul>
     <div class="content-panel" ref="contentPanel">
+      <img
+        src="@/assets/img/list/contact_non_selected@2x.png"
+        width="280"
+        height="280"
+        alt="空组件"
+        v-if="widgetIsNull"
+      />
       <message-display
+        v-else
         :message-status="0"
         list-id="1892144211"
         @update-last-message="updateLastMessage($event)"
@@ -48,10 +56,11 @@ export default defineComponent({
     return {
       msgSubscriptIco: require("../assets/img/msg-subscript.png"),
       avatarIco: require("../assets/img/avatar-ico.png"),
-      groupMsgImg: require("../assets/img/group-msg-img.png"),
+      groupMsgImg: require("../assets/img/group-msg-img.jpg"),
       GroupBlocked: require("../assets/img/Group_Blocked@2x.png"),
       otherMsgImg: require("../assets/img/other-msg-img.jpg"),
-      lastMessageContent: ""
+      lastMessageContent: "",
+      widgetIsNull: true
     };
   }
 });

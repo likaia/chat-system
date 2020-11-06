@@ -177,6 +177,13 @@ import { defineComponent } from "vue";
 import { responseDataType } from "@/type/ComponentDataType";
 export default defineComponent({
   name: "data-panel",
+  props: {
+    paramsId: String
+  },
+  created() {
+    // 页面创建时获取好友详情信息
+    this.getUserDataByUid(this.paramsId);
+  },
   data() {
     return {
       message: require("../assets/img/list/profile_sendmsg_normal@2x.png"),
@@ -245,15 +252,8 @@ export default defineComponent({
         userName: "",
         userId: "",
         signature: ""
-      },
-      userId: this.$route.params.userId
+      }
     };
-  },
-  mounted() {
-    // 页面挂载完成后userId不为空则请求数据
-    if (!_.isEmpty(this.userId)) {
-      this.getUserDataByUid(this.userId);
-    }
   },
   methods: {
     // 获取用户信息
@@ -272,9 +272,8 @@ export default defineComponent({
     }
   },
   watch: {
-    $route() {
-      // 好友列表切换时重新请求数据
-      this.getUserDataByUid(this.$route.params.userId);
+    paramsId: function(val: string) {
+      this.getUserDataByUid(val);
     }
   }
 });

@@ -223,5 +223,8 @@ $listFontColor:#777777;
     width: 85%;
     height: 100%;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
