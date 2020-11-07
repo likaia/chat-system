@@ -36,7 +36,10 @@
         <div class="icon-data-panel">
           <div class="row-panel">
             <div class="item-panel">
-              <div class="ico-panel">
+              <div class="ico-panel" v-if="userInfo.gender == 1">
+                <img :src="gender.woman" alt="" />
+              </div>
+              <div class="ico-panel" v-else>
                 <img :src="gender.man" alt="" />
               </div>
               <div class="title-panel">
@@ -46,12 +49,9 @@
             <div class="item-panel">
               <div class="ico-panel">
                 <img
-                  :src="ageNumber.man.one"
-                  style="width: 20px; height: 30px"
-                  alt=""
-                />
-                <img
-                  :src="ageNumber.man.nine"
+                  :src="item"
+                  v-for="(item, index) in age"
+                  :key="index"
                   style="width: 20px; height: 30px"
                   alt=""
                 />
@@ -89,12 +89,12 @@
                 <img
                   :src="ageNumber.woman.one"
                   alt=""
-                  style="width: 10px;height: 20px"
+                  style="width: 10px; height: 20px"
                 />
                 <img
                   :src="ageNumber.woman.four"
                   alt=""
-                  style="width: 10px;height: 20px"
+                  style="width: 10px; height: 20px"
                 />
               </div>
               <div class="title-panel">
@@ -138,7 +138,7 @@
               <p>分组</p>
             </div>
             <div class="right-panel">
-              <p>我</p>
+              <p>{{ userInfo.groupName }}</p>
             </div>
           </div>
           <div class="row-panel">
@@ -162,7 +162,9 @@
               <p>故乡</p>
             </div>
             <div class="right-panel">
-              <p></p>
+              <p>
+                {{ userInfo.country }}{{ userInfo.province }}{{ userInfo.city }}
+              </p>
             </div>
           </div>
         </div>
@@ -178,7 +180,8 @@ import { responseDataType } from "@/type/ComponentDataType";
 export default defineComponent({
   name: "data-panel",
   props: {
-    paramsId: String
+    paramsId: String,
+    groupName: String,
   },
   created() {
     // 页面创建时获取好友详情信息
@@ -191,7 +194,7 @@ export default defineComponent({
       qzone: require("../assets/img/list/profile_qzone_normal@2x.png"),
       gender: {
         man: require("../assets/img/gender/gender_man@2x.png"),
-        woman: require("../assets/img/gender/gender_woman@2x.png")
+        woman: require("../assets/img/gender/gender_woman@2x.png"),
       },
       ageNumber: {
         man: {
@@ -204,7 +207,7 @@ export default defineComponent({
           six: require("../assets/img/ageNumber/profile_age_num_6@2x.png"),
           seven: require("../assets/img/ageNumber/profile_age_num_7@2x.png"),
           eight: require("../assets/img/ageNumber/profile_age_num_8@2x.png"),
-          nine: require("../assets/img/ageNumber/profile_age_num_9@2x.png")
+          nine: require("../assets/img/ageNumber/profile_age_num_9@2x.png"),
         },
         woman: {
           zero: require("../assets/img/ageNumber/profile_birth_num_0@2x.png"),
@@ -216,8 +219,8 @@ export default defineComponent({
           six: require("../assets/img/ageNumber/profile_birth_num_6@2x.png"),
           seven: require("../assets/img/ageNumber/profile_birth_num_7@2x.png"),
           eight: require("../assets/img/ageNumber/profile_birth_num_8@2x.png"),
-          nine: require("../assets/img/ageNumber/profile_birth_num_9@2x.png")
-        }
+          nine: require("../assets/img/ageNumber/profile_birth_num_9@2x.png"),
+        },
       },
       zodiacSign: {
         chicken: require("../assets/img/zodiacSign/zodiac_chicken@2x.png"),
@@ -231,7 +234,7 @@ export default defineComponent({
         rabbit: require("../assets/img/zodiacSign/zodiac_rabbit@2x.png"),
         sheep: require("../assets/img/zodiacSign/zodiac_sheep@2x.png"),
         snake: require("../assets/img/zodiacSign/zodiac_snake@2x.png"),
-        tiger: require("../assets/img/zodiacSign/zodiac_tiger@2x.png")
+        tiger: require("../assets/img/zodiacSign/zodiac_tiger@2x.png"),
       },
       constellation: {
         Aquarius: require("../assets/img/constellation/constellation_Aquarius@2x.png"),
@@ -245,38 +248,80 @@ export default defineComponent({
         Sagittarius: require("../assets/img/constellation/constellation_Sagittarius@2x.png"),
         Scorpio: require("../assets/img/constellation/constellation_Scorpio@2x.png"),
         Taurus: require("../assets/img/constellation/constellation_Taurus@2x.png"),
-        Virgo: require("../assets/img/constellation/constellation_Virgo@2x.png")
+        Virgo: require("../assets/img/constellation/constellation_Virgo@2x.png"),
       },
       userInfo: {
         avatarSrc: "",
         userName: "",
         userId: "",
-        signature: ""
-      }
+        signature: "",
+        bloodGroup: "",
+        city: "",
+        country: "",
+        dateOfBirth: [],
+        gender: 1,
+        province: "",
+        age: "",
+        mouth: "",
+        day: "",
+      },
+      ageNumberValue: [],
     };
   },
   methods: {
     // 获取用户信息
-    getUserDataByUid: function(userId: string) {
+    getUserDataByUid: function (userId: string) {
       if (_.isEmpty(userId)) {
         return false;
       }
       this.$api.websiteManageAPI
         .getUserDataByUid({ userId: userId })
         .then((res: responseDataType) => {
+          console.log(res.data);
+          //好友资料赋值
           this.userInfo.userId = userId;
+          this.userInfo.gender = res.data.gender;
+          this.userInfo.groupName = this.groupName;         
           this.userInfo.userName = res.data.userName;
           this.userInfo.avatarSrc = res.data.avatarSrc;
           this.userInfo.signature = res.data.signature;
+          this.userInfo.country = res.data.country;
+          this.userInfo.province = res.data.province;
+          this.userInfo.city = res.data.city;
+          //分割数据为年月日
+          this.dateOfBirth = res.data.dateOfBirth.split("-");
+          //显示年龄
+          this.manageAge();
         });
-    }
+    },
+    //处理年龄的数据
+    manageAge() {
+      this.age =
+        Number(new Date().getFullYear()) + 1 - Number(this.dateOfBirth[0]) + "";
+      this.age = this.age.split("").map((item: string) => Number(item));
+      if (this.userInfo.gender == 1) {
+        for (const key in this.ageNumber.woman) {
+          this.ageNumberValue.push(this.ageNumber.woman[key]);
+        }
+        this.age[0] = this.ageNumberValue[this.age[0]];
+        this.age[1] = this.ageNumberValue[this.age[1]];
+      } else {
+        for (const key in this.ageNumber.man) {
+          this.ageNumberValue.push(this.ageNumber.man[key]);
+        }
+        this.age[0] = this.ageNumberValue[this.age[0]];
+        this.age[1] = this.ageNumberValue[this.age[1]];
+      }
+      this.ageNumberValue = [];
+    },
   },
   watch: {
-    paramsId: function(val: string) {
+    paramsId: function (val: string) {
       this.getUserDataByUid(val);
-    }
-  }
+    },
+  },
 });
 </script>
 
 <style lang="scss" src="../assets/scss/data-panel.scss" scoped></style>
+
