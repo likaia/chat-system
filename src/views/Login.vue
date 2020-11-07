@@ -160,7 +160,7 @@
         v-if="isLoginStatus === loginStatusEnum.NOT_LOGGED_IN"
         @click="registered(true)"
       >
-        立即注册
+        注册账号
       </p>
       <p v-else @click="registered(false)">返回登录</p>
     </div>
