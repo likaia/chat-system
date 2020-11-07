@@ -198,8 +198,7 @@ export default defineComponent({
   name: "message-display",
   props: {
     listId: String,
-    messageStatus: Number,
-    updateLastMessage: String
+    messageStatus: Number
   },
   created() {
     this.$socket.sendObj({
@@ -677,7 +676,7 @@ export default defineComponent({
       this.senderMessageList.push(msgObj);
       // 修改滚动条位置
       this.$nextTick(() => {
-        if (this.$refs.messagesContainer.scrollHeight) {
+        if (this.$refs.messagesContainer?.scrollHeight) {
           this.$refs.messagesContainer.scrollTop = this.$refs.messagesContainer.scrollHeight;
         }
       });
@@ -777,6 +776,12 @@ export default defineComponent({
     getEditableDivFocus: function() {
       // 开头获取焦点
       this.$refs.msgInputContainer.focus();
+    }
+  },
+  emits: {
+    // vue3中建议对所有emit事件进行验证
+    "update-last-message": (val: string) => {
+      return !_.isEmpty(val);
     }
   },
   computed: {
