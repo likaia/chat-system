@@ -2,20 +2,28 @@
 <template>
   <div id="mainBody">
     <ul class="list-panel" ref="listPanel">
-      <li class="row-panel">
+      <li
+        class="row-panel"
+        v-for="(item, index) in msgList"
+        :key="item.id"
+        @click="showChatInterface(item.id, index)"
+        :class="{ active: currentIndex === index }"
+      >
         <div class="item-subscript-panel"></div>
         <div class="item-avatar-panel">
-          <img :src="groupMsgImg" alt="用户头像" />
+          <img :src="item.avatarSrc" alt="用户头像" />
         </div>
         <div class="item-nickname-panel">
-          <p class="title">官方测试群</p>
-          <p class="subtitle">{{ lastMessageContent }}</p>
+          <p class="title">{{ item.petName }}</p>
+          <p class="subtitle">
+            {{ lastMessageContent ? lastMessageContent : "暂无消息" }}
+          </p>
         </div>
         <div class="item-time-panel">
-          <!--<p>下午10:22</p>
-                        <div class="msg-count-panel msg-count-more-panel">
-                            <p></p>
-                        </div>-->
+          <p>{{ item.time }}</p>
+          <!--          <div class="msg-count-panel msg-count-more-panel">-->
+          <!--            <p></p>-->
+          <!--          </div>-->
         </div>
       </li>
     </ul>
@@ -30,7 +38,7 @@
       <message-display
         v-else
         :message-status="0"
-        list-id="1892144211"
+        :list-id="listId"
         @update-last-message="updateLastMessage($event)"
       />
     </div>
@@ -39,6 +47,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import _ from "lodash";
 import messageDisplay from "@/components/message-display.vue";
 
 export default defineComponent({
@@ -50,6 +59,15 @@ export default defineComponent({
     getThisWindowWidth: () => window.innerWidth,
     updateLastMessage: function(data: string) {
       this.lastMessageContent = data;
+    },
+    showChatInterface: function(listID: string, liIndex: number) {
+      if (_.isEmpty(listID)) {
+        alert("无消息id");
+        return false;
+      }
+      this.currentIndex = liIndex;
+      this.listId = listID;
+      this.widgetIsNull = false;
     }
   },
   data() {
@@ -60,7 +78,25 @@ export default defineComponent({
       GroupBlocked: require("../assets/img/Group_Blocked@2x.png"),
       otherMsgImg: require("../assets/img/other-msg-img.jpg"),
       lastMessageContent: "",
-      widgetIsNull: true
+      currentIndex: -1, // 当前点击项索引
+      widgetIsNull: true,
+      listId: "",
+      msgList: [
+        {
+          id: "4417890256",
+          petName: "官方测试群",
+          time: "上午10:24",
+          avatarSrc:
+            "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1604729759234&di=5f75dfab0948c370fd890fa914fd3bfc&imgtype=0&src=http%3A%2F%2Fwww.2qqtouxiang.com%2Fpic%2FTP4849_01.jpg"
+        },
+        {
+          id: "",
+          petName: "小白船",
+          time: "上午12:24",
+          avatarSrc:
+            "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1604735927400&di=500d344ec5ea44ff95c6da8c784026d5&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201703%2F17%2F20170317211440_KWdE8.jpeg"
+        }
+      ]
     };
   }
 });

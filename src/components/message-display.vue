@@ -199,7 +199,13 @@ export default defineComponent({
   props: {
     listId: String,
     messageStatus: Number,
-    updateLastMessage: Function
+    updateLastMessage: String
+  },
+  created() {
+    this.$socket.sendObj({
+      code: 200,
+      msg: "连接成功"
+    });
   },
   data<T>(): messageDisplayDataType<T> {
     return {
@@ -490,12 +496,26 @@ export default defineComponent({
                     imgHeight = img.height;
                     msgImgName = `/${res.fileName}?width:${imgWidth}&height:${imgHeight}/`;
                     // 消息发送: 发送图片
+                    this.$socket.sendObj({
+                      msg: msgImgName,
+                      code: 0,
+                      username: this.$store.state.username,
+                      avatarSrc: this.$store.state.profilePicture,
+                      userID: this.$store.state.userID
+                    });
                   } else {
-                    img.onload = function() {
+                    img.onload = () => {
                       imgWidth = img.width;
                       imgHeight = img.height;
                       msgImgName = `/${res.fileName}?width=${imgWidth}&height=${imgHeight}/`;
                       // 消息发送: 发送图片
+                      this.$socket.sendObj({
+                        msg: msgImgName,
+                        code: 0,
+                        username: this.$store.state.username,
+                        avatarSrc: this.$store.state.profilePicture,
+                        userID: this.$store.state.userID
+                      });
                     };
                   }
                   // 清空输入框中的内容
@@ -657,7 +677,9 @@ export default defineComponent({
       this.senderMessageList.push(msgObj);
       // 修改滚动条位置
       this.$nextTick(() => {
-        this.$refs.messagesContainer.scrollTop = this.$refs.messagesContainer.scrollHeight;
+        if (this.$refs.messagesContainer.scrollHeight) {
+          this.$refs.messagesContainer.scrollTop = this.$refs.messagesContainer.scrollHeight;
+        }
       });
     },
     // 获取url参数
