@@ -22,31 +22,41 @@ export default defineComponent({
     // 用户离开或返回时切换登录状态
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState == "hidden") {
-        // 离开页面
-        this.$api.websiteManageAPI
-          .updateOnlineStatus({
-            userId: this.$store.state.userID,
-            status: false
-          })
-          .then((res: responseDataType) => {
-            if (res.code !== 0) {
-              // 状态更新失败
-              alert(res.msg);
-            }
-          });
+        if (
+          this.$store.state?.token &&
+          localStorage.getItem("token") !== null
+        ) {
+          // 离开页面
+          this.$api.websiteManageAPI
+            .updateOnlineStatus({
+              userId: this.$store.state.userID,
+              status: false
+            })
+            .then((res: responseDataType) => {
+              if (res.code !== 0) {
+                // 状态更新失败
+                alert(res.msg);
+              }
+            });
+        }
       } else {
         // 返回页面
-        this.$api.websiteManageAPI
-          .updateOnlineStatus({
-            userId: this.$store.state.userID,
-            status: true
-          })
-          .then((res: responseDataType) => {
-            if (res.code !== 0) {
-              // 状态更新失败
-              alert(res.msg);
-            }
-          });
+        if (
+          this.$store.state?.token &&
+          localStorage.getItem("token") !== null
+        ) {
+          this.$api.websiteManageAPI
+            .updateOnlineStatus({
+              userId: this.$store.state.userID,
+              status: true
+            })
+            .then((res: responseDataType) => {
+              if (res.code !== 0) {
+                // 状态更新失败
+                alert(res.msg);
+              }
+            });
+        }
       }
     });
   }
