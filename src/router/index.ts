@@ -1,4 +1,9 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
+import {
+  createRouter,
+  createWebHashHistory,
+  onBeforeRouteLeave,
+  RouteRecordRaw
+} from "vue-router";
 import Login from "@/views/Login.vue";
 import MainContent from "@/components/main-content.vue";
 import store from "@/store/index.ts";

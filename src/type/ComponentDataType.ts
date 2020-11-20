@@ -102,3 +102,6 @@ export type friendsDataType = {
   onlineStatus: boolean; // 在线状态
   userId: string; // 用户id
 };
+
+// 待处理请求定义
+export type pendingRequest = (...params: any[]) => void;

@@ -7,6 +7,8 @@
 
 import axiosObj, { AxiosRequestConfig, AxiosResponse } from "axios";
 import store from "../store";
+import websiteManageAPI from "@/api/websiteManageAPI";
+import { responseDataType, pendingRequest } from "@/type/ComponentDataType";
 
 const defaultConfig = {
   // baseURL在此处省略配置,考虑到项目可能由多人协作完成开发，域名也各不相同，此处通过对api的抽离，域名单独配置在base.js中
@@ -38,6 +40,11 @@ const defaultConfig = {
   //
   // }]
 };
+
+// 是否正在刷新的标记
+let isRefreshing = false;
+// 重试队列，每一项将是一个待执行的函数形式
+let requests: pendingRequest[] = [];
 
 /**
  * 请求失败后的错误统一处理，当然还有更多状态码判断，根据自己业务需求去扩展即可
@@ -86,11 +93,51 @@ _axios.interceptors.request.use(
 // 响应拦截器
 _axios.interceptors.response.use(
   function(response: AxiosResponse) {
-    // 清除本地存储中的token,如果需要刷新token，在这里通过旧的token跟服务器换新token，将新的token设置的vuex中
+    // token过期，续期token
     if (response.data?.code === 401) {
-      localStorage.removeItem("token");
-      // 页面刷新
-      parent.location.reload();
+      // 原请求的配置
+      const config = response.config;
+      if (!isRefreshing) {
+        // 开始刷新token
+        isRefreshing = true;
+        // 重新请求并更新token，执行未执行完的请求
+        return websiteManageAPI
+          .tokenRenew({
+            userName: store.state.username,
+            token: store.state.token
+          })
+          .then((res: responseDataType) => {
+            if (res.code === 0) {
+              const token = res.data.token;
+              // 刷新未执行请求中的token
+              config.headers.token = token;
+              config.baseURL = "";
+              // 更新vuex中的token
+              store.commit("updateToken", token);
+              // 执行队列中的请求
+              requests.forEach((cb: pendingRequest) => cb(token));
+              // 清空队列
+              requests = [];
+              // 重试当前请求并返回promise
+              return _axios(config);
+            }
+          })
+          .catch(reason => alert(reason))
+          .finally(() => {
+            // 改变刷新状态
+            isRefreshing = false;
+          });
+      } else {
+        // 正在刷新token，返回一个未执行resolve的promise
+        return new Promise(resolve => {
+          // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行
+          requests.push((token: string) => {
+            config.headers.token = token;
+            config.baseURL = "";
+            resolve(_axios(config));
+          });
+        });
+      }
     }
     if (response.status === 200) {
       // 处理接口中的data
