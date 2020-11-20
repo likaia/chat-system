@@ -33,6 +33,15 @@ const websiteManageAPI = {
   // 获取家里电量信息
   getRoomBatteryInfo<T>(params: paramsType<T>) {
     return services.post(`${base.lkBaseURL}/other/getRoomBatteryInfo`, params);
+
+  // token续期
+  tokenRenew<T>(params: paramsType<T>) {
+    return services.post(`${base.lk}/user/tokenRenew`, params);
+  },
+
+  // 更新在线状态
+  updateOnlineStatus<T>(params: paramsType<T>) {
+    return services.post(`${base.lk}/user/updateOnlineStatus`, params);
   }
 };
 

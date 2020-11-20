@@ -105,3 +105,6 @@ export type friendsDataType = {
   groupId?: number;//分组id
   groupName: string; // 分组名称
 };
+
+// 待处理请求定义
+export type pendingRequest = (...params: any[]) => void;

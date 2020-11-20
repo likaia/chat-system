@@ -223,18 +223,18 @@ export default defineComponent({
         },
       },
       zodiacSign: {
-        chicken: require("../assets/img/zodiacSign/zodiac_chicken@2x.png"),
-        cow: require("../assets/img/zodiacSign/zodiac_cow@2x.png"),
-        dog: require("../assets/img/zodiacSign/zodiac_dog@2x.png"),
-        dragon: require("../assets/img/zodiacSign/zodiac_dragon@2x.png"),
-        horse: require("../assets/img/zodiacSign/zodiac_horse@2x.png"),
-        monkey: require("../assets/img/zodiacSign/zodiac_monkey@2x.png"),
         mouse: require("../assets/img/zodiacSign/zodiac_mouse@2x.png"),
-        pig: require("../assets/img/zodiacSign/zodiac_pig@2x.png"),
-        rabbit: require("../assets/img/zodiacSign/zodiac_rabbit@2x.png"),
-        sheep: require("../assets/img/zodiacSign/zodiac_sheep@2x.png"),
-        snake: require("../assets/img/zodiacSign/zodiac_snake@2x.png"),
+        cow: require("../assets/img/zodiacSign/zodiac_cow@2x.png"),
         tiger: require("../assets/img/zodiacSign/zodiac_tiger@2x.png"),
+        rabbit: require("../assets/img/zodiacSign/zodiac_rabbit@2x.png"),
+        dragon: require("../assets/img/zodiacSign/zodiac_dragon@2x.png"),
+        snake: require("../assets/img/zodiacSign/zodiac_snake@2x.png"),
+        horse: require("../assets/img/zodiacSign/zodiac_horse@2x.png"),
+        sheep: require("../assets/img/zodiacSign/zodiac_sheep@2x.png"),
+        monkey: require("../assets/img/zodiacSign/zodiac_monkey@2x.png"),
+        chicken: require("../assets/img/zodiacSign/zodiac_chicken@2x.png"),
+        dog: require("../assets/img/zodiacSign/zodiac_dog@2x.png"),
+        pig: require("../assets/img/zodiacSign/zodiac_pig@2x.png"),
       },
       constellation: {
         Aquarius: require("../assets/img/constellation/constellation_Aquarius@2x.png"),
@@ -265,7 +265,9 @@ export default defineComponent({
         mouth: "",
         day: "",
       },
+      zodiacSignField:["鼠","牛","虎","兔","龙","蛇","马","羊","猴","鸡","狗","猪"],
       ageNumberValue: [],
+      zodiacSignValue:[]
     };
   },
   methods: {
@@ -281,7 +283,7 @@ export default defineComponent({
           //好友资料赋值
           this.userInfo.userId = userId;
           this.userInfo.gender = res.data.gender;
-          this.userInfo.groupName = this.groupName;         
+          this.userInfo.groupName = this.groupName;
           this.userInfo.userName = res.data.userName;
           this.userInfo.avatarSrc = res.data.avatarSrc;
           this.userInfo.signature = res.data.signature;
@@ -292,6 +294,7 @@ export default defineComponent({
           this.dateOfBirth = res.data.dateOfBirth.split("-");
           //显示年龄
           this.manageAge();
+          //显示生肖
         });
     },
     //处理年龄的数据
