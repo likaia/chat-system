@@ -5,8 +5,6 @@
   "private": false,
   "publisher": "magicalprogrammer@qq.com",
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/likaia/chat-system.git"
   },
   "keywords": [
     "vuejs",
@@ -59,10 +57,5 @@
     "prettier": "^1.19.1",
     "sass-loader": "^8.0.2",
     "typescript": "~3.9.3"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
   }
 }
