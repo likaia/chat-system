@@ -84,6 +84,7 @@ export type contactListDataType<V> = {
   groupList: Element[]; // 分组列表dom
   paramsID: string; // 好友列表的用户id
   widgetIsNull: boolean; // 组件是否为空
+  groupName: string; // 分组名称
 };
 
 // 联系人列表类型定义
@@ -96,11 +97,14 @@ export type friendsListType<V> = {
 
 // 联系人类型定义
 export type friendsDataType = {
-  username: string; // 昵称
-  avatarSrc: string; // 头像地址
-  signature: string; // 个性签名
-  onlineStatus: boolean; // 在线状态
-  userId: string; // 用户id
+  userName?: string; // 昵称
+  avatarSrc?: string; // 头像地址
+  signature?: string; // 个性签名
+  onlineStatus?: boolean; // 在线状态
+  userId?: string; // 用户id
+  groupId?: number; // 分组id
+  groupName: string; // 分组名称
+  remarks:String; // 备注
 };
 
 // 待处理请求定义
