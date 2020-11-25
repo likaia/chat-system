@@ -85,6 +85,7 @@ export type contactListDataType<V> = {
   paramsID: string; // 好友列表的用户id
   widgetIsNull: boolean; // 组件是否为空
   groupName: string; // 分组名称
+  remarks: string; // 备注
 };
 
 // 联系人列表类型定义
@@ -104,7 +105,7 @@ export type friendsDataType = {
   userId?: string; // 用户id
   groupId?: number; // 分组id
   groupName: string; // 分组名称
-  remarks:String; // 备注
+  remarks: String; // 备注
 };
 
 // 待处理请求定义

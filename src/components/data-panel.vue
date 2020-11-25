@@ -35,8 +35,11 @@
       <div class="main-panel">
         <div class="icon-data-panel">
           <div class="row-panel">
-            <div class="item-panel" v-if="userInfo.gender == 1||userInfo.gender==0">
-              <div class="ico-panel" v-if="userInfo.gender == 1">
+            <div
+              class="item-panel"
+              v-if="userInfo.gender === 1 || userInfo.gender === 0"
+            >
+              <div class="ico-panel" v-if="userInfo.gender === 1">
                 <img :src="gender.woman" alt="" />
               </div>
               <div class="ico-panel" v-else>
@@ -78,7 +81,7 @@
                 <p>{{ userInfo.constellation.constellationName }}座</p>
               </div>
             </div>
-            <div class="item-panel" v-if="userInfo.mouth&&userInfo.day">
+            <div class="item-panel" v-if="userInfo.mouth && userInfo.day">
               <div class="ico-panel">
                 <img
                   v-for="(item, index) in userInfo.mouth"
@@ -169,7 +172,10 @@
               <p>{{ userInfo.occupation }}</p>
             </div>
           </div>
-          <div class="row-panel" v-if="userInfo.country||userInfo.province||userInfo.city">
+          <div
+            class="row-panel"
+            v-if="userInfo.country || userInfo.province || userInfo.city"
+          >
             <div class="left-panel">
               <p>故乡</p>
             </div>
@@ -194,7 +200,7 @@ export default defineComponent({
   props: {
     paramsId: String,
     groupName: String,
-    remarks: String,
+    remarks: String
   },
   created() {
     // 页面创建时获取好友详情信息
@@ -207,7 +213,7 @@ export default defineComponent({
       qzone: require("../assets/img/list/profile_qzone_normal@2x.png"),
       gender: {
         man: require("../assets/img/gender/gender_man@2x.png"),
-        woman: require("../assets/img/gender/gender_woman@2x.png"),
+        woman: require("../assets/img/gender/gender_woman@2x.png")
       },
       ageNumber: {
         man: {
@@ -220,7 +226,7 @@ export default defineComponent({
           six: require("../assets/img/ageNumber/profile_age_num_6@2x.png"),
           seven: require("../assets/img/ageNumber/profile_age_num_7@2x.png"),
           eight: require("../assets/img/ageNumber/profile_age_num_8@2x.png"),
-          nine: require("../assets/img/ageNumber/profile_age_num_9@2x.png"),
+          nine: require("../assets/img/ageNumber/profile_age_num_9@2x.png")
         },
         woman: {
           zero: require("../assets/img/ageNumber/profile_birth_num_0@2x.png"),
@@ -232,8 +238,8 @@ export default defineComponent({
           six: require("../assets/img/ageNumber/profile_birth_num_6@2x.png"),
           seven: require("../assets/img/ageNumber/profile_birth_num_7@2x.png"),
           eight: require("../assets/img/ageNumber/profile_birth_num_8@2x.png"),
-          nine: require("../assets/img/ageNumber/profile_birth_num_9@2x.png"),
-        },
+          nine: require("../assets/img/ageNumber/profile_birth_num_9@2x.png")
+        }
       },
       zodiacSign: {
         monkey: require("../assets/img/zodiacSign/zodiac_monkey@2x.png"),
@@ -247,7 +253,7 @@ export default defineComponent({
         dragon: require("../assets/img/zodiacSign/zodiac_dragon@2x.png"),
         snake: require("../assets/img/zodiacSign/zodiac_snake@2x.png"),
         horse: require("../assets/img/zodiacSign/zodiac_horse@2x.png"),
-        sheep: require("../assets/img/zodiacSign/zodiac_sheep@2x.png"),
+        sheep: require("../assets/img/zodiacSign/zodiac_sheep@2x.png")
       },
       constellation: {
         Capricorn: require("../assets/img/constellation/constellation_Capricorn@2x.png"), //摩羯座
@@ -261,14 +267,14 @@ export default defineComponent({
         Virgo: require("../assets/img/constellation/constellation_Virgo@2x.png"), //处女座
         Libra: require("../assets/img/constellation/constellation_Libra@2x.png"), //天平
         Scorpio: require("../assets/img/constellation/constellation_Scorpio@2x.png"), //天蝎座
-        Sagittarius: require("../assets/img/constellation/constellation_Sagittarius@2x.png"), //射手座
+        Sagittarius: require("../assets/img/constellation/constellation_Sagittarius@2x.png") //射手座
       },
       bloods: {
         A: require("../assets/img/blood/blood_A@2x.png"),
         AB: require("../assets/img/blood/blood_AB@2x.png"),
         B: require("../assets/img/blood/blood_B@2x.png"),
         O: require("../assets/img/blood/blood_O@2x.png"),
-        Other: require("../assets/img/blood/blood_other@2x.png"),
+        Other: require("../assets/img/blood/blood_other@2x.png")
       },
       userInfo: {
         avatarSrc: "",
@@ -289,7 +295,7 @@ export default defineComponent({
         constellation: {},
         blood: "",
         remarks: "",
-        contactNumber: "",
+        contactNumber: ""
       },
       ageNumberOfAgeValue: [],
       zodiacSignValue: {
@@ -307,23 +313,23 @@ export default defineComponent({
           "龙",
           "蛇",
           "马",
-          "羊",
-        ],
+          "羊"
+        ]
       },
       constellationValue: {
         constellationName: "",
         constellationSrc: [],
         constellationFieldData:
           "魔羯水瓶双鱼白羊金牛双子巨蟹狮子处女天秤天蝎射手魔羯",
-        constellationDay: [20, 19, 21, 21, 21, 22, 23, 23, 23, 23, 22, 22],
+        constellationDay: [20, 19, 21, 21, 21, 22, 23, 23, 23, 23, 22, 22]
       },
       ageNumberOfBrithdayMouthValue: [],
-      ageNumberOfBrithdayDayValue: [],
+      ageNumberOfBrithdayDayValue: []
     };
   },
   methods: {
     // 获取用户信息
-    getUserDataByUid: function (userId: string) {
+    getUserDataByUid: function(userId: string) {
       if (_.isEmpty(userId)) {
         return false;
       }
@@ -374,11 +380,17 @@ export default defineComponent({
         .map((item: string) => Number(item));
       if (this.userInfo.gender == 1) {
         for (const key in this.ageNumber.woman) {
-          this.ageNumberOfAgeValue.push(this.ageNumber.woman[key]);
+          // 判断当前遍历到的属性是否存在
+          if (Object.prototype.hasOwnProperty.call(this.ageNumber.woman, key)) {
+            this.ageNumberOfAgeValue.push(this.ageNumber.woman[key]);
+          }
         }
       } else {
         for (const key in this.ageNumber.man) {
-          this.ageNumberOfAgeValue.push(this.ageNumber.man[key]);
+          // 判断当前遍历到的属性是否存在
+          if (Object.prototype.hasOwnProperty.call(this.ageNumber.man, key)) {
+            this.ageNumberOfAgeValue.push(this.ageNumber.man[key]);
+          }
         }
       }
       this.userInfo.age[0] = this.ageNumberOfAgeValue[this.userInfo.age[0]];
@@ -391,7 +403,10 @@ export default defineComponent({
         Number(this.dateOfBirth[0]) % 12
       ];
       for (const key in this.zodiacSign) {
-        this.zodiacSignValue.zodiacSignSrc.push(this.zodiacSign[key]);
+        // 判断当前遍历到的属性是否存在
+        if (Object.prototype.hasOwnProperty.call(this.zodiacSign, key)) {
+          this.zodiacSignValue.zodiacSignSrc.push(this.zodiacSign[key]);
+        }
       }
       this.zodiacSignValue.zodiacSignSrc = this.zodiacSignValue.zodiacSignSrc[
         Number(this.dateOfBirth[0]) % 12
@@ -408,7 +423,12 @@ export default defineComponent({
         2
       );
       for (const key in this.constellation) {
-        this.constellationValue.constellationSrc.push(this.constellation[key]);
+        // 判断当前遍历到的属性是否存在
+        if (Object.prototype.hasOwnProperty.call(this.constellation, key)) {
+          this.constellationValue.constellationSrc.push(
+            this.constellation[key]
+          );
+        }
       }
       //当月的星座的判断小于该节点为该星座，否则是下一个月的星座
       if (day < this.constellationValue.constellationDay[mouth - 1]) {
@@ -432,11 +452,17 @@ export default defineComponent({
 
       if (this.userInfo.gender == 1) {
         for (const key in this.ageNumber.woman) {
-          this.ageNumberOfBrithdayMouthValue.push(this.ageNumber.woman[key]);
+          // 判断当前遍历到的属性是否存在
+          if (Object.prototype.hasOwnProperty.call(this.ageNumber.woman, key)) {
+            this.ageNumberOfBrithdayMouthValue.push(this.ageNumber.woman[key]);
+          }
         }
       } else {
         for (const key in this.ageNumber.man) {
-          this.ageNumberOfBrithdayMouthValue.push(this.ageNumber.man[key]);
+          // 判断当前遍历到的属性是否存在
+          if (Object.prototype.hasOwnProperty.call(this.ageNumber.man, key)) {
+            this.ageNumberOfBrithdayMouthValue.push(this.ageNumber.man[key]);
+          }
         }
       }
       this.userInfo.mouth[0] = this.ageNumberOfBrithdayMouthValue[
@@ -456,11 +482,17 @@ export default defineComponent({
 
       if (this.userInfo.gender == 1) {
         for (const key in this.ageNumber.woman) {
-          this.ageNumberOfBrithdayDayValue.push(this.ageNumber.woman[key]);
+          // 判断当前遍历到的属性是否存在
+          if (Object.prototype.hasOwnProperty.call(this.ageNumber.woman, key)) {
+            this.ageNumberOfBrithdayDayValue.push(this.ageNumber.woman[key]);
+          }
         }
       } else {
         for (const key in this.ageNumber.man) {
-          this.ageNumberOfBrithdayDayValue.push(this.ageNumber.man[key]);
+          // 判断当前遍历到的属性是否存在
+          if (Object.prototype.hasOwnProperty.call(this.ageNumber.man, key)) {
+            this.ageNumberOfBrithdayDayValue.push(this.ageNumber.man[key]);
+          }
         }
       }
       this.userInfo.day[0] = this.ageNumberOfBrithdayDayValue[
@@ -474,22 +506,24 @@ export default defineComponent({
     manageBlood(blood: string) {
       for (const key in this.bloods) {
         if (key == blood) {
-          this.userInfo.blood = this.bloods[key];
+          // 判断当前遍历到的属性是否存在
+          if (Object.prototype.hasOwnProperty.call(this.bloods, key)) {
+            this.userInfo.blood = this.bloods[key];
+          }
           break;
         }
         if (blood == undefined) {
           this.userInfo.blood = this.bloods["Other"];
         }
       }
-    },
+    }
   },
   watch: {
-    paramsId: function (val: string) {
+    paramsId: function(val: string) {
       this.getUserDataByUid(val);
-    },
-  },
+    }
+  }
 });
 </script>
 
 <style lang="scss" src="../assets/scss/data-panel.scss" scoped></style>
-

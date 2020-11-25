@@ -96,14 +96,17 @@
               :key="index"
               tabindex="0"
             >
-              <div class="main-panel" @click="getBuddyInfo(list.userId,list.groupName,list.remarks)">
+              <div
+                class="main-panel"
+                @click="getBuddyInfo(list.userId, list.groupName, list.remarks)"
+              >
                 <div class="head-img-panel">
                   <img :src="list.avatarSrc" alt="用户头像" />
                 </div>
                 <div class="nickname-panel">
                   <!--昵称-->
                   <div class="name-panel">
-                    {{ list.userName }}({{list.remarks}})
+                    {{ list.userName }}({{ list.remarks }})
                   </div>
                   <!--签名-->
                   <div class="signature-panel">
@@ -127,7 +130,12 @@
         alt="空组件"
         v-if="widgetIsNull"
       />
-      <data-panel :params-id="paramsID" :group-name="groupName" :remarks="remarks" v-else></data-panel>
+      <data-panel
+        :params-id="paramsID"
+        :group-name="groupName"
+        :remarks="remarks"
+        v-else
+      ></data-panel>
     </div>
   </div>
 </template>
@@ -140,7 +148,7 @@ import {
   contactListDataType,
   friendsListType,
   friendsDataType,
-  responseDataType,
+  responseDataType
 } from "@/type/ComponentDataType";
 // import data from "@/api/index.ts"
 export default defineComponent({
@@ -152,15 +160,20 @@ export default defineComponent({
       groupList: [],
       paramsID: "",
       widgetIsNull: true,
-      groupName:""
+      groupName: "",
+      remarks: ""
     };
   },
   components: {
-    dataPanel,
+    dataPanel
   },
   methods: {
     // 获取列表好友信息
-    getBuddyInfo: function (paramsID: string,groupName:string,remarks:string) {
+    getBuddyInfo: function(
+      paramsID: string,
+      groupName: string,
+      remarks: string
+    ) {
       // id为空时显示空组件状态
       if (_.isEmpty(paramsID)) {
         this.widgetIsNull = true;
@@ -169,19 +182,19 @@ export default defineComponent({
       // 显示好友详情组件
       this.widgetIsNull = false;
       this.paramsID = paramsID;
-      this.groupName=groupName; 
-      this.remarks=remarks;
+      this.groupName = groupName;
+      this.remarks = remarks;
     },
     // 设置分组箭头Dom
-    setGroupArrow: function (el: Element) {
+    setGroupArrow: function(el: Element) {
       this.groupArrow.push(el);
     },
     // 设置分组列表dom
-    setGroupList: function (el: Element) {
+    setGroupList: function(el: Element) {
       this.groupList.push(el);
     },
     // 列表状态切换
-    groupingStatus: function (index: number) {
+    groupingStatus: function(index: number) {
       // 获取transform的值
       let transformVal = this.groupArrow[index].style.transform;
       if (!_.isEmpty(transformVal)) {
@@ -202,19 +215,15 @@ export default defineComponent({
         this.groupArrow[index].style.transform = "rotate(90deg)";
         this.groupList[index].style.display = "block";
       }
-    },
-  },
-  beforeUpdate() {
-    this.groupArrow = [];
-    this.groupList = [];
+    }
   },
   mounted() {
     //获取好友列表人员
     this.$api.websiteManageAPI
       .getFriendsList({ userId: this.$store.state.userID })
       .then((res: responseDataType) => {
-         console.log(res.data);
-         
+        console.log(res.data);
+
         //遍历获取分组名称
         res.data.forEach((item: friendsDataType) => {
           this.groupList.push(item.groupName);
@@ -227,7 +236,7 @@ export default defineComponent({
             groupName: this.groupList[index],
             totalPeople: 0,
             onlineUsers: 0,
-            friendsData: [],
+            friendsData: []
           });
           res.data.forEach((item: friendsDataType) => {
             if (this.groupList[index] == item.groupName) {
@@ -238,7 +247,7 @@ export default defineComponent({
                 onlineStatus: item.onlineStatus,
                 userId: item.userId,
                 groupName: item.groupName,
-                remarks:item.remarks
+                remarks: item.remarks
               });
             }
           });
@@ -257,9 +266,8 @@ export default defineComponent({
           );
         }
       });
-  },
+  }
 });
 </script>
 
 <style scoped lang="scss" src="../assets/scss/contact-list.scss"></style>
- 
