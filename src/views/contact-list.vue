@@ -89,21 +89,21 @@
             </div>
           </div>
           <!--好友列表-->
-          <div class="buddy-panel" :ref="setGroupList" style="display:none">
+          <div class="buddy-panel" :ref="setGroupList" style="display: none">
             <div
               class="item-panel"
               v-for="(list, index) in item.friendsData"
               :key="index"
               tabindex="0"
             >
-              <div class="main-panel" @click="getBuddyInfo(list.userId)">
+              <div class="main-panel" @click="getBuddyInfo(list.userId,list.groupName,list.remarks)">
                 <div class="head-img-panel">
                   <img :src="list.avatarSrc" alt="用户头像" />
                 </div>
                 <div class="nickname-panel">
                   <!--昵称-->
                   <div class="name-panel">
-                    {{ list.username }}
+                    {{ list.userName }}({{list.remarks}})
                   </div>
                   <!--签名-->
                   <div class="signature-panel">
@@ -127,7 +127,7 @@
         alt="空组件"
         v-if="widgetIsNull"
       />
-      <data-panel :params-id="paramsID" v-else></data-panel>
+      <data-panel :params-id="paramsID" :group-name="groupName" :remarks="remarks" v-else></data-panel>
     </div>
   </div>
 </template>
@@ -139,68 +139,28 @@ import dataPanel from "@/components/data-panel.vue";
 import {
   contactListDataType,
   friendsListType,
-  friendsDataType
+  friendsDataType,
+  responseDataType,
 } from "@/type/ComponentDataType";
-
+// import data from "@/api/index.ts"
 export default defineComponent({
   name: "contact-list",
   data(): contactListDataType<friendsListType<friendsDataType>> {
     return {
-      friendsList: [
-        {
-          groupName: "我",
-          totalPeople: 2,
-          onlineUsers: 2,
-          friendsData: [
-            {
-              username: "神奇的程序员",
-              avatarSrc:
-                "https://www.kaisir.cn/uploads/1ece3749801d4d45933ba8b31403c685touxiang.jpeg",
-              signature: "今天的努力只为未来",
-              onlineStatus: true,
-              userId: "c04618bab36146e3a9d3b411e7f9eb8f"
-            },
-            {
-              username: "admin",
-              avatarSrc:
-                "https://www.kaisir.cn/uploads/40ba319f75964c25a7370e3909d347c5admin.jpg",
-              signature: "",
-              onlineStatus: true,
-              userId: "32ee06c8380e479b9cd4097e170a6193"
-            }
-          ]
-        },
-        {
-          groupName: "我的朋友",
-          totalPeople: 0,
-          onlineUsers: 0,
-          friendsData: []
-        },
-        {
-          groupName: "我的家人",
-          totalPeople: 0,
-          onlineUsers: 0,
-          friendsData: []
-        },
-        {
-          groupName: "我的同事",
-          totalPeople: 0,
-          onlineUsers: 0,
-          friendsData: []
-        }
-      ],
+      friendsList: [],
       groupArrow: [],
       groupList: [],
       paramsID: "",
-      widgetIsNull: true
+      widgetIsNull: true,
+      groupName:""
     };
   },
   components: {
-    dataPanel
+    dataPanel,
   },
   methods: {
     // 获取列表好友信息
-    getBuddyInfo: function(paramsID: string) {
+    getBuddyInfo: function (paramsID: string,groupName:string,remarks:string) {
       // id为空时显示空组件状态
       if (_.isEmpty(paramsID)) {
         this.widgetIsNull = true;
@@ -209,17 +169,19 @@ export default defineComponent({
       // 显示好友详情组件
       this.widgetIsNull = false;
       this.paramsID = paramsID;
+      this.groupName=groupName; 
+      this.remarks=remarks;
     },
     // 设置分组箭头Dom
-    setGroupArrow: function(el: Element) {
+    setGroupArrow: function (el: Element) {
       this.groupArrow.push(el);
     },
     // 设置分组列表dom
-    setGroupList: function(el: Element) {
+    setGroupList: function (el: Element) {
       this.groupList.push(el);
     },
     // 列表状态切换
-    groupingStatus: function(index: number) {
+    groupingStatus: function (index: number) {
       // 获取transform的值
       let transformVal = this.groupArrow[index].style.transform;
       if (!_.isEmpty(transformVal)) {
@@ -240,13 +202,64 @@ export default defineComponent({
         this.groupArrow[index].style.transform = "rotate(90deg)";
         this.groupList[index].style.display = "block";
       }
-    }
+    },
   },
   beforeUpdate() {
     this.groupArrow = [];
     this.groupList = [];
-  }
+  },
+  mounted() {
+    //获取好友列表人员
+    this.$api.websiteManageAPI
+      .getFriendsList({ userId: this.$store.state.userID })
+      .then((res: responseDataType) => {
+         console.log(res.data);
+         
+        //遍历获取分组名称
+        res.data.forEach((item: friendsDataType) => {
+          this.groupList.push(item.groupName);
+        });
+        //去重相同分组
+        this.groupList = [...new Set(this.groupList)];
+        // 获取好友列表人员在线信息
+        for (let index = 0; index < this.groupList.length; index++) {
+          this.friendsList.push({
+            groupName: this.groupList[index],
+            totalPeople: 0,
+            onlineUsers: 0,
+            friendsData: [],
+          });
+          res.data.forEach((item: friendsDataType) => {
+            if (this.groupList[index] == item.groupName) {
+              this.friendsList[index].friendsData.push({
+                userName: item.userName,
+                avatarSrc: item.avatarSrc,
+                signature: item.signature,
+                onlineStatus: item.onlineStatus,
+                userId: item.userId,
+                groupName: item.groupName,
+                remarks:item.remarks
+              });
+            }
+          });
+        }
+        //获取在线人员总数
+        for (let index = 0; index < this.friendsList.length; index++) {
+          this.friendsList[index].totalPeople = this.friendsList[
+            index
+          ].friendsData.length;
+          this.friendsList[index].friendsData.forEach(
+            (item: friendsDataType) => {
+              if (item.onlineStatus) {
+                this.friendsList[index].onlineUsers++;
+              }
+            }
+          );
+        }
+      });
+  },
 });
 </script>
 
 <style scoped lang="scss" src="../assets/scss/contact-list.scss"></style>
+ 
