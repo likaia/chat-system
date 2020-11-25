@@ -23,5 +23,12 @@ module.exports = {
     https: false,
     hotOnly: false,
     proxy: null
+  },
+  // 关闭生产环境console
+  configureWebpack(config) {
+    if (process.env.NODE_ENV === "production") {
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true;
+    }
   }
 };

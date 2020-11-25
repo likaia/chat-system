@@ -78,6 +78,12 @@ export default createStore({
     // 更新在线人数
     updateOnlineUsers(state, number) {
       state.onlineUsers = number;
+    },
+    // 更新token
+    updateToken(state, token: string) {
+      state.token = token;
+      // 更新本地存储中的token
+      localStorage.setItem("token", token);
     }
   },
   modules: {}

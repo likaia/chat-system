@@ -5,6 +5,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
+import { responseDataType } from "@/type/ComponentDataType";
 
 export default defineComponent({
   name: "app",
@@ -16,6 +17,48 @@ export default defineComponent({
       },
       getCurrentComponentName: ""
     };
+  },
+  created() {
+    // 用户离开或返回时切换登录状态
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState == "hidden") {
+        if (
+          this.$store.state?.token &&
+          localStorage.getItem("token") !== null
+        ) {
+          // 离开页面
+          this.$api.websiteManageAPI
+            .updateOnlineStatus({
+              userId: this.$store.state.userID,
+              status: false
+            })
+            .then((res: responseDataType) => {
+              if (res.code !== 0) {
+                // 状态更新失败
+                alert(res.msg);
+              }
+            });
+        }
+      } else {
+        // 返回页面
+        if (
+          this.$store.state?.token &&
+          localStorage.getItem("token") !== null
+        ) {
+          this.$api.websiteManageAPI
+            .updateOnlineStatus({
+              userId: this.$store.state.userID,
+              status: true
+            })
+            .then((res: responseDataType) => {
+              if (res.code !== 0) {
+                // 状态更新失败
+                alert(res.msg);
+              }
+            });
+        }
+      }
+    });
   }
 });
 </script>
