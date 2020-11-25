@@ -266,6 +266,11 @@ export default defineComponent({
           );
         }
       });
+  },
+  // 页面更新前晴空分组列表dom
+  beforeUpdate() {
+    this.groupArrow = [];
+    this.groupList = [];
   }
 });
 </script>
