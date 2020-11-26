@@ -35,23 +35,26 @@
       <div class="main-panel">
         <div class="icon-data-panel">
           <div class="row-panel">
-            <div class="item-panel">
-              <div class="ico-panel">
+            <div
+              class="item-panel"
+              v-if="userInfo.gender === 1 || userInfo.gender === 0"
+            >
+              <div class="ico-panel" v-if="userInfo.gender === 1">
+                <img :src="gender.woman" alt="" />
+              </div>
+              <div class="ico-panel" v-else>
                 <img :src="gender.man" alt="" />
               </div>
               <div class="title-panel">
                 <p>性别</p>
               </div>
             </div>
-            <div class="item-panel">
+            <div class="item-panel" v-if="userInfo.age">
               <div class="ico-panel">
                 <img
-                  :src="ageNumber.man.one"
-                  style="width: 20px; height: 30px"
-                  alt=""
-                />
-                <img
-                  :src="ageNumber.man.nine"
+                  :src="item"
+                  v-for="(item, index) in userInfo.age"
+                  :key="index"
                   style="width: 20px; height: 30px"
                   alt=""
                 />
@@ -62,50 +65,60 @@
             </div>
             <div class="item-panel">
               <div class="ico-panel">
-                <img :src="zodiacSign.dragon" alt="" />
+                <img :src="userInfo.zodiacSign.zodiacSignSrc" alt="" />
               </div>
               <div class="title-panel">
-                <p>属龙</p>
+                <p>属{{ userInfo.zodiacSign.zodiacSignName }}</p>
               </div>
             </div>
           </div>
           <div class="row-panel">
-            <div class="item-panel">
+            <div class="item-panel" v-if="userInfo.constellation">
               <div class="ico-panel">
-                <img :src="constellation.Aries" alt="" />
+                <img :src="userInfo.constellation.constellationSrc" alt="" />
               </div>
               <div class="title-panel">
-                <p>白羊座</p>
+                <p>{{ userInfo.constellation.constellationName }}座</p>
               </div>
             </div>
-            <div class="item-panel">
+            <div class="item-panel" v-if="userInfo.mouth && userInfo.day">
               <div class="ico-panel">
                 <img
-                  :src="ageNumber.woman.four"
+                  v-for="(item, index) in userInfo.mouth"
+                  :key="index"
+                  :src="item"
                   style="width: 20px; height: 30px"
                   alt=""
                 />
                 |
                 <img
-                  :src="ageNumber.woman.one"
+                  v-for="(item, index) in userInfo.day"
+                  :key="index"
+                  :src="item"
                   alt=""
-                  style="width: 10px;height: 20px"
-                />
-                <img
-                  :src="ageNumber.woman.four"
-                  alt=""
-                  style="width: 10px;height: 20px"
+                  style="width: 10px; height: 20px"
                 />
               </div>
               <div class="title-panel">
                 <p>生日</p>
               </div>
             </div>
-            <div class="item-panel"></div>
+            <div class="item-panel" v-if="userInfo.blood">
+              <div class="ico-panel">
+                <img
+                  :src="userInfo.blood"
+                  style="width: 30px; height: 30px"
+                  alt=""
+                />
+              </div>
+              <div class="title-panel">
+                <p>血型</p>
+              </div>
+            </div>
           </div>
         </div>
         <div class="text--data-panel">
-          <div class="row-panel">
+          <div class="row-panel" v-if="userInfo.userId">
             <div class="left-panel">
               <p>UID</p>
             </div>
@@ -119,7 +132,7 @@
               />
             </div>
           </div>
-          <div class="row-panel">
+          <div class="row-panel" v-if="userInfo.userName">
             <div class="left-panel">
               <p>昵称</p>
             </div>
@@ -127,42 +140,49 @@
               <p>{{ userInfo.userName }}</p>
             </div>
           </div>
-          <div class="row-panel">
+          <div class="row-panel" v-if="userInfo.remarks">
             <div class="left-panel">
               <p>备注</p>
             </div>
-            <div class="right-panel"></div>
+            <div class="right-panel">
+              <p>{{ userInfo.remarks }}</p>
+            </div>
           </div>
-          <div class="row-panel">
+          <div class="row-panel" v-if="userInfo.groupName">
             <div class="left-panel">
               <p>分组</p>
             </div>
             <div class="right-panel">
-              <p>我</p>
+              <p>{{ userInfo.groupName }}</p>
             </div>
           </div>
-          <div class="row-panel">
+          <div class="row-panel" v-if="userInfo.contactNumber">
             <div class="left-panel">
               <p>手机</p>
             </div>
             <div class="right-panel">
-              <p></p>
+              <p>{{ userInfo.contactNumber }}</p>
             </div>
           </div>
-          <div class="row-panel">
+          <div class="row-panel" v-if="userInfo.occupation">
             <div class="left-panel">
               <p>职业</p>
             </div>
             <div class="right-panel">
-              <p></p>
+              <p>{{ userInfo.occupation }}</p>
             </div>
           </div>
-          <div class="row-panel">
+          <div
+            class="row-panel"
+            v-if="userInfo.country || userInfo.province || userInfo.city"
+          >
             <div class="left-panel">
               <p>故乡</p>
             </div>
             <div class="right-panel">
-              <p></p>
+              <p>
+                {{ userInfo.country }}{{ userInfo.province }}{{ userInfo.city }}
+              </p>
             </div>
           </div>
         </div>
@@ -178,7 +198,9 @@ import { responseDataType } from "@/type/ComponentDataType";
 export default defineComponent({
   name: "data-panel",
   props: {
-    paramsId: String
+    paramsId: String,
+    groupName: String,
+    remarks: String
   },
   created() {
     // 页面创建时获取好友详情信息
@@ -220,39 +242,89 @@ export default defineComponent({
         }
       },
       zodiacSign: {
-        chicken: require("../assets/img/zodiacSign/zodiac_chicken@2x.png"),
-        cow: require("../assets/img/zodiacSign/zodiac_cow@2x.png"),
-        dog: require("../assets/img/zodiacSign/zodiac_dog@2x.png"),
-        dragon: require("../assets/img/zodiacSign/zodiac_dragon@2x.png"),
-        horse: require("../assets/img/zodiacSign/zodiac_horse@2x.png"),
         monkey: require("../assets/img/zodiacSign/zodiac_monkey@2x.png"),
-        mouse: require("../assets/img/zodiacSign/zodiac_mouse@2x.png"),
+        chicken: require("../assets/img/zodiacSign/zodiac_chicken@2x.png"),
+        dog: require("../assets/img/zodiacSign/zodiac_dog@2x.png"),
         pig: require("../assets/img/zodiacSign/zodiac_pig@2x.png"),
+        mouse: require("../assets/img/zodiacSign/zodiac_mouse@2x.png"),
+        cow: require("../assets/img/zodiacSign/zodiac_cow@2x.png"),
+        tiger: require("../assets/img/zodiacSign/zodiac_tiger@2x.png"),
         rabbit: require("../assets/img/zodiacSign/zodiac_rabbit@2x.png"),
-        sheep: require("../assets/img/zodiacSign/zodiac_sheep@2x.png"),
+        dragon: require("../assets/img/zodiacSign/zodiac_dragon@2x.png"),
         snake: require("../assets/img/zodiacSign/zodiac_snake@2x.png"),
-        tiger: require("../assets/img/zodiacSign/zodiac_tiger@2x.png")
+        horse: require("../assets/img/zodiacSign/zodiac_horse@2x.png"),
+        sheep: require("../assets/img/zodiacSign/zodiac_sheep@2x.png")
       },
       constellation: {
-        Aquarius: require("../assets/img/constellation/constellation_Aquarius@2x.png"),
-        Aries: require("../assets/img/constellation/constellation_Aries@2x.png"),
-        cancer: require("../assets/img/constellation/constellation_cancer@2x.png"),
-        Capricorn: require("../assets/img/constellation/constellation_Capricorn@2x.png"),
-        Gemini: require("../assets/img/constellation/constellation_Gemini@2x.png"),
-        Leo: require("../assets/img/constellation/constellation_Leo@2x.png"),
-        Libra: require("../assets/img/constellation/constellation_Libra@2x.png"),
-        Pisces: require("../assets/img/constellation/constellation_Pisces@2x.png"),
-        Sagittarius: require("../assets/img/constellation/constellation_Sagittarius@2x.png"),
-        Scorpio: require("../assets/img/constellation/constellation_Scorpio@2x.png"),
-        Taurus: require("../assets/img/constellation/constellation_Taurus@2x.png"),
-        Virgo: require("../assets/img/constellation/constellation_Virgo@2x.png")
+        Capricorn: require("../assets/img/constellation/constellation_Capricorn@2x.png"), // 摩羯座
+        Aquarius: require("../assets/img/constellation/constellation_Aquarius@2x.png"), // 水瓶
+        Pisces: require("../assets/img/constellation/constellation_Pisces@2x.png"), // 双鱼座
+        Aries: require("../assets/img/constellation/constellation_Aries@2x.png"), // 白羊
+        Taurus: require("../assets/img/constellation/constellation_Taurus@2x.png"), // 金牛座
+        Gemini: require("../assets/img/constellation/constellation_Gemini@2x.png"), // 双子座
+        Cancer: require("../assets/img/constellation/constellation_cancer@2x.png"), // 巨蟹座
+        Leo: require("../assets/img/constellation/constellation_Leo@2x.png"), // 狮子座
+        Virgo: require("../assets/img/constellation/constellation_Virgo@2x.png"), // 处女座
+        Libra: require("../assets/img/constellation/constellation_Libra@2x.png"), // 天平
+        Scorpio: require("../assets/img/constellation/constellation_Scorpio@2x.png"), // 天蝎座
+        Sagittarius: require("../assets/img/constellation/constellation_Sagittarius@2x.png") // 射手座
+      },
+      bloods: {
+        A: require("../assets/img/blood/blood_A@2x.png"),
+        AB: require("../assets/img/blood/blood_AB@2x.png"),
+        B: require("../assets/img/blood/blood_B@2x.png"),
+        O: require("../assets/img/blood/blood_O@2x.png"),
+        Other: require("../assets/img/blood/blood_other@2x.png")
       },
       userInfo: {
         avatarSrc: "",
         userName: "",
         userId: "",
-        signature: ""
-      }
+        signature: "",
+        bloodGroup: "",
+        city: "",
+        country: "",
+        dateOfBirth: [],
+        gender: 1,
+        occupation: "",
+        province: "",
+        age: "",
+        mouth: "",
+        day: "",
+        zodiacSign: {},
+        constellation: {},
+        blood: "",
+        remarks: "",
+        contactNumber: ""
+      },
+      ageNumberOfAgeValue: [],
+      zodiacSignValue: {
+        zodiacSignName: "",
+        zodiacSignSrc: [],
+        zodiacSignField: [
+          "猴",
+          "鸡",
+          "狗",
+          "猪",
+          "鼠",
+          "牛",
+          "虎",
+          "兔",
+          "龙",
+          "蛇",
+          "马",
+          "羊"
+        ]
+      },
+      constellationValue: {
+        constellationName: "",
+        constellationSrc: [],
+        constellationFieldData:
+          "魔羯水瓶双鱼白羊金牛双子巨蟹狮子处女天秤天蝎射手魔羯",
+        constellationDay: [20, 19, 21, 21, 21, 22, 23, 23, 23, 23, 22, 22]
+      },
+      ageNumberOfBrithdayMouthValue: [],
+      ageNumberOfBrithdayDayValue: []
     };
   },
   methods: {
@@ -264,11 +336,186 @@ export default defineComponent({
       this.$api.websiteManageAPI
         .getUserDataByUid({ userId: userId })
         .then((res: responseDataType) => {
+          console.log(res.data);
+          // 好友资料赋值
           this.userInfo.userId = userId;
+          this.userInfo.gender = res.data.gender;
+          this.userInfo.groupName = this.groupName;
           this.userInfo.userName = res.data.userName;
           this.userInfo.avatarSrc = res.data.avatarSrc;
           this.userInfo.signature = res.data.signature;
+          this.userInfo.country = res.data.country;
+          this.userInfo.province = res.data.province;
+          this.userInfo.city = res.data.city;
+          this.userInfo.occupation = res.data.occupation;
+          this.userInfo.blood = res.data.bloodGroup;
+          this.userInfo.remarks = this.remarks;
+          this.userInfo.contactNumber = res.data.contactNumber;
+          // 分割数据为年月日
+          this.dateOfBirth = res.data.dateOfBirth.split("-");
+          // 显示年龄
+          this.manageAge();
+          // 显示生肖
+          this.manageAgeZodiacSign();
+          // 显示星座
+          this.manageConstellation(
+            Number(this.dateOfBirth[1]),
+            Number(this.dateOfBirth[2])
+          );
+          // 显示生日的月份
+          this.manageBrithdayMouth(Number(this.dateOfBirth[1]));
+          // 显示生日的日期
+          this.manageBrithdayDay(Number(this.dateOfBirth[2]));
+          // 显示血型
+          this.manageBlood(this.userInfo.blood);
         });
+    },
+    // 处理年龄的数据
+    manageAge() {
+      this.ageNumberOfAgeValue = [];
+      this.userInfo.age =
+        Number(new Date().getFullYear()) + 1 - Number(this.dateOfBirth[0]) + "";
+      this.userInfo.age = this.userInfo.age
+        .split("")
+        .map((item: string) => Number(item));
+      if (this.userInfo.gender == 1) {
+        for (const key in this.ageNumber.woman) {
+          // 判断当前遍历到的属性是否存在
+          if (Object.prototype.hasOwnProperty.call(this.ageNumber.woman, key)) {
+            this.ageNumberOfAgeValue.push(this.ageNumber.woman[key]);
+          }
+        }
+      } else {
+        for (const key in this.ageNumber.man) {
+          // 判断当前遍历到的属性是否存在
+          if (Object.prototype.hasOwnProperty.call(this.ageNumber.man, key)) {
+            this.ageNumberOfAgeValue.push(this.ageNumber.man[key]);
+          }
+        }
+      }
+      this.userInfo.age[0] = this.ageNumberOfAgeValue[this.userInfo.age[0]];
+      this.userInfo.age[1] = this.ageNumberOfAgeValue[this.userInfo.age[1]];
+    },
+    // 处理生肖的数据
+    manageAgeZodiacSign() {
+      this.zodiacSignValue.zodiacSignSrc = [];
+      this.zodiacSignValue.zodiacSignName = this.zodiacSignValue.zodiacSignField[
+        Number(this.dateOfBirth[0]) % 12
+      ];
+      for (const key in this.zodiacSign) {
+        // 判断当前遍历到的属性是否存在
+        if (Object.prototype.hasOwnProperty.call(this.zodiacSign, key)) {
+          this.zodiacSignValue.zodiacSignSrc.push(this.zodiacSign[key]);
+        }
+      }
+      this.zodiacSignValue.zodiacSignSrc = this.zodiacSignValue.zodiacSignSrc[
+        Number(this.dateOfBirth[0]) % 12
+      ];
+      this.userInfo.zodiacSign = this.zodiacSignValue;
+    },
+    // 处理星座数据
+    manageConstellation(mouth: number, day: number) {
+      this.constellationValue.constellationSrc = [];
+      // 字段对应的值
+      this.constellationValue.constellationName = this.constellationValue.constellationFieldData.substr(
+        mouth * 2 -
+          (day < this.constellationValue.constellationDay[mouth - 1] ? 2 : 0),
+        2
+      );
+      for (const key in this.constellation) {
+        // 判断当前遍历到的属性是否存在
+        if (Object.prototype.hasOwnProperty.call(this.constellation, key)) {
+          this.constellationValue.constellationSrc.push(
+            this.constellation[key]
+          );
+        }
+      }
+      // 当月的星座的判断小于该节点为该星座，否则是下一个月的星座
+      if (day < this.constellationValue.constellationDay[mouth - 1]) {
+        this.constellationValue.constellationSrc = this.constellationValue.constellationSrc[
+          mouth - 1
+        ];
+      } else {
+        this.constellationValue.constellationSrc = this.constellationValue.constellationSrc[
+          mouth
+        ];
+      }
+      this.userInfo.constellation = this.constellationValue;
+    },
+    // 处理生日的月份数据
+    manageBrithdayMouth(mouth: number) {
+      this.ageNumberOfBrithdayMouthValue = [];
+      this.userInfo.mouth = mouth + "";
+      this.userInfo.mouth = this.userInfo.mouth
+        .split("")
+        .map((item: string) => Number(item));
+
+      if (this.userInfo.gender == 1) {
+        for (const key in this.ageNumber.woman) {
+          // 判断当前遍历到的属性是否存在
+          if (Object.prototype.hasOwnProperty.call(this.ageNumber.woman, key)) {
+            this.ageNumberOfBrithdayMouthValue.push(this.ageNumber.woman[key]);
+          }
+        }
+      } else {
+        for (const key in this.ageNumber.man) {
+          // 判断当前遍历到的属性是否存在
+          if (Object.prototype.hasOwnProperty.call(this.ageNumber.man, key)) {
+            this.ageNumberOfBrithdayMouthValue.push(this.ageNumber.man[key]);
+          }
+        }
+      }
+      this.userInfo.mouth[0] = this.ageNumberOfBrithdayMouthValue[
+        this.userInfo.mouth[0]
+      ];
+      this.userInfo.mouth[1] = this.ageNumberOfBrithdayMouthValue[
+        this.userInfo.mouth[1]
+      ];
+    },
+    // 处理生日的日期数据
+    manageBrithdayDay(day: number) {
+      this.ageNumberOfBrithdayDayValue = [];
+      this.userInfo.day = day + "";
+      this.userInfo.day = this.userInfo.day
+        .split("")
+        .map((item: string) => Number(item));
+
+      if (this.userInfo.gender == 1) {
+        for (const key in this.ageNumber.woman) {
+          // 判断当前遍历到的属性是否存在
+          if (Object.prototype.hasOwnProperty.call(this.ageNumber.woman, key)) {
+            this.ageNumberOfBrithdayDayValue.push(this.ageNumber.woman[key]);
+          }
+        }
+      } else {
+        for (const key in this.ageNumber.man) {
+          // 判断当前遍历到的属性是否存在
+          if (Object.prototype.hasOwnProperty.call(this.ageNumber.man, key)) {
+            this.ageNumberOfBrithdayDayValue.push(this.ageNumber.man[key]);
+          }
+        }
+      }
+      this.userInfo.day[0] = this.ageNumberOfBrithdayDayValue[
+        this.userInfo.day[0]
+      ];
+      this.userInfo.day[1] = this.ageNumberOfBrithdayDayValue[
+        this.userInfo.day[1]
+      ];
+    },
+    // 处理血型
+    manageBlood(blood: string) {
+      for (const key in this.bloods) {
+        if (key == blood) {
+          // 判断当前遍历到的属性是否存在
+          if (Object.prototype.hasOwnProperty.call(this.bloods, key)) {
+            this.userInfo.blood = this.bloods[key];
+          }
+          break;
+        }
+        if (blood == undefined) {
+          this.userInfo.blood = this.bloods["Other"];
+        }
+      }
     }
   },
   watch: {

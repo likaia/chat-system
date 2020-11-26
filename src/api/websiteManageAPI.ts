@@ -26,7 +26,10 @@ const websiteManageAPI = {
   getUserDataByUid<T>(params: paramsType<T>) {
     return services.post(`${base.lk}/user/getUserDataByUid`, params);
   },
-
+  // 根据用户id获取好友列表
+  getFriendsList<T>(params: paramsType<T>) {
+    return services.post(`${base.lk}/user/getFriendsList`, params);
+  },
   // token续期
   tokenRenew<T>(params: paramsType<T>) {
     return services.post(`${base.lk}/user/tokenRenew`, params);
