@@ -6,8 +6,8 @@
         :key="index"
         @click="itemClick(index)"
       >
-        <div></div>
-        <p>{{ item }}</p>
+        <div :class="[index == currentIndex ? classList[index] : '']"></div>
+        <p :class="index == currentIndex ? 'activecolor' : ''">{{ item }}</p>
       </li>
     </ul>
   </div>
@@ -28,7 +28,8 @@ export default defineComponent({
   },
   data() {
     return {
-      currentIndex: 0
+      currentIndex: -1,
+      classList: ["activeIcon0", "activeIcon1", "activeIcon2"]
     };
   },
   methods: {
@@ -64,45 +65,61 @@ ul {
     }
   }
   li:nth-child(1) div {
-    background: url(../../../assets/img/more/file_normal_ap@2x.png) center
+    background: url(../../assets/img/more/file_normal_ap@2x.png) center
       no-repeat;
     background-size: cover;
   }
   li:nth-child(1):hover {
     color: $hoverFontColor;
     div {
-      background: url(../../../assets/img/more/file_hover_ap@2x.png) center
+      background: url(../../assets/img/more/file_hover_ap@2x.png) center
         no-repeat;
       background-size: cover;
     }
   }
-
   li:nth-child(2) div {
-    background: url(../../../assets/img/more/feedback_normal_ap@2x.png) center
+    background: url(../../assets/img/more/feedback_normal_ap@2x.png) center
       no-repeat;
     background-size: cover;
   }
   li:nth-child(2):hover {
     color: $hoverFontColor;
     div {
-      background: url(../../../assets/img/more/feedback_press_ap@2x.png) center
+      background: url(../../assets/img/more/feedback_press_ap@2x.png) center
         no-repeat;
       background-size: cover;
     }
   }
 
   li:nth-child(3) div {
-    background: url(../../../assets/img/more/setting_normal_ap@2x.png) center
+    background: url(../../assets/img/more/setting_normal_ap@2x.png) center
       no-repeat;
     background-size: cover;
   }
   li:nth-child(3):hover {
     color: $hoverFontColor;
     div {
-      background: url(../../../assets/img/more/setting_hover_ap@2x.png) center
+      background: url(../../assets/img/more/setting_hover_ap@2x.png) center
         no-repeat;
       background-size: cover;
     }
   }
+}
+.activeIcon0 {
+  background: url(../../assets/img/more/file_hover_ap@2x.png) center no-repeat !important;
+  background-size: cover !important;
+}
+.activeIcon1 {
+  background: url(../../assets/img/more/feedback_press_ap@2x.png) center
+    no-repeat !important;
+  background-size: cover !important;
+}
+.activeIcon2 {
+  background: url(../../assets/img/more/setting_hover_ap@2x.png) center
+    no-repeat !important;
+  background-size: cover !important;
+}
+.activecolor {
+  color: #12b7f5 !important;
 }
 </style>
