@@ -63,7 +63,10 @@
                 <p>年龄</p>
               </div>
             </div>
-            <div class="item-panel">
+            <div
+              class="item-panel"
+              v-if="JSON.stringify(userInfo.zodiacSign) !== '{}'"
+            >
               <div class="ico-panel">
                 <img :src="userInfo.zodiacSign.zodiacSignSrc" alt="" />
               </div>
@@ -73,7 +76,10 @@
             </div>
           </div>
           <div class="row-panel">
-            <div class="item-panel" v-if="userInfo.constellation">
+            <div
+              class="item-panel"
+              v-if="JSON.stringify(userInfo.constellation) !== '{}'"
+            >
               <div class="ico-panel">
                 <img :src="userInfo.constellation.constellationSrc" alt="" />
               </div>
@@ -257,15 +263,15 @@ export default defineComponent({
       },
       constellation: {
         Capricorn: require("../assets/img/constellation/constellation_Capricorn@2x.png"), // 摩羯座
-        Aquarius: require("../assets/img/constellation/constellation_Aquarius@2x.png"), // 水瓶
+        Aquarius: require("../assets/img/constellation/constellation_Aquarius@2x.png"), // 水瓶座
         Pisces: require("../assets/img/constellation/constellation_Pisces@2x.png"), // 双鱼座
-        Aries: require("../assets/img/constellation/constellation_Aries@2x.png"), // 白羊
+        Aries: require("../assets/img/constellation/constellation_Aries@2x.png"), // 白羊座
         Taurus: require("../assets/img/constellation/constellation_Taurus@2x.png"), // 金牛座
         Gemini: require("../assets/img/constellation/constellation_Gemini@2x.png"), // 双子座
         Cancer: require("../assets/img/constellation/constellation_cancer@2x.png"), // 巨蟹座
         Leo: require("../assets/img/constellation/constellation_Leo@2x.png"), // 狮子座
         Virgo: require("../assets/img/constellation/constellation_Virgo@2x.png"), // 处女座
-        Libra: require("../assets/img/constellation/constellation_Libra@2x.png"), // 天平
+        Libra: require("../assets/img/constellation/constellation_Libra@2x.png"), // 天平座
         Scorpio: require("../assets/img/constellation/constellation_Scorpio@2x.png"), // 天蝎座
         Sagittarius: require("../assets/img/constellation/constellation_Sagittarius@2x.png") // 射手座
       },
@@ -336,7 +342,6 @@ export default defineComponent({
       this.$api.websiteManageAPI
         .getUserDataByUid({ userId: userId })
         .then((res: responseDataType) => {
-          console.log(res.data);
           // 好友资料赋值
           this.userInfo.userId = userId;
           this.userInfo.gender = res.data.gender;
@@ -352,22 +357,30 @@ export default defineComponent({
           this.userInfo.remarks = this.remarks;
           this.userInfo.contactNumber = res.data.contactNumber;
           // 分割数据为年月日
-          this.dateOfBirth = res.data.dateOfBirth.split("-");
-          // 显示年龄
-          this.manageAge();
-          // 显示生肖
-          this.manageAgeZodiacSign();
-          // 显示星座
-          this.manageConstellation(
-            Number(this.dateOfBirth[1]),
-            Number(this.dateOfBirth[2])
-          );
-          // 显示生日的月份
-          this.manageBrithdayMouth(Number(this.dateOfBirth[1]));
-          // 显示生日的日期
-          this.manageBrithdayDay(Number(this.dateOfBirth[2]));
-          // 显示血型
-          this.manageBlood(this.userInfo.blood);
+          this.dateOfBirth = [];
+          this.userInfo.zodiacSign = {};
+          this.userInfo.constellation = {};
+          this.userInfo.age = "";
+          this.userInfo.mouth = "";
+          this.userInfo.day = "";
+          if (res.data.dateOfBirth !== undefined) {
+            this.dateOfBirth = res.data.dateOfBirth.split("-");
+            // 显示年龄
+            this.manageAge();
+            // 显示生肖
+            this.manageAgeZodiacSign();
+            // 显示星座
+            this.manageConstellation(
+              Number(this.dateOfBirth[1]),
+              Number(this.dateOfBirth[2])
+            );
+            // 显示生日的月份
+            this.manageBrithdayMouth(Number(this.dateOfBirth[1]));
+            // 显示生日的日期
+            this.manageBrithdayDay(Number(this.dateOfBirth[2]));
+            // 显示血型
+            this.manageBlood(this.userInfo.blood);
+          }
         });
     },
     // 处理年龄的数据
@@ -412,6 +425,7 @@ export default defineComponent({
         Number(this.dateOfBirth[0]) % 12
       ];
       this.userInfo.zodiacSign = this.zodiacSignValue;
+      console.log(this.userInfo.zodiacSign);
     },
     // 处理星座数据
     manageConstellation(mouth: number, day: number) {
@@ -525,5 +539,4 @@ export default defineComponent({
   }
 });
 </script>
-
 <style lang="scss" src="../assets/scss/data-panel.scss" scoped></style>
