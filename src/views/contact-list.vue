@@ -5,7 +5,7 @@
     <div class="list-panel">
       <!--加好友-->
       <div class="top-panel">
-        <div class="add-friend-panel">
+        <div class="add-friend-panel" @click="addFriendsInfoSerach">
           <p>加好友</p>
         </div>
       </div>
@@ -71,7 +71,7 @@
         <div
           class="row-panel"
           v-for="(item, index) in friendsList"
-          :key="index"
+          :key="item.childrenId"
         >
           <div class="main-content" @click="groupingStatus(index)">
             <div class="icon-panel">
@@ -137,6 +137,10 @@
         v-else
       ></data-panel>
     </div>
+    <!--添加好友弹框-->
+    <teleport to="body" v-if="showAddAlert">
+      <addFriendsList></addFriendsList>
+    </teleport>
   </div>
 </template>
 
@@ -144,6 +148,7 @@
 import _ from "lodash";
 import { defineComponent } from "vue";
 import dataPanel from "@/components/data-panel.vue";
+import addFriendsList from "./addFriends-list.vue";
 import {
   contactListDataType,
   friendsListType,
@@ -161,11 +166,13 @@ export default defineComponent({
       paramsID: "",
       widgetIsNull: true,
       groupName: "",
-      remarks: ""
+      remarks: "",
+      showAddAlert: false
     };
   },
   components: {
-    dataPanel
+    dataPanel,
+    addFriendsList
   },
   methods: {
     // 获取列表好友信息
@@ -215,31 +222,41 @@ export default defineComponent({
         this.groupArrow[index].style.transform = "rotate(90deg)";
         this.groupList[index].style.display = "block";
       }
+    },
+    // 添加好友弹框
+    addFriendsInfoSerach: function() {
+      this.showAddAlert = true;
     }
   },
   mounted() {
-    //获取好友列表人员
+    // 获取好友列表人员
     this.$api.websiteManageAPI
       .getFriendsList({ userId: this.$store.state.userID })
       .then((res: responseDataType) => {
-        console.log(res.data);
-
-        //遍历获取分组名称
+        // 遍历获取分组名称
         res.data.forEach((item: friendsDataType) => {
-          this.groupList.push(item.groupName);
+          this.groupList.push(
+            JSON.stringify({
+              childrenId: item.childrenId,
+              groupName: item.groupName
+            })
+          );
         });
-        //去重相同分组
+        // 去重相同分组
         this.groupList = [...new Set(this.groupList)];
         // 获取好友列表人员在线信息
         for (let index = 0; index < this.groupList.length; index++) {
+          // 将字符串转为对象
+          this.groupList[index] = JSON.parse(this.groupList[index]);
           this.friendsList.push({
-            groupName: this.groupList[index],
+            groupName: this.groupList[index].groupName,
             totalPeople: 0,
             onlineUsers: 0,
-            friendsData: []
+            friendsData: [],
+            childrenId: this.groupList[index].childrenId
           });
           res.data.forEach((item: friendsDataType) => {
-            if (this.groupList[index] == item.groupName) {
+            if (this.groupList[index].childrenId == item.childrenId) {
               this.friendsList[index].friendsData.push({
                 userName: item.userName,
                 avatarSrc: item.avatarSrc,
@@ -247,12 +264,13 @@ export default defineComponent({
                 onlineStatus: item.onlineStatus,
                 userId: item.userId,
                 groupName: item.groupName,
-                remarks: item.remarks
+                remarks: item.remarks,
+                childrenId: item.childrenId
               });
             }
           });
         }
-        //获取在线人员总数
+        // 获取在线人员总数
         for (let index = 0; index < this.friendsList.length; index++) {
           this.friendsList[index].totalPeople = this.friendsList[
             index

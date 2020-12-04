@@ -86,6 +86,7 @@ export type contactListDataType<V> = {
   widgetIsNull: boolean; // 组件是否为空
   groupName: string; // 分组名称
   remarks: string; // 备注
+  showAddAlert: boolean; // 添加好友弹框 
 };
 
 // 联系人列表类型定义
@@ -103,7 +104,7 @@ export type friendsDataType = {
   signature?: string; // 个性签名
   onlineStatus?: boolean; // 在线状态
   userId?: string; // 用户id
-  groupId?: number; // 分组id
+  childrenId?: number; // 分组id
   groupName: string; // 分组名称
   remarks: String; // 备注
 };
