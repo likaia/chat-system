@@ -233,11 +233,8 @@ export default defineComponent({
     this.$api.websiteManageAPI
       .getFriendsList({ userId: this.$store.state.userID })
       .then((res: responseDataType) => {
-<<<<<<< HEAD
-=======
         console.log(res.data);
 
->>>>>>> d24dfcbc5d9ddd2e761b8636045102f839ce07ff
         // 遍历获取分组名称
         res.data.forEach((item: friendsDataType) => {
           this.groupList.push(
