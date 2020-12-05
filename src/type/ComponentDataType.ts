@@ -110,3 +110,11 @@ export type friendsDataType = {
 
 // 待处理请求定义
 export type pendingRequest = (...params: any[]) => void;
+
+// 右键菜单DOM属性定义
+export type rightMenuAttribute = {
+  status: string;
+  left: string;
+  top: string;
+  list: [];
+};

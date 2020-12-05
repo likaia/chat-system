@@ -380,7 +380,7 @@ export default defineComponent({
               (newBlob: Blob, newBase: string) => {
                 // 删除可编辑div中的图片名称
                 this.$refs.msgInputContainer.textContent = oldText;
-                img.src = newBase; //设置链接
+                img.src = newBase; // 设置链接
                 // 图片渲染
                 this.$refs.msgInputContainer.append(img);
               }
@@ -466,9 +466,9 @@ export default defineComponent({
               let base64Img = (item as HTMLImageElement).src;
               // 删除base64图片的前缀
               base64Img = base64Img.replace(/^data:image\/\w+;base64,/, "");
-              //随机文件名
+              // 随机文件名
               const fileName = new Date().getTime() + "chatImg" + ".jpeg";
-              //将base64转换成file
+              // 将base64转换成file
               const imgFile = this.convertBase64UrlToImgFile(
                 base64Img,
                 fileName,

@@ -8,6 +8,7 @@
         :key="item.id"
         @click="showChatInterface(item.id, index)"
         :class="{ active: currentIndex === index }"
+        v-right-click="rightMenuObj"
       >
         <div class="item-subscript-panel"></div>
         <div class="item-avatar-panel">
@@ -80,6 +81,37 @@ export default defineComponent({
       lastMessageContent: "",
       currentIndex: -1, // 当前点击项索引
       widgetIsNull: true,
+      // 右键菜单对象，菜单内容和处理事件
+      rightMenuObj: {
+        text: [
+          "查看资料",
+          "复制用户id",
+          "移除该会话",
+          "在联系人中查看",
+          "在单聊窗口中打开",
+          "会话置顶"
+        ],
+        handler: {
+          checkingData() {
+            console.log("查看资料点击事件");
+          },
+          copyId() {
+            console.log("复制用户id点击事件");
+          },
+          removeItem() {
+            console.log("移除会话点击事件");
+          },
+          showContact() {
+            console.log("在联系人中查看");
+          },
+          showSingleChat() {
+            console.log("在单聊窗口中打开");
+          },
+          topConversation() {
+            console.log("会话置顶");
+          }
+        }
+      },
       listId: "",
       msgList: [
         {
