@@ -197,7 +197,7 @@ import _ from "lodash";
 export default defineComponent({
   name: "message-display",
   props: {
-    listId: String,
+    listId: Number,
     messageStatus: Number
   },
   created() {
@@ -375,7 +375,7 @@ export default defineComponent({
             img.height = imgHeight;
             // 压缩图片，渲染页面
             this.compressPic(
-              imgContent,
+              imgContent as string,
               scale,
               (newBlob: Blob, newBase: string) => {
                 // 删除可编辑div中的图片名称

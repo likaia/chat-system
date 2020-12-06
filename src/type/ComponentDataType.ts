@@ -8,7 +8,7 @@ export type loginDataType<T> = {
   password: string; // 密码
   confirmPassword: string; // 注册时的确认登录密码
   isLoginStatus: number; // 登录状态：0.未登录 1.登录中 2.注册
-  loginStatusEnum: Object; // 登录状态枚举
+  loginStatusEnum: Record<string, any>; // 登录状态枚举
   isDefaultAvatar: boolean; // 头像是否为默认头像
   avatarSrc: T; // 头像地址
   loadText: string; // 加载层的文字
@@ -105,7 +105,7 @@ export type friendsDataType = {
   userId?: string; // 用户id
   groupId?: number; // 分组id
   groupName: string; // 分组名称
-  remarks: String; // 备注
+  remarks: string; // 备注
 };
 
 // 待处理请求定义
@@ -113,8 +113,41 @@ export type pendingRequest = (...params: any[]) => void;
 
 // 右键菜单DOM属性定义
 export type rightMenuAttribute = {
-  status: string;
-  left: string;
-  top: string;
-  list: [];
+  status: string; // 右键菜单显隐状态
+  left: string; // 右键菜单显示位置: 左测距离
+  top: string; // 右键菜单显示位置: 顶部距离
+  list: []; // 右键菜单列表数据: 文本列表、事件处理函数
+};
+
+export type rightMenuListObj = {
+  text?: Array<string>;
+  handler?: Array<Record<string, (...params: any) => void>>;
+  id?: number;
+};
+
+// 消息列表组件Data对象属性定义
+export type msgListDataType = {
+  msgSubscriptIco: string; // 置顶图标
+  GroupBlocked: string; // 群消息免打扰图标
+  lastMessageContent: string; // 最后一条消息内容
+  currentIndex: number; // 当前点击项索引
+  widgetIsNull: boolean; // 消息内容组件显示状态
+  rightMenuObj: {
+    text: Array<string>; // 文本数组
+    handler: Record<string, (...params: any) => void>; // 事件处理函数
+  }; // 右键菜单
+  listId: number | null;
+  messageType: number | null;
+  msgList: Array<totalMessage>;
+};
+
+// 消息列表数据类型定义
+export type totalMessage = {
+  id?: number; // 消息id
+  avatarSrc?: string; // 消息头像
+  userName?: string; // 消息名称
+  lastTime?: string; // 最后一条消息发送时间
+  lastMsgTxt?: string; // 最后一条消息内容
+  userId?: string; // 消息id
+  type?: number; // 消息类型: 0: 单聊 1: 群聊
 };
