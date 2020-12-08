@@ -363,7 +363,7 @@ export default defineComponent({
           this.userInfo.age = "";
           this.userInfo.mouth = "";
           this.userInfo.day = "";
-          if (res.data.dateOfBirth !== undefined) {
+          if (res.data.dateOfBirth != null) {
             this.dateOfBirth = res.data.dateOfBirth.split("-");
             // 显示年龄
             this.manageAge();
@@ -425,7 +425,6 @@ export default defineComponent({
         Number(this.dateOfBirth[0]) % 12
       ];
       this.userInfo.zodiacSign = this.zodiacSignValue;
-      console.log(this.userInfo.zodiacSign);
     },
     // 处理星座数据
     manageConstellation(mouth: number, day: number) {

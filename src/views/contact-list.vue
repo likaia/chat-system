@@ -90,33 +90,37 @@
           </div>
           <!--好友列表-->
           <div class="buddy-panel" :ref="setGroupList" style="display: none">
-            <div
-              class="item-panel"
-              v-for="(list, index) in item.friendsData"
-              :key="index"
-              tabindex="0"
-            >
+            <template v-for="(list, index) in item.friendsData" :key="index">
               <div
-                class="main-panel"
-                @click="getBuddyInfo(list.userId, list.groupName, list.remarks)"
+                class="item-panel"
+                tabindex="0"
+                v-if="list.userId !== undefined"
               >
-                <div class="head-img-panel">
-                  <img :src="list.avatarSrc" alt="用户头像" />
-                </div>
-                <div class="nickname-panel">
-                  <!--昵称-->
-                  <div class="name-panel">
-                    {{ list.userName }}({{ list.remarks }})
+                <div
+                  class="main-panel"
+                  @click="
+                    getBuddyInfo(list.userId, list.groupName, list.remarks)
+                  "
+                >
+                  <div class="head-img-panel">
+                    <img :src="list.avatarSrc" alt="用户头像" />
                   </div>
-                  <!--签名-->
-                  <div class="signature-panel">
-                    [{{ list.onlineStatus ? "在线" : "离线" }}]{{
-                      list.signature
-                    }}
+                  <div class="nickname-panel">
+                    <!--昵称-->
+                    <div class="name-panel">
+                      <span>{{ list.userName }}</span>
+                      <span v-if="list.remarks">({{ list.remarks }})</span>
+                    </div>
+                    <!--签名-->
+                    <div class="signature-panel">
+                      [{{ list.onlineStatus ? "在线" : "离线" }}]{{
+                        list.signature
+                      }}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </template>
           </div>
         </div>
       </div>
@@ -269,14 +273,14 @@ export default defineComponent({
                 remarks: item.remarks,
                 childrenId: item.childrenId
               });
+              if (item.userId) {
+                this.friendsList[index].totalPeople++;
+              }
             }
           });
         }
         // 获取在线人员总数
         for (let index = 0; index < this.friendsList.length; index++) {
-          this.friendsList[index].totalPeople = this.friendsList[
-            index
-          ].friendsData.length;
           this.friendsList[index].friendsData.forEach(
             (item: friendsDataType) => {
               if (item.onlineStatus) {
