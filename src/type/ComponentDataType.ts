@@ -55,23 +55,25 @@ export type messageDisplayDataType<T> = {
   emoticonShowStatus: string; // 表情面板显隐状态
   emojiList: {}; // 表情列表，从json文件中获取
   toolbarList: {}; // 工具栏列表，从json文件中获取
-  senderMessageList: T[]; // 已发送消息列表
+  senderMessageList: Array<msgListType>; // 已发送消息列表
   audioCtx: number; // 当前要播放的音频频率
   arrFrequency: number[]; // 音频频率列表
 };
 
 // 消息列表对象属性类型定义
 export type msgListType = {
-  username?: string;
-  userID?: string;
+  id?: number;
+  msgText?: string;
+  createTime?: string;
+  userName?: string;
+  userId?: string;
   avatarSrc?: string;
-  msg?: string;
+  msgId?: number;
 };
 
-// 发送者消息对象类型定义
-export type senderMessageType = {
-  msgText: string;
-  msgId: number;
+// 服务端推送消息类型
+export type serverPushMessageType = {
+  msg: string;
   avatarSrc: string;
   userID: string;
   username: string;
@@ -132,14 +134,19 @@ export type msgListDataType = {
   lastMessageContent: string; // 最后一条消息内容
   currentIndex: number; // 当前点击项索引
   widgetIsNull: boolean; // 消息内容组件显示状态
-  rightMenuObj: {
-    text: Array<string>; // 文本数组
-    handler: Record<string, (...params: any) => void>; // 事件处理函数
-  }; // 右键菜单
   listId: number | null;
   messageType: number | null;
+  buddyId: string;
+  buddyName: string;
   msgList: Array<totalMessage>;
 };
+
+// 右键菜单类型定义
+export type rightMenuObjType = {
+  this: any;
+  text: Array<string>; // 文本数组
+  handler: Record<string, (...params: any) => void>; // 事件处理函数
+}; // 右键菜单
 
 // 消息列表数据类型定义
 export type totalMessage = {
@@ -150,4 +157,5 @@ export type totalMessage = {
   lastMsgTxt?: string; // 最后一条消息内容
   userId?: string; // 消息id
   type?: number; // 消息类型: 0: 单聊 1: 群聊
+  buddyId?: string; // 好友id
 };

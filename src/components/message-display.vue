@@ -3,7 +3,7 @@
   <div id="mainContent">
     <div class="top-panel" ref="topPanel">
       <div class="title-panel">
-        <p>当前在线人数: {{ onlineUsers }}</p>
+        <p>{{ buddyName }}</p>
         <!--在线设备类型-->
         <!--<div class="equipmentType">
                     <img :src="this.resourceObj.phoneNormal" alt="">
@@ -25,16 +25,16 @@
     </div>
     <!--消息显示-->
     <div class="messages-panel" ref="messagesContainer">
-      <div
-        class="row-panel"
-        v-for="item in senderMessageList"
-        :key="item.msgId"
-      >
+      <div class="row-panel" v-for="item in senderMessageList" :key="item.id">
         <!--发送者消息样式-->
-        <div class="sender-panel" v-if="item.userID === userID">
+        <div
+          class="sender-panel"
+          v-if="item.userId === userID"
+          :data-createTime="item.createTime"
+        >
           <!--昵称展示-->
           <div class="user-name-panel sender">
-            <p>{{ item.username }}</p>
+            <p>{{ item.userName }}</p>
           </div>
           <!--消息-->
           <div class="msg-body">
@@ -56,14 +56,14 @@
           </div>
         </div>
         <!--对方消息样式-->
-        <div class="otherSide-panel" v-else>
+        <div class="otherSide-panel" v-else :data-createTime="item.createTime">
           <!--头像-->
           <div class="avatar-panel">
             <img :src="item.avatarSrc" alt="" />
           </div>
           <!--昵称展示-->
           <div class="user-name-panel sender">
-            <p>{{ item.username }}</p>
+            <p>{{ item.userName }}</p>
           </div>
           <!--消息-->
           <div class="msg-body">
@@ -188,8 +188,7 @@ import { defineComponent } from "vue";
 import {
   messageDisplayDataType,
   msgListType,
-  responseDataType,
-  senderMessageType
+  responseDataType
 } from "@/type/ComponentDataType";
 import base from "@/api/base";
 import _ from "lodash";
@@ -197,8 +196,10 @@ import _ from "lodash";
 export default defineComponent({
   name: "message-display",
   props: {
-    listId: Number,
-    messageStatus: Number
+    listId: Number, // 消息id
+    messageStatus: Number, // 消息类型
+    buddyId: String, // 好友id
+    buddyName: String // 好友昵称
   },
   created() {
     this.$socket.sendObj({
@@ -253,11 +254,11 @@ export default defineComponent({
     // 设置列容器高度
     this.$refs.messagesContainer.style.height =
       this.getThisWindowHeight() - 450 + "px";
+    // 获取消息内容
+    this.getMessageTextList(this.listId);
     // 执行剪切板监听与全局点击事件监听
     this.pasteHandle();
     this.globalClick();
-    // 从本地存储中获取数据渲染页面
-    this.renderPage("", "", 1);
     // 监听消息接收
     this.$options.sockets.onmessage = (res: { data: string }) => {
       const data = JSON.parse(res.data);
@@ -268,14 +269,16 @@ export default defineComponent({
         // 更新在线人数
         this.$store.commit("updateOnlineUsers", data.onlineUsers);
         // 获取服务端推送的消息
-        const msgObj = {
-          msg: data.msg,
+        const msgObj: msgListType = {
+          msgText: data.msg,
           avatarSrc: data.avatarSrc,
-          userID: data.userID,
-          username: data.username
+          id: data?.id,
+          createTime: data.createTime,
+          userId: data.userID,
+          userName: data.username
         };
         // 播放消息提示音:判断当前消息是否为对方发送
-        if (msgObj.userID !== this.$store.state.userID) {
+        if (msgObj.userId !== this.userID) {
           this.audioCtx = new AudioContext();
           // 非当前用户发送的消息
           // 当前频率: 随机产生
@@ -311,16 +314,8 @@ export default defineComponent({
           // 2秒后停止声音
           oscillator.stop(this.audioCtx.currentTime + 2);
         }
-        // 渲染页面:如果msgArray存在则转json
-        if (_.isEmpty(localStorage.getItem("msgArray"))) {
-          this.renderPage([], msgObj, 0);
-        } else {
-          this.renderPage(
-            JSON.parse(localStorage.getItem("msgArray") as string),
-            msgObj,
-            0
-          );
-        }
+        // 渲染页面
+        this.renderPage([], msgObj);
       }
     };
   },
@@ -497,6 +492,7 @@ export default defineComponent({
                     // 消息发送: 发送图片
                     this.$socket.sendObj({
                       msg: msgImgName,
+                      buddyId: this.buddyId,
                       code: 0,
                       username: this.$store.state.username,
                       avatarSrc: this.$store.state.profilePicture,
@@ -510,6 +506,7 @@ export default defineComponent({
                       // 消息发送: 发送图片
                       this.$socket.sendObj({
                         msg: msgImgName,
+                        buddyId: this.buddyId,
                         code: 0,
                         username: this.$store.state.username,
                         avatarSrc: this.$store.state.profilePicture,
@@ -534,6 +531,7 @@ export default defineComponent({
         if (msgText.trim().length > 0) {
           this.$socket.sendObj({
             msg: msgText,
+            buddyId: this.buddyId,
             code: 0,
             username: this.$store.state.username,
             avatarSrc: this.$store.state.profilePicture,
@@ -545,79 +543,44 @@ export default defineComponent({
       }
     },
     //  渲染页面
-    renderPage: function(
-      msgArray: Array<msgListType>,
-      msgObj: msgListType,
-      status: number
-    ) {
-      if (status === 1) {
-        // 页面第一次加载，如果本地存储中有数据则渲染至页面
-        let msgArray = [];
-        if (localStorage.getItem("msgArray") !== null) {
-          msgArray = JSON.parse(localStorage.getItem("msgArray") as string);
-          for (let i = 0; i < msgArray.length; i++) {
-            const thisSenderMessageObj = {
-              msgText: msgArray[i].msg,
-              msgId: i,
-              avatarSrc: msgArray[i].avatarSrc,
-              userID: msgArray[i].userID,
-              username: msgArray[i].username
-            };
-            // 更新消息内容
-            this.messageContent = thisSenderMessageObj.msgText;
-            // 向父组件传值
-            this.$emit("update-last-message", this.messageContent);
-            // 解析并渲染
-            this.messageParsing(thisSenderMessageObj);
-          }
-        }
-      } else {
-        // 判断本地存储中是否有数据
-        if (localStorage.getItem("msgArray") === null) {
-          // 新增记录
-          msgArray.push(msgObj);
-          // 更新消息内容
-          this.messageContent = msgObj.msg;
-          // 向父组件传值
-          this.$emit("update-last-message", this.messageContent);
-          localStorage.setItem("msgArray", JSON.stringify(msgArray));
-          for (let i = 0; i < msgArray.length; i++) {
-            const thisSenderMessageObj = {
-              msgText: msgArray[i].msg,
-              msgId: i,
-              avatarSrc: msgArray[i].avatarSrc,
-              userID: msgArray[i].userID,
-              username: msgArray[i].username
-            };
-            // 解析并渲染
-            this.messageParsing(thisSenderMessageObj);
-          }
-        } else {
-          // 更新记录
-          msgArray = JSON.parse(localStorage.getItem("msgArray") as string);
-          msgArray.push(msgObj);
-          localStorage.setItem("msgArray", JSON.stringify(msgArray));
-          // 更新消息内容
-          this.messageContent = msgObj.msg;
-          // 向父组件传值
-          this.$emit("update-last-message", this.messageContent);
-          const thisSenderMessageObj: senderMessageType = {
-            msgText: msgObj.msg as string,
-            msgId: Date.now(),
-            avatarSrc: msgObj.avatarSrc as string,
-            userID: msgObj.userID as string,
-            username: msgObj.username as string
+    renderPage: function(msgArray: Array<msgListType>, msgObj: msgListType) {
+      if (msgArray.length > 0) {
+        // 页面更新，渲染消息内容列表数据
+        for (let i = 0; i < msgArray.length; i++) {
+          const thisSenderMessageObj: msgListType = {
+            msgText: msgArray[i].msgText,
+            id: msgArray[i].id,
+            avatarSrc: msgArray[i].avatarSrc,
+            userId: msgArray[i].userId,
+            userName: msgArray[i].userName,
+            createTime: msgArray[i].createTime
           };
           // 解析并渲染
           this.messageParsing(thisSenderMessageObj);
         }
+      } else {
+        // 接收到服务端推送的新消息，渲染单个消息对象
+        const thisSenderMessageObj: msgListType = {
+          msgText: msgObj.msgText,
+          id: msgObj?.id,
+          avatarSrc: msgObj.avatarSrc,
+          userId: msgObj.userId,
+          userName: msgObj.userName,
+          createTime: msgObj?.createTime
+        };
+        // 解析并渲染
+        this.messageParsing(thisSenderMessageObj);
       }
     },
     // 消息解析
-    messageParsing: function(msgObj: { msgText: string }) {
+    messageParsing: function(msgObj: msgListType) {
+      // 消息内容为空不渲染
+      if (msgObj.msgText == null) {
+        return false;
+      }
       // 解析接口返回的数据进行渲染
       const separateReg = /(\/[^/]+\/)/g;
-      let msgText = msgObj.msgText;
+      let msgText = msgObj.msgText as string;
       let finalMsgText: string;
       // 将符合条件的字符串放到数组里
       const resultArray = msgText.match(separateReg);
@@ -776,6 +739,19 @@ export default defineComponent({
     getEditableDivFocus: function() {
       // 开头获取焦点
       this.$refs.msgInputContainer.focus();
+    },
+    // 获取消息内容
+    getMessageTextList: function(msgId: string) {
+      this.$api.messageListAPI
+        .getMessageTextList({ msgId: msgId })
+        .then((res: responseDataType) => {
+          if (res.code === 0) {
+            // 渲染消息列表
+            this.renderPage(res.data.messageTextList, {});
+          } else {
+            alert(res.msg);
+          }
+        });
     }
   },
   emits: {
@@ -790,6 +766,16 @@ export default defineComponent({
     },
     onlineUsers(): number {
       return this.$store.state.onlineUsers;
+    }
+  },
+  watch: {
+    listId: function(newMsgId: string) {
+      // 消息id发生改变,晴空消息列表数据
+      this.senderMessageList = [];
+      // 重新获取消息内容
+      this.getMessageTextList(newMsgId);
+      // 与当前好友建立连接
+      console.log(this.buddyId);
     }
   }
 });
