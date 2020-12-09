@@ -10060,6 +10060,11 @@ vue-router@^4.0.0-0:
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-4.0.0-beta.13.tgz#4611d09a9e44f231cc401ecc294a7f2dcb30e6a6"
   integrity sha512-dYv9qpHPaojQlfujViiTkPkf1Bf5RCFzkCkdVFc1cENzWJYAGJanpIHiyjyKoM4u7IDFBZMItci+U4ieaEWA8A==
 
+vue-solar-lunar@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/vue-solar-lunar/-/vue-solar-lunar-1.0.1.tgz#8ce6d554e7f6a1073574ba64124bb249c7f556b8"
+  integrity sha512-DIWtyKijufwHxZsoZ0iOhLaBktTnNgiteqdDS3iOALGc0kV6YbRj6V6c/pgTKmm1Suk0D5PwZyauS88/j4KKfA==
+
 vue-style-loader@^4.1.0, vue-style-loader@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/vue-style-loader/-/vue-style-loader-4.1.2.tgz#dedf349806f25ceb4e64f3ad7c0a44fba735fcf8"
