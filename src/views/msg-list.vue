@@ -6,7 +6,15 @@
         class="row-panel"
         v-for="(item, index) in messageList"
         :key="item.id"
-        @click="showChatInterface(item.id, index, item.type)"
+        @click="
+          showChatInterface(
+            item.id,
+            index,
+            item.type,
+            item.buddyId,
+            item.userName
+          )
+        "
         :class="{ active: currentIndex === index }"
         v-right-click="rightMenuObj"
       >
@@ -28,7 +36,11 @@
         </div>
       </li>
     </ul>
-    <div class="content-panel" ref="contentPanel">
+    <div
+      class="content-panel"
+      ref="contentPanel"
+      :style="{ width: contentPanelWidth }"
+    >
       <img
         src="@/assets/img/list/contact_non_selected@2x.png"
         width="280"
@@ -40,6 +52,8 @@
         v-else
         :message-status="messageType"
         :list-id="listId"
+        :buddy-id="buddyId"
+        :buddy-name="buddyName"
         @update-last-message="updateLastMessage($event)"
       />
     </div>
@@ -53,6 +67,7 @@ import messageDisplay from "@/components/message-display.vue";
 import {
   msgListDataType,
   responseDataType,
+  rightMenuObjType,
   totalMessage
 } from "@/type/ComponentDataType";
 
@@ -68,7 +83,13 @@ export default defineComponent({
       this.lastMessageContent = data;
     },
     // 显示消息面板组件
-    showChatInterface: function(listID: number, liIndex: number, type: number) {
+    showChatInterface: function(
+      listID: number,
+      liIndex: number,
+      type: number,
+      buddyId: string,
+      buddyName: string
+    ) {
       if (_.isNull(listID)) {
         alert("无消息id");
         return false;
@@ -76,6 +97,8 @@ export default defineComponent({
       this.currentIndex = liIndex;
       this.listId = listID;
       this.messageType = type;
+      this.buddyId = buddyId;
+      this.buddyName = buddyName;
       this.widgetIsNull = false;
     }
   },
@@ -102,8 +125,37 @@ export default defineComponent({
       lastMessageContent: "",
       currentIndex: -1, // 当前点击项索引
       widgetIsNull: true,
+      listId: null,
+      messageType: null,
+      buddyId: "",
+      buddyName: "",
+      msgList: []
+    };
+  },
+  computed: {
+    // 处理消息列表
+    messageList(): Array<totalMessage> {
+      const list: Array<totalMessage> = [];
+      const msgList: Array<totalMessage> = this.msgList;
+      for (let i = 0; i < msgList.length; i++) {
+        const msgObj = msgList[i];
+        // 对时间进行处理，截取小时和分钟
+        msgObj.lastTime = msgObj.lastTime?.substring(10, 16);
+        list.push(msgObj);
+      }
+      return list;
+    },
+    // 内容区域宽度
+    contentPanelWidth(): string {
+      if (this.messageList.length === 0) {
+        return "100%";
+      }
+      return "85%";
+    },
+    rightMenuObj(): rightMenuObjType {
       // 右键菜单对象，菜单内容和处理事件
-      rightMenuObj: {
+      const obj: rightMenuObjType = {
+        this: this,
         text: [
           "查看资料",
           "复制用户id",
@@ -114,6 +166,7 @@ export default defineComponent({
         ],
         handler: {
           checkingData() {
+            console.log(obj.this.$store.state.token);
             console.log("查看资料点击事件");
           },
           copyId() {
@@ -132,24 +185,8 @@ export default defineComponent({
             console.log("会话置顶");
           }
         }
-      },
-      listId: null,
-      messageType: null,
-      msgList: []
-    };
-  },
-  computed: {
-    // 处理好友列表
-    messageList(): Array<totalMessage> {
-      const list: Array<totalMessage> = [];
-      const msgList: Array<totalMessage> = this.msgList;
-      for (let i = 0; i < msgList.length; i++) {
-        const msgObj = msgList[i];
-        // 对时间进行处理，截取小时和分钟
-        msgObj.lastTime = msgObj.lastTime?.substring(10, 16);
-        list.push(msgObj);
-      }
-      return list;
+      };
+      return obj;
     }
   }
 });

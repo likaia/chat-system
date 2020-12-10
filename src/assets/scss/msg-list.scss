@@ -16,6 +16,8 @@
       height: 70px;
       list-style: none;
       background: #fdfdfd;
+      cursor: default;
+      user-select: none;
       display: flex;
       justify-content: space-between;
       align-items: center;
