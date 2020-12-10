@@ -5,7 +5,7 @@
     <div class="list-panel">
       <!--加好友-->
       <div class="top-panel">
-        <div class="add-friend-panel" @click="addFriendsInfoSerach">
+        <div class="add-friend-panel" @click="addFriendsInfoSearch">
           <p>加好友</p>
         </div>
       </div>
@@ -72,6 +72,7 @@
           class="row-panel"
           v-for="(item, index) in friendsList"
           :key="item.childrenId"
+          v-right-click="rightMenuObj"
         >
           <div class="main-content" @click="groupingStatus(index)">
             <div class="icon-panel">
@@ -143,7 +144,10 @@
     </div>
     <!--添加好友弹框-->
     <teleport to="body" v-if="showAddAlert">
-      <addFriendsList></addFriendsList>
+      <addFriendsList
+        :show-add-alert="showAddAlert"
+        @no-show-add-friends-alert="isShowFriendsAddSearch(noShow)"
+      ></addFriendsList>
     </teleport>
   </div>
 </template>
@@ -171,7 +175,21 @@ export default defineComponent({
       widgetIsNull: true,
       groupName: "",
       remarks: "",
-      showAddAlert: false
+      showAddAlert: false,
+      rightMenuObj: {
+        text: ["添加分组", "删除分组", "分组重命名"],
+        handler: {
+          addGroup() {
+            console.log("添加分组事件");
+          },
+          delGroup() {
+            console.log("删除分组事件");
+          },
+          renameGroup() {
+            console.log("分组重命名事件");
+          }
+        }
+      }
     };
   },
   components: {
@@ -228,8 +246,11 @@ export default defineComponent({
       }
     },
     // 添加好友弹框
-    addFriendsInfoSerach: function() {
+    addFriendsInfoSearch: function() {
       this.showAddAlert = true;
+    },
+    isShowFriendsAddSearch: function(noShow: boolean) {
+      this.showAddAlert = noShow;
     }
   },
   mounted() {
@@ -237,8 +258,6 @@ export default defineComponent({
     this.$api.websiteManageAPI
       .getFriendsList({ userId: this.$store.state.userID })
       .then((res: responseDataType) => {
-        console.log(res.data);
-
         // 遍历获取分组名称
         res.data.forEach((item: friendsDataType) => {
           this.groupList.push(

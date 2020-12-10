@@ -1,6 +1,6 @@
 import { createStore } from "vuex";
 import main from "../main";
-import { userInfoType } from "@/type/ComponentDataType";
+import { rightMenuAttribute, userInfoType } from "@/type/ComponentDataType";
 export default createStore({
   state: {
     token: "",
@@ -22,6 +22,12 @@ export default createStore({
       heartBeatInterval: 50000,
       // 心跳定时器
       heartBeatTimer: 0
+    },
+    rightMenu: {
+      status: "none",
+      top: "0px",
+      left: "0px",
+      list: []
     }
   },
   mutations: {
@@ -84,6 +90,13 @@ export default createStore({
       state.token = token;
       // 更新本地存储中的token
       localStorage.setItem("token", token);
+    },
+    // 更新右键菜单数据
+    updateRightMenuStatus(state, menuObj: rightMenuAttribute) {
+      state.rightMenu.status = menuObj.status;
+      state.rightMenu.top = menuObj.top;
+      state.rightMenu.left = menuObj.left;
+      state.rightMenu.list = menuObj.list;
     }
   },
   modules: {}

@@ -35,6 +35,20 @@
         width: 23px;
         height: 23px;
         border-radius: 50%;
+
+        .close-icon{
+          margin-left: 20%;
+          margin-top:20%;
+          width: 15px;
+          height: 15px;
+        }
+
+        .min-icon{
+          margin-left: 20%;
+          margin-top: 20%;
+          width: 15px;
+          height: 15px;
+        }
       }
 
       div:nth-child(1) {
@@ -61,13 +75,13 @@
     height: 202px;
     border-radius: 0 0 5px 5px;
 
-    .main-panel-content {
+    .main-panel-search {
       width: 646px;
       background: #fcfdfc;
       display: flex;
       padding-top: 50px;
 
-      .main-panel-content-icon {
+      .main-panel-search-icon {
         width: 50px;
         height: 50px;
         border-radius: 50% 0 0 50%;
@@ -77,9 +91,20 @@
         justify-content: center;
       }
 
+     .main-panel-search-input{
+       width: 100%;
+       position: relative;
+
+       img{
+         position: absolute;
+         right: 13px;
+         top: 10px;
+       }
+     }
+
       input {
         font-size: 22px;
-        width: 586px;
+        width: 100%;
         background: #f0f0f0;
         border: none;
         height: 50px;
@@ -87,6 +112,65 @@
         border-radius: 0 25px 25px 0;
       }
     }
+
+     .main-panel-content{
+     
+        .main-panel-content-name{
+          color: #7e7e7e;
+          font-size: 20px;
+          letter-spacing: 3px;
+          font-weight: 500;
+          padding: 10px 0;
+          font-weight: bold;
+        }
+
+        .main-panel-content-friends-info{
+          
+          .main-panel-content-friendsList{
+            display: flex;
+            padding: 5px;
+
+            .friendsList-img-avatarSrc{
+              border-radius: 50%;
+              width: 40px;
+              height: 40px;
+              padding-right: 10px;
+ 
+              img{
+                border-radius: 50%;
+                width: 100%;
+                height: 100%;
+              }
+            }
+
+            .friendsList-userName{
+              width: 559px;
+              font-size: 17px;
+            }
+            .friendsList-isFriend{
+              img{
+                width: 25px;
+                height: 25px;
+              }
+            }
+
+            .friendsList-isNotFriend{
+              white-space: nowrap;
+              color: #a9a9a9;
+            }
+
+            .friendsList-isNotFriendsInfo{
+              display: flex;
+              width: 100%;
+              padding: 5px;
+              align-items: center;
+              justify-content: center;
+              font-size: 18px;
+              color: #a9a9a9;
+            }
+          }
+        }
+      }
   }
 }
 
