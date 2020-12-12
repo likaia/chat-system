@@ -446,7 +446,7 @@ export default defineComponent({
     getThisWindowHeight: () => window.innerHeight,
     getThisWindowWidth: () => window.innerWidth,
     // 消息发送
-    sendMessage: function(event: KeyboardEvent, msgId?: number) {
+    sendMessage: function(event: KeyboardEvent) {
       if (event.key === "Enter") {
         // 阻止编辑框默认生成div事件
         event.preventDefault();
