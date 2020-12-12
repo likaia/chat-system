@@ -3,7 +3,8 @@
   <div id="mainContent">
     <div class="top-panel" ref="topPanel">
       <div class="title-panel">
-        <p>{{ buddyName }}</p>
+        <p v-if="messageStatus === 0">{{ buddyName }}</p>
+        <p v-else>{{ buddyName }}({{ onlineUsers }})</p>
         <!--在线设备类型-->
         <!--<div class="equipmentType">
                     <img :src="this.resourceObj.phoneNormal" alt="">
