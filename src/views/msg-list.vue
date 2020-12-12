@@ -8,7 +8,7 @@
         :key="item.id"
         @click="
           showChatInterface(
-            item.id,
+            item.buddyId,
             index,
             item.type,
             item.buddyId,
@@ -84,13 +84,13 @@ export default defineComponent({
     },
     // 显示消息面板组件
     showChatInterface: function(
-      listID: number,
+      listID: string,
       liIndex: number,
       type: number,
       buddyId: string,
       buddyName: string
     ) {
-      if (_.isNull(listID)) {
+      if (_.isEmpty(listID)) {
         alert("无消息id");
         return false;
       }
@@ -125,7 +125,7 @@ export default defineComponent({
       lastMessageContent: "",
       currentIndex: -1, // 当前点击项索引
       widgetIsNull: true,
-      listId: null,
+      listId: "",
       messageType: null,
       buddyId: "",
       buddyName: "",

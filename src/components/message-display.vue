@@ -196,7 +196,7 @@ import _ from "lodash";
 export default defineComponent({
   name: "message-display",
   props: {
-    listId: Number, // 消息id
+    listId: String, // 消息id
     messageStatus: Number, // 消息类型
     buddyId: String, // 好友id
     buddyName: String // 好友昵称
@@ -446,7 +446,7 @@ export default defineComponent({
     getThisWindowHeight: () => window.innerHeight,
     getThisWindowWidth: () => window.innerWidth,
     // 消息发送
-    sendMessage: function(event: KeyboardEvent) {
+    sendMessage: function(event: KeyboardEvent, msgId?: number) {
       if (event.key === "Enter") {
         // 阻止编辑框默认生成div事件
         event.preventDefault();
@@ -496,7 +496,8 @@ export default defineComponent({
                       code: 0,
                       username: this.$store.state.username,
                       avatarSrc: this.$store.state.profilePicture,
-                      userID: this.$store.state.userID
+                      userID: this.$store.state.userID,
+                      msgId: this.listId
                     });
                   } else {
                     img.onload = () => {
@@ -510,7 +511,8 @@ export default defineComponent({
                         code: 0,
                         username: this.$store.state.username,
                         avatarSrc: this.$store.state.profilePicture,
-                        userID: this.$store.state.userID
+                        userID: this.$store.state.userID,
+                        msgId: this.listId
                       });
                     };
                   }
@@ -535,7 +537,8 @@ export default defineComponent({
             code: 0,
             username: this.$store.state.username,
             avatarSrc: this.$store.state.profilePicture,
-            userID: this.$store.state.userID
+            userID: this.$store.state.userID,
+            msgId: this.listId
           });
           // 清空输入框中的内容
           (event.target as Element).innerHTML = "";
@@ -743,7 +746,7 @@ export default defineComponent({
     // 获取消息内容
     getMessageTextList: function(msgId: string) {
       this.$api.messageListAPI
-        .getMessageTextList({ msgId: msgId })
+        .getMessageTextList({ msgId: msgId, userId: this.userID })
         .then((res: responseDataType) => {
           if (res.code === 0) {
             // 渲染消息列表
