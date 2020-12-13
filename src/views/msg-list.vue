@@ -103,20 +103,23 @@ export default defineComponent({
     }
   },
   mounted() {
-    // 获取好友列表
-    this.$api.messageListAPI
-      .getMessageList({
-        pageNo: 1,
-        pageSize: 20,
-        userId: this.$store.state.userID
-      })
-      .then((res: responseDataType) => {
-        if (res.code === 0) {
-          this.msgList = res.data.messageList;
-        } else {
-          alert(res.msg);
-        }
-      });
+    // token不为空时获取好友列表
+    if (!_.isEmpty(this.$store.state.token)) {
+      // 获取好友列表
+      this.$api.messageListAPI
+        .getMessageList({
+          pageNo: 1,
+          pageSize: 20,
+          userId: this.$store.state.userID
+        })
+        .then((res: responseDataType) => {
+          if (res.code === 0) {
+            this.msgList = res.data.messageList;
+          } else {
+            alert(res.msg);
+          }
+        });
+    }
   },
   data(): msgListDataType {
     return {
