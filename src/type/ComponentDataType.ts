@@ -149,7 +149,7 @@ export type msgListDataType = {
 // 右键菜单类型定义
 export type rightMenuObjType = {
   this: any;
-  text: Array<string>; // 文本数组
+  text: Array<string | { status: boolean; content: string }>; // 文本数组
   handler: Record<string, (...params: any) => void>; // 事件处理函数
 }; // 右键菜单
 

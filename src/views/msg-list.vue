@@ -161,7 +161,7 @@ export default defineComponent({
         this: this,
         text: [
           "查看资料",
-          "复制用户id",
+          { content: "复制用户id", status: true },
           "移除该会话",
           "在联系人中查看",
           "在单聊窗口中打开",

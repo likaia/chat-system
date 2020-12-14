@@ -139,22 +139,38 @@
       <ul>
         <!--分为2组渲染-->
         <li>
-          <span
+          <div
             v-for="item in rightMenuList"
             :key="item.id"
             v-show="item.id <= 3"
-            @click="item.handler"
-            >{{ item.text }}
-          </span>
+          >
+            <!--status为true时, 代表禁用-->
+            <span v-if="item.text?.status === true" class="disable"
+              >{{ item.text.content }}
+            </span>
+            <!--status为false时, 参数为对象, 取content中的值-->
+            <span v-else-if="item.text?.status === false" @click="item.handler">
+              {{ item.text.content }}
+            </span>
+            <span v-else @click="item.handler">{{ item.text }} </span>
+          </div>
         </li>
         <li>
-          <span
+          <div
             v-for="item in rightMenuList"
             :key="item.id"
             v-show="item.id > 3"
-            @click="item.handler"
-            >{{ item.text }}
-          </span>
+          >
+            <!--status为true时, 代表禁用-->
+            <span v-if="item.text?.status === true" class="disable"
+              >{{ item.text.content }}
+            </span>
+            <!--status为false时, 参数为对象, 取content中的值-->
+            <span v-else-if="item.text?.status === false" @click="item.handler">
+              {{ item.text.content }}
+            </span>
+            <span v-else @click="item.handler">{{ item.text }} </span>
+          </div>
         </li>
       </ul>
     </div>
