@@ -778,8 +778,6 @@ export default defineComponent({
       this.senderMessageList = [];
       // 重新获取消息内容
       this.getMessageTextList(newMsgId);
-      // 与当前好友建立连接
-      console.log(this.buddyId);
     }
   }
 });
