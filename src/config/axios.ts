@@ -46,32 +46,6 @@ let isRefreshing = false;
 // 重试队列，每一项将是一个待执行的函数形式
 let requests: pendingRequest[] = [];
 
-/**
- * 请求失败后的错误统一处理，当然还有更多状态码判断，根据自己业务需求去扩展即可
- * @param status 请求失败的状态码
- * @param msg 错误信息
- */
-const errorHandle = (status: number, msg: string) => {
-  // 状态码判断
-  switch (status) {
-    // 401: 未登录状态，跳转登录页
-    case 401:
-      // 跳转登录页
-      break;
-    // 403 token过期
-    case 403:
-      // 如果不需要自动刷新token，可以在这里移除本地存储中的token，跳转登录页
-
-      break;
-    // 404请求不存在
-    case 404:
-      // 提示资源不存在
-      break;
-    default:
-      console.log(msg);
-  }
-};
-
 // 创建实例
 const _axios = axiosObj.create(defaultConfig);
 // 请求拦截器
@@ -103,7 +77,7 @@ _axios.interceptors.response.use(
         // 重新请求并更新token，执行未执行完的请求
         return websiteManageAPI
           .tokenRenew({
-            userName: store.state.username,
+            userId: store.state.userID,
             token: store.state.token
           })
           .then((res: responseDataType) => {
@@ -120,9 +94,23 @@ _axios.interceptors.response.use(
               requests = [];
               // 重试当前请求并返回promise
               return _axios(config);
+            } else {
+              // 修改登录状态
+              websiteManageAPI
+                .updateOnlineStatus({
+                  userId: store.state.userID,
+                  status: false
+                })
+                .then(() => {
+                  // 清除本地存储，刷新当前页面
+                  localStorage.clear();
+                  location.reload();
+                });
             }
           })
-          .catch(reason => alert(reason))
+          .catch(reason => {
+            throw reason;
+          })
           .finally(() => {
             // 改变刷新状态
             isRefreshing = false;
@@ -162,7 +150,6 @@ _axios.interceptors.response.use(
   function(error) {
     if (error) {
       // 请求已发出，但不在2xx范围内
-      errorHandle(error.status, error.data.msg);
       return Promise.reject(error);
     } else {
       // 断网
