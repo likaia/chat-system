@@ -67,9 +67,9 @@ import messageDisplay from "@/components/message-display.vue";
 import {
   msgListDataType,
   responseDataType,
-  rightMenuObjType,
   totalMessage
 } from "@/type/ComponentDataType";
+import { rightMenuType } from "vue-right-click-menu-next/dist/lib/type/pluginsType";
 
 export default defineComponent({
   name: "msg-list",
@@ -155,9 +155,9 @@ export default defineComponent({
       }
       return "85%";
     },
-    rightMenuObj(): rightMenuObjType {
+    rightMenuObj(): rightMenuType {
       // 右键菜单对象，菜单内容和处理事件
-      const obj: rightMenuObjType = {
+      const obj: rightMenuType = {
         this: this,
         text: [
           "查看资料",

@@ -10055,6 +10055,11 @@ vue-native-websocket-vue3@^3.0.0:
   resolved "https://registry.yarnpkg.com/vue-native-websocket-vue3/-/vue-native-websocket-vue3-3.0.0.tgz#fb4e4a62ec6fa5f340c34d6197e9a65f76990b62"
   integrity sha512-plC/lxsu2Sikt3Y18mlYPXTvcUFmdMAUZk5TV2JXcWgkh7HHz9JdIdkNKJrWMrKGzSDCo2dChSJNjD2cBlIMmg==
 
+vue-right-click-menu-next@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/vue-right-click-menu-next/-/vue-right-click-menu-next-1.0.0.tgz#20a4bd045bbfc41d3ed6c34c9ec11db7eacb892e"
+  integrity sha512-dc7yNc1K2gE5J0aMmGyxtxslpW+lTHSYFoQSw1CBnl8IIz/nRqtGzm7kkpEwRRSA2rFWNNLquxesY7dhSfjcNg==
+
 vue-router@^4.0.0-0:
   version "4.0.0-beta.13"
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-4.0.0-beta.13.tgz#4611d09a9e44f231cc401ecc294a7f2dcb30e6a6"
