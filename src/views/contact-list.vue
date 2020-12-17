@@ -72,9 +72,12 @@
           class="row-panel"
           v-for="(item, index) in friendsList"
           :key="item.childrenId"
-          v-right-click="rightMenuObj"
         >
-          <div class="main-content" @click="groupingStatus(index)">
+          <div
+            class="main-content"
+            @click="groupingStatus(index)"
+            v-right-click="rightMenuObj"
+          >
             <div class="icon-panel">
               <img
                 :ref="setGroupArrow"

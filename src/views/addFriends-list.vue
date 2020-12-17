@@ -26,8 +26,8 @@
 
           <div
             class="top-panel-left-icon"
-            @mouseover="showLeftIco(true)"
-            @mouseleave="showLeftIco(false)"
+            @mouseover="showLeftIco()"
+            @mouseleave="showLeftIco()"
           >
             <img
               :style="{ display: leftIco }"
@@ -76,7 +76,7 @@
             class="main-panel-content-friends-info"
           >
             <div
-              v-for="list in friendsList"
+              v-for="(list, index) in friendsList"
               :key="list.userId"
               class="main-panel-content-friendsList"
             >
@@ -88,9 +88,32 @@
                   {{ list.userName }}({{ list.userId }})
                 </div>
                 <div class="friendsList-isFriend" v-if="!list.isFriend">
-                  <img src="@/assets/img/list/+normal@2x.png" alt="" />
+                  <img
+                    :ref="setAddIconNormal"
+                    src="@/assets/img/list/+normal@2x.png"
+                    alt=""
+                    style="display:block;"
+                    @mouseover="aa(index)"
+                  />
+                  <img
+                    :ref="setAddIconHover"
+                    src="@/assets/img/list/+hover@2x.png"
+                    alt=""
+                    style="display:none;"
+                    @mouseout="bb(index)"
+                  />
+                  <img
+                    :ref="setAddIconPress"
+                    src="@/assets/img/list/+press@2x.png"
+                    alt=""
+                    style="display:none;"
+                  />
                 </div>
-                <div class="friendsList-isNotFriend" v-else>
+                <div
+                  class="friendsList-isNotFriend"
+                  :ref="setAddIconNormal"
+                  v-else
+                >
                   已添加
                 </div>
               </template>
@@ -106,6 +129,7 @@
     </div>
   </div>
 </template>
+
 <script lang="ts">
 import { defineComponent } from "vue";
 import _ from "lodash";
@@ -119,28 +143,49 @@ export default defineComponent({
     },
     // 获取搜索好友列表
     searchFriendInfoResult() {
+      // 获取最新好友信息初始化
       this.friendsList = [];
+      // 当搜索框有内容
       if (this.searchFriendInfo) {
         this.showUserInfo = true;
+        // 调用接口获取搜索好友数据列表
         this.$api.websiteManageAPI
           .getSearchUserInfoList({
             content: this.searchFriendInfo,
             userId: this.$store.state.userID
           })
           .then((res: responseDataType) => {
+            // console.log(res.data.length);
+
+            // 对整体框位置做相当于的适应
             this.$refs.mainPanel.style = "height:auto;";
             this.$refs.mainPanelContentFriendsInfo.style =
               " height: 269px;overflow: auto; ";
             this.$refs.addFriendsListContent.style.marginTop =
-              -(this.$refs.addFriendsListContent.clientHeight / 2) + "px";
+              -(this.$refs.addFriendsListContent.offsetHeight / 2) + "px";
+            // 整体框位置在上边界贴上边界
+            if (this.$refs.addFriendsListContent.offsetTop < 0) {
+              this.$refs.addFriendsListContent.style.marginTop = -126 + "px";
+            }
+            // 整体框位置在下边界贴下边界
+            if (
+              this.$refs.addFriendsListContent.offsetTop +
+                this.$refs.addFriendsListContent.offsetHeight >
+              window.innerHeight
+            ) {
+              this.$refs.addFriendsListContent.style.marginTop = -340 + "px";
+            }
+            // 当好友数量大于一个
             if (res.data.length > 0) {
               res.data.forEach((item: any) => {
+                // 是好友
                 if (!item.isFriend) {
                   this.friendsList.push({
                     userName: item.userName,
                     userId: item.userId,
                     avatarSrc: item.avatarSrc
                   });
+                  // 不是好友
                 } else {
                   this.friendsList.push({
                     userName: item.userName,
@@ -151,6 +196,7 @@ export default defineComponent({
                 }
               });
             }
+            // 没有好友
             if (res.data.length == 0) {
               this.friendsList.push({ msg: "该用户不存在" });
             }
@@ -161,7 +207,7 @@ export default defineComponent({
         this.showUserInfo = false;
       }
     },
-    // 清空搜索框的内容
+    // 清空搜索框的内容并获取焦点
     clearSearchFriendInfo() {
       this.searchFriendInfo = "";
       this.$refs.serachInput.focus();
@@ -176,33 +222,81 @@ export default defineComponent({
     },
     // 按下触发可拖曳事件
     alertDown: function(e: any) {
+      // 获取初始时当前框距离对应边界的大小位置和当前鼠标左键点下时事件的位置
       this.moveAlertData.x = e.clientX;
       this.moveAlertData.y = e.clientY;
-      if (this.friendsList.length != 0) {
-        this.moveAlertData.t =
-          this.$refs.addFriendsListContent.offsetTop +
-          this.$refs.addFriendsListContent.clientHeight / 2;
-      } else {
-        this.moveAlertData.t = this.$refs.addFriendsListContent.offsetTop + 126;
-      }
-      this.moveAlertData.l = this.$refs.addFriendsListContent.offsetLeft + 350;
+      this.moveAlertData.t =
+        this.$refs.addFriendsListContent.offsetTop +
+        this.$refs.addFriendsListContent.offsetHeight / 2;
+      this.moveAlertData.l =
+        this.$refs.addFriendsListContent.offsetLeft +
+        this.$refs.addFriendsListContent.offsetWidth / 2;
       this.moveAlertData.isDown = true;
+      // 将鼠标图标换成可拖动
       this.$refs.addFriendsListContent.style.cursor = "move";
     },
     // 按下并持续触发可拖曳事件
     alertMove: function(e: any) {
+      // 防止未按下事件触发时，可获取并持续触发可拖曳事件
       if (this.moveAlertData.isDown == false) {
         return;
       }
+
+      this.$refs.addFriendsListContent.style.marginTop =
+        -this.$refs.addFriendsListContent.offsetHeight / 2 + "px";
+      // 获取移动时最新的鼠标位位置
       this.moveAlertData.moveX = e.clientX;
       this.moveAlertData.moveY = e.clientY;
+      // 移动时最新位置 = 移动时最新的鼠标位位置 - （初始时的鼠标大小位置 - 初始时鼠标左键点下时事件的位置）
       this.moveAlertData.movel =
         this.moveAlertData.moveX -
         (this.moveAlertData.x - this.moveAlertData.l);
       this.moveAlertData.movet =
         this.moveAlertData.moveY -
         (this.moveAlertData.y - this.moveAlertData.t);
-
+      // 对左边界进行边界处理
+      if (
+        window.innerWidth -
+          this.moveAlertData.movel -
+          this.$refs.addFriendsListContent.offsetWidth / 2 <
+        0
+      ) {
+        this.moveAlertData.movel =
+          window.innerWidth -
+          this.$refs.addFriendsListContent.offsetWidth +
+          this.$refs.addFriendsListContent.offsetWidth / 2;
+      }
+      // 对右边界进行边界处理
+      if (
+        this.moveAlertData.movel -
+          this.$refs.addFriendsListContent.offsetWidth / 2 <
+        0
+      ) {
+        this.moveAlertData.movel =
+          this.$refs.addFriendsListContent.offsetWidth / 2;
+      }
+      // 对下边界进行边界处理
+      if (
+        window.innerHeight -
+          this.moveAlertData.movet -
+          this.$refs.addFriendsListContent.offsetHeight / 2 <
+        0
+      ) {
+        this.moveAlertData.movet =
+          window.innerHeight -
+          this.$refs.addFriendsListContent.offsetHeight +
+          this.$refs.addFriendsListContent.offsetHeight / 2;
+      }
+      // 对上边界进行边界处理
+      if (
+        this.moveAlertData.movet -
+          this.$refs.addFriendsListContent.offsetHeight / 2 <
+        0
+      ) {
+        this.moveAlertData.movet =
+          this.$refs.addFriendsListContent.offsetHeight / 2;
+      }
+      // 渲染最新位置
       this.$refs.addFriendsListContent.style.left =
         this.moveAlertData.movel + "px";
       this.$refs.addFriendsListContent.style.top =
@@ -216,6 +310,34 @@ export default defineComponent({
     // 获取搜索框焦点事件
     clearMouseEvent: function() {
       this.moveAlertData.isDown = false;
+    },
+    setAddIconNormal: function(el: Element) {
+      if (el != null) {
+        this.setAddIconN.push(el);
+      } else {
+        this.setAddIconN = [];
+      }
+    },
+    setAddIconHover: function() {
+      this.setAddIconH = this.setAddIconN;
+    },
+    setAddIconPress: function() {
+      this.setAddIconP = this.setAddIconN;
+    },
+    // 鼠标事件
+    aa(index: number) {
+      console.log(this.setAddIconN);
+      if (this.setAddIconN[index].tagName == "img") {
+        this.setAddIconN[index].style.display = "none";
+        this.setAddIconH[index].style.display = "block";
+        console.log(this.setAddIconN[index].tagName);
+      }
+    },
+    bb(index: number) {
+      if (this.setAddIconN[index].tagName == "img") {
+        this.setAddIconN[index].style.display = "block";
+        this.setAddIconH[index].style.display = "none";
+      }
     }
   },
   props: {
@@ -237,7 +359,10 @@ export default defineComponent({
         movel: 0,
         movet: 0,
         isDown: false
-      }
+      },
+      setAddIconN: [],
+      setAddIconH: [],
+      setAddIconP: []
     };
   },
   emits: {
