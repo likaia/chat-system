@@ -126,38 +126,6 @@
     <div class="main-content-view">
       <router-view />
     </div>
-    <!--右键菜单-->
-    <div
-      id="rightMenuDom"
-      class="right-menu"
-      :style="{
-        display: rightMenuStatus,
-        top: rightMenuTop,
-        left: rightMenuLeft
-      }"
-    >
-      <ul>
-        <!--分为2组渲染-->
-        <li>
-          <span
-            v-for="item in rightMenuList"
-            :key="item.id"
-            v-show="item.id <= 3"
-            @click="item.handler"
-            >{{ item.text }}
-          </span>
-        </li>
-        <li>
-          <span
-            v-for="item in rightMenuList"
-            :key="item.id"
-            v-show="item.id > 3"
-            @click="item.handler"
-            >{{ item.text }}
-          </span>
-        </li>
-      </ul>
-    </div>
   </div>
 </template>
 
@@ -273,22 +241,6 @@ export default defineComponent({
     // 用户头像
     profilePicture(): string {
       return this.$store.state.profilePicture;
-    },
-    // 右键菜单显隐状态
-    rightMenuStatus(): string {
-      return this.$store.state.rightMenu.status;
-    },
-    // 右键菜单距离浏览器顶部高度
-    rightMenuTop(): string {
-      return this.$store.state.rightMenu.top;
-    },
-    // 右键菜单距离浏览器左边长度
-    rightMenuLeft(): string {
-      return this.$store.state.rightMenu.left;
-    },
-    // 右键菜单列表内容
-    rightMenuList(): [] {
-      return this.$store.state.rightMenu.list;
     }
   }
 });
