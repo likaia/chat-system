@@ -8,7 +8,7 @@
         :key="item.id"
         @click="
           showChatInterface(
-            item.id,
+            item.buddyId,
             index,
             item.type,
             item.buddyId,
@@ -67,9 +67,9 @@ import messageDisplay from "@/components/message-display.vue";
 import {
   msgListDataType,
   responseDataType,
-  rightMenuObjType,
   totalMessage
 } from "@/type/ComponentDataType";
+import { rightMenuType } from "vue-right-click-menu-next/dist/lib/type/pluginsType";
 
 export default defineComponent({
   name: "msg-list",
@@ -84,13 +84,13 @@ export default defineComponent({
     },
     // 显示消息面板组件
     showChatInterface: function(
-      listID: number,
+      listID: string,
       liIndex: number,
       type: number,
       buddyId: string,
       buddyName: string
     ) {
-      if (_.isNull(listID)) {
+      if (_.isEmpty(listID)) {
         alert("无消息id");
         return false;
       }
@@ -103,20 +103,23 @@ export default defineComponent({
     }
   },
   mounted() {
-    // 获取好友列表
-    this.$api.messageListAPI
-      .getMessageList({
-        pageNo: 1,
-        pageSize: 20,
-        userId: this.$store.state.userID
-      })
-      .then((res: responseDataType) => {
-        if (res.code === 0) {
-          this.msgList = res.data.messageList;
-        } else {
-          alert(res.msg);
-        }
-      });
+    // token不为空时获取好友列表
+    if (!_.isEmpty(this.$store.state.token)) {
+      // 获取好友列表
+      this.$api.messageListAPI
+        .getMessageList({
+          pageNo: 1,
+          pageSize: 20,
+          userId: this.$store.state.userID
+        })
+        .then((res: responseDataType) => {
+          if (res.code === 0) {
+            this.msgList = res.data.messageList;
+          } else {
+            alert(res.msg);
+          }
+        });
+    }
   },
   data(): msgListDataType {
     return {
@@ -125,7 +128,7 @@ export default defineComponent({
       lastMessageContent: "",
       currentIndex: -1, // 当前点击项索引
       widgetIsNull: true,
-      listId: null,
+      listId: "",
       messageType: null,
       buddyId: "",
       buddyName: "",
@@ -152,13 +155,13 @@ export default defineComponent({
       }
       return "85%";
     },
-    rightMenuObj(): rightMenuObjType {
+    rightMenuObj(): rightMenuType {
       // 右键菜单对象，菜单内容和处理事件
-      const obj: rightMenuObjType = {
+      const obj: rightMenuType = {
         this: this,
         text: [
           "查看资料",
-          "复制用户id",
+          { content: "复制用户id", status: true },
           "移除该会话",
           "在联系人中查看",
           "在单聊窗口中打开",

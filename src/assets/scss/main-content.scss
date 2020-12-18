@@ -242,6 +242,17 @@ $rightWidth: 85%;
             color: #FFFFFF;
           }
         }
+
+        // 禁止点击样式
+        .disable {
+          color: #666666;
+
+          &:hover {
+            cursor:not-allowed;
+            background-color: #F2F2F2;
+            color: #666666;
+          }
+        }
       }
     }
   }

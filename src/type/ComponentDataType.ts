@@ -88,7 +88,7 @@ export type contactListDataType<V> = {
   widgetIsNull: boolean; // 组件是否为空
   groupName: string; // 分组名称
   remarks: string; // 备注
-  showAddAlert: boolean; // 添加好友弹框 
+  showAddAlert: boolean; // 添加好友弹框
   rightMenuObj: {
     text: Array<string>; // 文本数组
     handler: Record<string, (...params: any) => void>; // 事件处理函数
@@ -139,7 +139,7 @@ export type msgListDataType = {
   lastMessageContent: string; // 最后一条消息内容
   currentIndex: number; // 当前点击项索引
   widgetIsNull: boolean; // 消息内容组件显示状态
-  listId: number | null;
+  listId: string;
   messageType: number | null;
   buddyId: string;
   buddyName: string;
@@ -149,7 +149,7 @@ export type msgListDataType = {
 // 右键菜单类型定义
 export type rightMenuObjType = {
   this: any;
-  text: Array<string>; // 文本数组
+  text: Array<string | { status: boolean; content: string }>; // 文本数组
   handler: Record<string, (...params: any) => void>; // 事件处理函数
 }; // 右键菜单
 

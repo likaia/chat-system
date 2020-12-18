@@ -3,7 +3,8 @@
   <div id="mainContent">
     <div class="top-panel" ref="topPanel">
       <div class="title-panel">
-        <p>{{ buddyName }}</p>
+        <p v-if="messageStatus === 0">{{ buddyName }}</p>
+        <p v-else>{{ buddyName }}({{ onlineUsers }})</p>
         <!--在线设备类型-->
         <!--<div class="equipmentType">
                     <img :src="this.resourceObj.phoneNormal" alt="">
@@ -196,7 +197,7 @@ import _ from "lodash";
 export default defineComponent({
   name: "message-display",
   props: {
-    listId: Number, // 消息id
+    listId: String, // 消息id
     messageStatus: Number, // 消息类型
     buddyId: String, // 好友id
     buddyName: String // 好友昵称
@@ -496,7 +497,8 @@ export default defineComponent({
                       code: 0,
                       username: this.$store.state.username,
                       avatarSrc: this.$store.state.profilePicture,
-                      userID: this.$store.state.userID
+                      userID: this.$store.state.userID,
+                      msgId: this.listId
                     });
                   } else {
                     img.onload = () => {
@@ -510,7 +512,8 @@ export default defineComponent({
                         code: 0,
                         username: this.$store.state.username,
                         avatarSrc: this.$store.state.profilePicture,
-                        userID: this.$store.state.userID
+                        userID: this.$store.state.userID,
+                        msgId: this.listId
                       });
                     };
                   }
@@ -535,7 +538,8 @@ export default defineComponent({
             code: 0,
             username: this.$store.state.username,
             avatarSrc: this.$store.state.profilePicture,
-            userID: this.$store.state.userID
+            userID: this.$store.state.userID,
+            msgId: this.listId
           });
           // 清空输入框中的内容
           (event.target as Element).innerHTML = "";
@@ -743,7 +747,7 @@ export default defineComponent({
     // 获取消息内容
     getMessageTextList: function(msgId: string) {
       this.$api.messageListAPI
-        .getMessageTextList({ msgId: msgId })
+        .getMessageTextList({ msgId: msgId, userId: this.userID })
         .then((res: responseDataType) => {
           if (res.code === 0) {
             // 渲染消息列表
@@ -774,8 +778,6 @@ export default defineComponent({
       this.senderMessageList = [];
       // 重新获取消息内容
       this.getMessageTextList(newMsgId);
-      // 与当前好友建立连接
-      console.log(this.buddyId);
     }
   }
 });

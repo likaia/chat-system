@@ -14,7 +14,7 @@
             class="top-panel-left-icon"
             @mouseover="showLeftIco(true)"
             @mouseleave="showLeftIco(false)"
-            @click="removeAddAlert"
+            @click.stop="removeAddAlert"
           >
             <img
               :style="{ display: leftIco }"
@@ -57,6 +57,8 @@
               placeholder="用户id/用户名"
               @keyup.enter="searchFriendInfoResult"
               @focus.stop="clearMouseEvent"
+              @dblclick.stop=""
+              @mousemove.stop=""
               ref="serachInput"
             />
             <img
@@ -93,14 +95,15 @@
                     src="@/assets/img/list/+normal@2x.png"
                     alt=""
                     style="display:block;"
-                    @mouseover="aa(index)"
+                    @mouseover="Hover(index, false)"
                   />
                   <img
                     :ref="setAddIconHover"
                     src="@/assets/img/list/+hover@2x.png"
                     alt=""
                     style="display:none;"
-                    @mouseout="bb(index)"
+                    @click.stop="Press(index)"
+                    @mouseout="Normal(index)"
                   />
                   <img
                     :ref="setAddIconPress"
@@ -128,13 +131,20 @@
       </div>
     </div>
   </div>
+  <addFriendIdentityChecked
+    v-if="isChecked"
+    :arg-userName="argUserName"
+    :arg-userId="argUserId"
+  />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import _ from "lodash";
 import { responseDataType } from "@/type/ComponentDataType";
+import addFriendIdentityChecked from "./addFriends-identityChecked.vue";
 export default defineComponent({
+  components: { addFriendIdentityChecked },
   name: "addFriends-list",
   methods: {
     // 关闭添加好友弹框
@@ -311,33 +321,56 @@ export default defineComponent({
     clearMouseEvent: function() {
       this.moveAlertData.isDown = false;
     },
+    // 获取normal添加图标元素
     setAddIconNormal: function(el: Element) {
       if (el != null) {
         this.setAddIconN.push(el);
+        if (el.tagName == "DIV") {
+          this.setAddIconHover(el);
+          this.setAddIconPress(el);
+        }
       } else {
         this.setAddIconN = [];
       }
     },
-    setAddIconHover: function() {
-      this.setAddIconH = this.setAddIconN;
-    },
-    setAddIconPress: function() {
-      this.setAddIconP = this.setAddIconN;
-    },
-    // 鼠标事件
-    aa(index: number) {
-      console.log(this.setAddIconN);
-      if (this.setAddIconN[index].tagName == "img") {
-        this.setAddIconN[index].style.display = "none";
-        this.setAddIconH[index].style.display = "block";
-        console.log(this.setAddIconN[index].tagName);
+    // 获取hover的添加图标元素
+    setAddIconHover: function(el: Element) {
+      if (el != null) {
+        this.setAddIconH.push(el);
+      } else {
+        this.setAddIconH = [];
       }
     },
-    bb(index: number) {
-      if (this.setAddIconN[index].tagName == "img") {
+    // 获取click添加图标元素
+    setAddIconPress: function(el: Element) {
+      if (el != null) {
+        this.setAddIconP.push(el);
+      } else {
+        this.setAddIconP = [];
+      }
+    },
+    // 鼠标悬浮是显示hover的添加图标
+    Hover(index: number) {
+      this.setAddIconN[index].style.display = "none";
+      this.setAddIconH[index].style.display = "block";
+      this.setAddIconP[index].style.display = "none";
+    },
+    // 鼠标离开目标是显示normal的添加图标
+    Normal(index: number) {
+      setTimeout(() => {
         this.setAddIconN[index].style.display = "block";
         this.setAddIconH[index].style.display = "none";
-      }
+        this.setAddIconP[index].style.display = "none";
+      }, 20);
+    },
+    // 鼠标单击时是显示click的添加图标
+    Press(index: number) {
+      this.setAddIconN[index].style.display = "none";
+      this.setAddIconH[index].style.display = "none";
+      this.setAddIconP[index].style.display = "block";
+      this.isChecked = true;
+      this.argUserName = this.friendsList[index].userName;
+      this.argUserId = this.friendsList[index].userId;
     }
   },
   props: {
@@ -362,7 +395,10 @@ export default defineComponent({
       },
       setAddIconN: [],
       setAddIconH: [],
-      setAddIconP: []
+      setAddIconP: [],
+      isChecked: false,
+      argUserName: "",
+      argUserId: ""
     };
   },
   emits: {
