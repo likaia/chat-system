@@ -135,7 +135,7 @@
         id="msgInputContainer"
         class="input-panel"
         ref="msgInputContainer"
-        @keydown.enter.exact="sendMessage($event)"
+        @keypress.enter.exact="sendMessage($event)"
         contenteditable="true"
         spellcheck="false"
       ></div>
@@ -471,48 +471,64 @@ export default defineComponent({
     getThisWindowWidth: () => window.innerWidth,
     // 消息发送
     sendMessage: function(event: KeyboardEvent) {
-      if (event.key === "Enter") {
-        // 阻止编辑框默认生成div事件
-        event.preventDefault();
-        let msgText = "";
-        // 获取输入框下的所有子元素
-        const allNodes = (event.target as Node).childNodes;
-        for (const item of allNodes) {
-          // 判断当前元素是否为img元素
-          if (item.nodeName === "IMG") {
-            if ((item as HTMLImageElement).alt === "") {
-              // 是图片
-              let base64Img = (item as HTMLImageElement).src;
-              // 删除base64图片的前缀
-              base64Img = base64Img.replace(/^data:image\/\w+;base64,/, "");
-              // 随机文件名
-              const fileName = new Date().getTime() + "chatImg" + ".jpeg";
-              // 将base64转换成file
-              const imgFile = this.convertBase64UrlToImgFile(
-                base64Img,
-                fileName,
-                "image/jpeg"
-              );
-              const formData = new FormData();
-              // 此处的file与后台取值时的属性一样,append时需要添加文件名，否则一直是blob
-              formData.append("file", imgFile, fileName);
-              // 将图片上传至服务器
-              this.$api.fileManageAPI
-                .upload(formData)
-                .then((res: responseDataType) => {
-                  let msgImgName = "";
-                  const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${res.fileName}`;
-                  // 获取图片大小
-                  const img = new Image();
-                  let imgWidth = 0;
-                  let imgHeight = 0;
-                  // 判断参数是否为url
-                  img.src = imgSrc;
-                  // 判断图片是否有缓存
-                  if (img.complete) {
+      console.log("回车事件");
+      // 阻止编辑框默认生成div事件
+      event.preventDefault();
+      let msgText = "";
+      // 获取输入框下的所有子元素
+      const allNodes = (event.target as Node).childNodes;
+      for (const item of allNodes) {
+        // 判断当前元素是否为img元素
+        if (item.nodeName === "IMG") {
+          if ((item as HTMLImageElement).alt === "") {
+            // 是图片
+            let base64Img = (item as HTMLImageElement).src;
+            // 删除base64图片的前缀
+            base64Img = base64Img.replace(/^data:image\/\w+;base64,/, "");
+            // 随机文件名
+            const fileName = new Date().getTime() + "chatImg" + ".jpeg";
+            // 将base64转换成file
+            const imgFile = this.convertBase64UrlToImgFile(
+              base64Img,
+              fileName,
+              "image/jpeg"
+            );
+            const formData = new FormData();
+            // 此处的file与后台取值时的属性一样,append时需要添加文件名，否则一直是blob
+            formData.append("file", imgFile, fileName);
+            // 将图片上传至服务器
+            this.$api.fileManageAPI
+              .upload(formData)
+              .then((res: responseDataType) => {
+                let msgImgName = "";
+                const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${res.fileName}`;
+                // 获取图片大小
+                const img = new Image();
+                let imgWidth = 0;
+                let imgHeight = 0;
+                // 判断参数是否为url
+                img.src = imgSrc;
+                // 判断图片是否有缓存
+                if (img.complete) {
+                  imgWidth = img.width;
+                  imgHeight = img.height;
+                  msgImgName = `/${res.fileName}?width:${imgWidth}&height:${imgHeight}/`;
+                  // 消息发送: 发送图片
+                  this.$socket.sendObj({
+                    msg: msgImgName,
+                    buddyId: this.buddyId,
+                    messageStatus: this.messageStatus,
+                    code: 0,
+                    username: this.$store.state.username,
+                    avatarSrc: this.$store.state.profilePicture,
+                    userID: this.$store.state.userID,
+                    msgId: this.listId
+                  });
+                } else {
+                  img.onload = () => {
                     imgWidth = img.width;
                     imgHeight = img.height;
-                    msgImgName = `/${res.fileName}?width:${imgWidth}&height:${imgHeight}/`;
+                    msgImgName = `/${res.fileName}?width=${imgWidth}&height=${imgHeight}/`;
                     // 消息发送: 发送图片
                     this.$socket.sendObj({
                       msg: msgImgName,
@@ -524,52 +540,35 @@ export default defineComponent({
                       userID: this.$store.state.userID,
                       msgId: this.listId
                     });
-                  } else {
-                    img.onload = () => {
-                      imgWidth = img.width;
-                      imgHeight = img.height;
-                      msgImgName = `/${res.fileName}?width=${imgWidth}&height=${imgHeight}/`;
-                      // 消息发送: 发送图片
-                      this.$socket.sendObj({
-                        msg: msgImgName,
-                        buddyId: this.buddyId,
-                        messageStatus: this.messageStatus,
-                        code: 0,
-                        username: this.$store.state.username,
-                        avatarSrc: this.$store.state.profilePicture,
-                        userID: this.$store.state.userID,
-                        msgId: this.listId
-                      });
-                    };
-                  }
-                  // 清空输入框中的内容
-                  (event.target as Element).innerHTML = "";
-                });
-            } else {
-              msgText += `/${(item as HTMLImageElement).alt}/`;
-            }
+                  };
+                }
+                // 清空输入框中的内容
+                (event.target as Element).innerHTML = "";
+              });
           } else {
-            // 获取text节点的值
-            if (item.nodeValue !== null) {
-              msgText += item.nodeValue;
-            }
+            msgText += `/${(item as HTMLImageElement).alt}/`;
+          }
+        } else {
+          // 获取text节点的值
+          if (item.nodeValue !== null) {
+            msgText += item.nodeValue;
           }
         }
-        // 消息发送: 发送文字，为空则不发送
-        if (msgText.trim().length > 0) {
-          this.$socket.sendObj({
-            msg: msgText,
-            buddyId: this.buddyId,
-            messageStatus: this.messageStatus,
-            code: 0,
-            username: this.$store.state.username,
-            avatarSrc: this.$store.state.profilePicture,
-            userID: this.$store.state.userID,
-            msgId: this.listId
-          });
-          // 清空输入框中的内容
-          (event.target as Element).innerHTML = "";
-        }
+      }
+      // 消息发送: 发送文字，为空则不发送
+      if (msgText.trim().length > 0) {
+        this.$socket.sendObj({
+          msg: msgText,
+          buddyId: this.buddyId,
+          messageStatus: this.messageStatus,
+          code: 0,
+          username: this.$store.state.username,
+          avatarSrc: this.$store.state.profilePicture,
+          userID: this.$store.state.userID,
+          msgId: this.listId
+        });
+        // 清空输入框中的内容
+        (event.target as Element).innerHTML = "";
       }
     },
     //  渲染页面
