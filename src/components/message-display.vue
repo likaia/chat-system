@@ -273,9 +273,10 @@ export default defineComponent({
         const msgObj: msgListType = {
           msgText: data.msg,
           avatarSrc: data.avatarSrc,
-          id: data?.id,
           createTime: data.createTime,
           userId: data.userID,
+          buddyId: data.buddyId,
+          messageStatus: data.messageStatus,
           userName: data.username
         };
         // 播放消息提示音:判断当前消息是否为对方发送
@@ -315,8 +316,30 @@ export default defineComponent({
           // 2秒后停止声音
           oscillator.stop(this.audioCtx.currentTime + 2);
         }
-        // 渲染页面
-        this.renderPage([], msgObj);
+        // 接收方消息：列表id == 消息推送方id，且消息状态为单聊
+        if (
+          _.isEqual(this.listId, msgObj.userId) &&
+          msgObj.messageStatus === 0
+        ) {
+          // 渲染页面
+          this.renderPage([], msgObj);
+        }
+        // 发送方消息：当前登录用户id == 消息发送方id，且消息状态为单聊
+        if (
+          _.isEqual(this.userID, msgObj.userId) &&
+          msgObj.messageStatus === 0
+        ) {
+          // 渲染页面
+          this.renderPage([], msgObj);
+        }
+        // 群聊消息：消息状态为1，列表id == 消息接收方id
+        if (
+          msgObj.messageStatus === 1 &&
+          _.isEqual(this.listId, msgObj.buddyId)
+        ) {
+          // 渲染页面
+          this.renderPage([], msgObj);
+        }
       }
     };
   },
@@ -494,6 +517,7 @@ export default defineComponent({
                     this.$socket.sendObj({
                       msg: msgImgName,
                       buddyId: this.buddyId,
+                      messageStatus: this.messageStatus,
                       code: 0,
                       username: this.$store.state.username,
                       avatarSrc: this.$store.state.profilePicture,
@@ -509,6 +533,7 @@ export default defineComponent({
                       this.$socket.sendObj({
                         msg: msgImgName,
                         buddyId: this.buddyId,
+                        messageStatus: this.messageStatus,
                         code: 0,
                         username: this.$store.state.username,
                         avatarSrc: this.$store.state.profilePicture,
@@ -535,6 +560,7 @@ export default defineComponent({
           this.$socket.sendObj({
             msg: msgText,
             buddyId: this.buddyId,
+            messageStatus: this.messageStatus,
             code: 0,
             username: this.$store.state.username,
             avatarSrc: this.$store.state.profilePicture,
@@ -553,7 +579,6 @@ export default defineComponent({
         for (let i = 0; i < msgArray.length; i++) {
           const thisSenderMessageObj: msgListType = {
             msgText: msgArray[i].msgText,
-            id: msgArray[i].id,
             avatarSrc: msgArray[i].avatarSrc,
             userId: msgArray[i].userId,
             userName: msgArray[i].userName,
@@ -566,7 +591,6 @@ export default defineComponent({
         // 接收到服务端推送的新消息，渲染单个消息对象
         const thisSenderMessageObj: msgListType = {
           msgText: msgObj.msgText,
-          id: msgObj?.id,
           avatarSrc: msgObj.avatarSrc,
           userId: msgObj.userId,
           userName: msgObj.userName,

@@ -62,11 +62,12 @@ export type messageDisplayDataType<T> = {
 
 // 消息列表对象属性类型定义
 export type msgListType = {
-  id?: number;
   msgText?: string;
   createTime?: string;
   userName?: string;
   userId?: string;
+  buddyId?: string;
+  messageStatus?: number;
   avatarSrc?: string;
   msgId?: number;
 };
