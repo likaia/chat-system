@@ -84,7 +84,63 @@
     <div class="user-input-panel" @click="getEditableDivFocus()">
       <div class="toolbar-panel">
         <div class="item-panel" v-for="item in toolbarList" :key="item.info">
+          <div v-if="item.name === 'selectImg'" class="file-panel">
+            <img
+              class="emoticon"
+              ref="selectImg"
+              :src="require(`../assets/img/${item.src}`)"
+              :alt="item.info"
+            />
+            <input
+              class="file"
+              name="file"
+              type="file"
+              accept="image/png,image/gif,image/jpeg"
+              @mouseenter="
+                toolbarSwitch(
+                  'hover',
+                  $event,
+                  item.src,
+                  item.hover,
+                  item.down,
+                  item.name
+                )
+              "
+              @mouseleave="
+                toolbarSwitch(
+                  'leave',
+                  $event,
+                  item.src,
+                  item.hover,
+                  item.down,
+                  item.name
+                )
+              "
+              @mousedown="
+                toolbarSwitch(
+                  'down',
+                  $event,
+                  item.src,
+                  item.hover,
+                  item.down,
+                  item.name
+                )
+              "
+              @mouseup="
+                toolbarSwitch(
+                  'up',
+                  $event,
+                  item.src,
+                  item.hover,
+                  item.down,
+                  item.name
+                )
+              "
+              @change="sendImage($event)"
+            />
+          </div>
           <img
+            v-else
             class="emoticon"
             :src="require(`../assets/img/${item.src}`)"
             @mouseenter="
@@ -348,7 +404,7 @@ export default defineComponent({
     pasteHandle: function() {
       document.body.addEventListener("paste", event => {
         // 获取当前输入框内的文字
-        const oldText = this.$refs.msgInputContainer.textContent;
+        const oldText = this.$refs.msgInputContainer?.textContent;
         // 读取图片
         const items = event.clipboardData && event.clipboardData.items;
         let file: Blob | null = null;
@@ -615,35 +671,28 @@ export default defineComponent({
         for (let item of resultArray) {
           // 删除字符串中的/符号
           item = item.replace(/\//g, "");
-          // 判断是否为图片: 后缀为.jpeg
+          // 判断是否为图片
           if (this.isImg(item)) {
             const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${item}`;
-            // 获取图片宽高
-            const imgInfo = {
-              imgWidth: this.getQueryVariable(imgSrc, "width"),
-              imgHeight: this.getQueryVariable(imgSrc, "height")
-            };
-            let thisImgWidth = 0;
-            let thisImgHeight = 0;
-            if (imgInfo.imgWidth < 400) {
-              thisImgWidth = imgInfo.imgWidth;
-              thisImgHeight = imgInfo.imgHeight;
-            } else {
-              // 缩放四倍
-              thisImgWidth = imgInfo.imgWidth / 4;
-              thisImgHeight = imgInfo.imgHeight / 4;
-            }
             // 找到item中?位置，在?之前添加\\进行转义，解决正则无法匹配特殊字符问题
             const charIndex = item.indexOf("?");
             // 生成正则表达式条件，添加\\用于对？的转义
             const regularItem = this.insertStr(item, charIndex, "\\");
             // 解析为img标签
-            const imgTag = `<img width="${thisImgWidth}" height="${thisImgHeight}" src="${imgSrc}" alt="聊天图片">`;
+            const imgTag = `<img width="100%" height="100%" src="${imgSrc}" alt="聊天图片">`;
             // 替换匹配的字符串为img标签:全局替换
             msgText = msgText.replace(
               new RegExp(`/${regularItem}/`, "g"),
               imgTag
             );
+          }
+          // 判断是否为gif
+          if (item.indexOf("gif") !== -1) {
+            const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${item}`;
+            // 解析为img标签
+            const imgTag = `<img width="100%" height="100%" src="${imgSrc}" alt="聊天图片">`;
+            // 替换匹配的字符串为img标签:全局替换
+            msgText = msgText.replace(new RegExp(`/${item}/`, "g"), imgTag);
           }
           // 表情渲染: 遍历表情配置文件
           for (const emojiItem of this.emojiList) {
@@ -695,24 +744,63 @@ export default defineComponent({
       toolItemName: string
     ) {
       if (status === "hover" || status === "up") {
-        (event.target as HTMLImageElement).src = require(`@/assets/img/${hoverPath}`);
+        // 选择图片
+        if (_.isEqual(toolItemName, "selectImg")) {
+          this.$refs.selectImg.src = require(`@/assets/img/${hoverPath}`);
+        } else {
+          (event.target as HTMLImageElement).src = require(`@/assets/img/${hoverPath}`);
+        }
       } else if (status === "leave") {
-        (event.target as HTMLImageElement).src = require(`@/assets/img/${path}`);
+        // 选择图片
+        if (_.isEqual(toolItemName, "selectImg")) {
+          this.$refs.selectImg.src = require(`@/assets/img/${path}`);
+        } else {
+          (event.target as HTMLImageElement).src = require(`@/assets/img/${path}`);
+        }
       } else {
         // 可编辑div获取焦点
         this.getEditableDivFocus();
-        (event.target as HTMLImageElement).src = require(`@/assets/img/${downPath}`);
-        // 表情框显示条件
-        if (toolItemName === "emoticon") {
-          if (this.emoticonShowStatus === "flex") {
-            this.emoticonShowStatus = "none";
-          } else {
-            this.emoticonShowStatus = "flex";
-          }
+        // 选择图片
+        if (_.isEqual(toolItemName, "selectImg")) {
+          this.$refs.selectImg.src = require(`@/assets/img/${downPath}`);
         } else {
-          this.emoticonShowStatus = "none";
+          (event.target as HTMLImageElement).src = require(`@/assets/img/${downPath}`);
+          // 表情框显示条件
+          if (toolItemName === "emoticon") {
+            if (this.emoticonShowStatus === "flex") {
+              this.emoticonShowStatus = "none";
+            } else {
+              this.emoticonShowStatus = "flex";
+            }
+          } else {
+            this.emoticonShowStatus = "none";
+          }
         }
       }
+    },
+    // 发送图片
+    sendImage: function(e: { target: { files: FileList } }) {
+      // 图片上传
+      const file = e.target.files[0];
+      // 构造form对象
+      const formData = new FormData();
+      // 后台取值字段 | blob文件数据 | 文件名称
+      formData.append("file", file, "chatImg" + file.name);
+      // 调用上传api
+      this.$api.fileManageAPI.upload(formData).then((res: responseDataType) => {
+        const fileName = `/${res.fileName}/`;
+        // 消息发送: 发送图片
+        this.$socket.sendObj({
+          msg: fileName,
+          buddyId: this.buddyId,
+          messageStatus: this.messageStatus,
+          code: 0,
+          username: this.$store.state.username,
+          avatarSrc: this.$store.state.profilePicture,
+          userID: this.$store.state.userID,
+          msgId: this.listId
+        });
+      });
     },
     // 表情框鼠标悬浮显示动态表情
     emojiConversion: function(
@@ -756,7 +844,7 @@ export default defineComponent({
     },
     // 判断是否为图片
     isImg: function(str: string) {
-      return str.indexOf(".jpeg") !== -1;
+      return str.indexOf(".jpeg") !== -1 || str.indexOf(".png") !== -1;
     },
     // 字符串指定位置添加字符
     insertStr: function(source: string, start: number, newStr: string) {
