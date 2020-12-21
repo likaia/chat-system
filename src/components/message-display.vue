@@ -654,6 +654,20 @@ export default defineComponent({
           userName: msgObj.userName,
           createTime: msgObj?.createTime
         };
+        // 找到消息记录列表中与新消息的同一分钟的消息，移除新消息的createTime对象
+        for (let i = 0; i < this.senderMessageList.length; i++) {
+          const messageObj: msgListType = this.senderMessageList[i];
+          // 截取当前消息与新消息发送时间的 年-月-日 时:分,判断其是否相等
+          if (
+            _.isEqual(
+              messageObj.createTime?.substring(0, 16),
+              thisSenderMessageObj.createTime?.substring(0, 16)
+            )
+          ) {
+            // 移除新消息的createTime属性
+            _.unset(thisSenderMessageObj, "createTime");
+          }
+        }
         // 解析并渲染
         this.messageParsing(thisSenderMessageObj);
       }
