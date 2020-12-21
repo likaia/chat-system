@@ -305,6 +305,13 @@ export default defineComponent({
       ]
     };
   },
+  created() {
+    this.$socket.sendObj({
+      code: 200,
+      userID: this.$store.state.userID,
+      msg: this.userID + "加入群聊"
+    });
+  },
   mounted() {
     // 设置列容器高度
     this.$refs.messagesContainer.style.height =
