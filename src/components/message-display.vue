@@ -27,6 +27,10 @@
     <!--消息显示-->
     <div class="messages-panel" ref="messagesContainer">
       <div class="row-panel" v-for="item in senderMessageList" :key="item.id">
+        <!--消息发送时间-->
+        <div class="snder-time-panel" v-if="item.createTime">
+          <span>{{ item.createTime.substring(5, 16) }}</span>
+        </div>
         <!--发送者消息样式-->
         <div
           class="sender-panel"
@@ -860,8 +864,34 @@ export default defineComponent({
         .getMessageTextList({ msgId: msgId, userId: this.userID })
         .then((res: responseDataType) => {
           if (res.code === 0) {
+            // 消息内容列表
+            const messageTextList: Array<msgListType> =
+              res.data.messageTextList;
+            // 处理好的消息内容数组
+            const finalTextList: Array<msgListType> = [];
+            // 时间存放对象
+            const timeObj: { [key: string]: boolean } = {};
+            // 处理消息内容列表，同一分钟的数据只保留一个创建时间
+            for (let i = 0; i < messageTextList.length; i++) {
+              // 消息对象
+              const messageObj = messageTextList[i];
+              // 获取时间的 年-月-日 时:分
+              const time = (messageObj.createTime as string).substring(0, 16);
+              // timeObj中已经存在time，则移除当前消息对象的createTime
+              if (_.has(timeObj, time)) {
+                // 移除createTime属性
+                _.unset(messageObj, "createTime");
+                // 将移除createTime属性的消息对象放进处理好的消息数组中
+                finalTextList.push(messageObj);
+              } else {
+                // 将time作为key放进timeObj中
+                timeObj[time] = true;
+                // 原封不动的将消息对象放进处理好的消息数组中
+                finalTextList.push(messageObj);
+              }
+            }
             // 渲染消息列表
-            this.renderPage(res.data.messageTextList, {});
+            this.renderPage(finalTextList, {});
           } else {
             alert(res.msg);
           }
