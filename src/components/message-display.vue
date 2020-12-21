@@ -262,12 +262,6 @@ export default defineComponent({
     buddyId: String, // 好友id
     buddyName: String // 好友昵称
   },
-  created() {
-    this.$socket.sendObj({
-      code: 200,
-      msg: "连接成功"
-    });
-  },
   data<T>(): messageDisplayDataType<T> {
     return {
       images: [],
@@ -932,6 +926,13 @@ export default defineComponent({
       this.senderMessageList = [];
       // 重新获取消息内容
       this.getMessageTextList(newMsgId);
+      if (_.isEqual(this.messageStatus, 1)) {
+        this.$socket.sendObj({
+          code: 200,
+          userID: this.$store.state.userID,
+          msg: this.userID + "加入群聊"
+        });
+      }
     }
   }
 });
