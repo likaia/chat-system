@@ -527,7 +527,6 @@ export default defineComponent({
     getThisWindowWidth: () => window.innerWidth,
     // 消息发送
     sendMessage: function(event: KeyboardEvent) {
-      console.log("回车事件");
       // 阻止编辑框默认生成div事件
       event.preventDefault();
       let msgText = "";
