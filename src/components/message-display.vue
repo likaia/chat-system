@@ -412,7 +412,8 @@ export default defineComponent({
         event.preventDefault();
         const text =
           event.clipboardData && event.clipboardData.getData("text/plain");
-        if (!_.isEmpty(text) && !_.isNull(text)) {
+        // text存在且不是img则将其插入可编辑div中
+        if (!_.isEmpty(text) && !_.isNull(text) && !this.isImg(text)) {
           document.execCommand("insertText", false, text);
         }
         // 读取图片
