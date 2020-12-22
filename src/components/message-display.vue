@@ -475,10 +475,10 @@ export default defineComponent({
               // 输入框图片显示缩小10倍
               imgWidth = imgObj.width / 10;
               imgHeight = imgObj.height / 10;
-              // 图片宽度大于1920，图片压缩5倍
+              // 图片宽度大于1920，图片压缩1.5倍
               if (imgObj.width > 1920) {
-                // 真实比例缩小5倍
-                scale = 5;
+                // 真实比例缩小1.5倍
+                scale = 1.5;
               }
             }
             // 设置可编辑div中图片宽高
