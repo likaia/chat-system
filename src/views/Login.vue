@@ -368,8 +368,13 @@ export default defineComponent({
       this.$refs.cancelBtn.style.background = "";
     },
     uploadAvatar: function<T>(e: { target: { files: FileList } }) {
+      const fileMaxSize = 1024 * 1024;
       // 头像上传
       const file = e.target.files[0];
+      if (file.size > fileMaxSize) {
+        alert("文件大小不能大于1MB");
+        return false;
+      }
       // 构造form对象
       const formData = new FormData();
       // 后台取值字段 | blob文件数据 | 文件名称

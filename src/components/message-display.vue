@@ -412,6 +412,10 @@ export default defineComponent({
         event.preventDefault();
         const text =
           event.clipboardData && event.clipboardData.getData("text/plain");
+        if (text?.includes("gif")) {
+          alert("无法上传gif，请使用工具栏中的选择图片");
+          return;
+        }
         // text存在且不是img则将其插入可编辑div中
         if (!_.isEmpty(text) && !_.isNull(text) && !this.isImg(text)) {
           document.execCommand("insertText", false, text);
@@ -568,6 +572,11 @@ export default defineComponent({
             this.$api.fileManageAPI
               .upload(formData)
               .then((res: responseDataType) => {
+                // 文件上传失败
+                if (!_.isEqual(res.code, 0)) {
+                  alert(res.msg);
+                  return false;
+                }
                 let msgImgName = "";
                 const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${res.fileName}`;
                 // 获取图片大小
@@ -810,6 +819,11 @@ export default defineComponent({
       formData.append("file", file, "chatImg" + file.name);
       // 调用上传api
       this.$api.fileManageAPI.upload(formData).then((res: responseDataType) => {
+        // 文件上传失败
+        if (!_.isEqual(res.code, 0)) {
+          alert(res.msg);
+          return false;
+        }
         const fileName = `/${res.fileName}/`;
         // 消息发送: 发送图片
         this.$socket.sendObj({
