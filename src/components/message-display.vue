@@ -329,6 +329,7 @@ export default defineComponent({
   created() {
     this.$socket.sendObj({
       code: 200,
+      token: this.$store.state.token,
       userID: this.$store.state.userID,
       msg: this.userID + "加入群聊"
     });
@@ -348,6 +349,10 @@ export default defineComponent({
       if (data.code === 200) {
         // 更新在线人数
         this.$store.commit("updateOnlineUsers", data.onlineUsers);
+      } else if (data.code === -1) {
+        // 消息发送失败
+        alert(data.msg);
+        return;
       } else {
         // 更新在线人数
         this.$store.commit("updateOnlineUsers", data.onlineUsers);
@@ -617,9 +622,8 @@ export default defineComponent({
                     buddyId: this.buddyId,
                     messageStatus: this.messageStatus,
                     code: 0,
-                    username: this.$store.state.username,
                     avatarSrc: this.$store.state.profilePicture,
-                    userID: this.$store.state.userID,
+                    token: this.$store.state.token,
                     msgId: this.listId
                   });
                 } else {
@@ -633,9 +637,8 @@ export default defineComponent({
                       buddyId: this.buddyId,
                       messageStatus: this.messageStatus,
                       code: 0,
-                      username: this.$store.state.username,
                       avatarSrc: this.$store.state.profilePicture,
-                      userID: this.$store.state.userID,
+                      token: this.$store.state.token,
                       msgId: this.listId
                     });
                   };
@@ -656,9 +659,8 @@ export default defineComponent({
           buddyId: this.buddyId,
           messageStatus: this.messageStatus,
           code: 0,
-          username: this.$store.state.username,
           avatarSrc: this.$store.state.profilePicture,
-          userID: this.$store.state.userID,
+          token: this.$store.state.token,
           msgId: this.listId
         });
         // 清空输入框中的内容
@@ -838,9 +840,8 @@ export default defineComponent({
           buddyId: this.buddyId,
           messageStatus: this.messageStatus,
           code: 0,
-          username: this.$store.state.username,
           avatarSrc: this.$store.state.profilePicture,
-          userID: this.$store.state.userID,
+          token: this.$store.state.token,
           msgId: this.listId
         });
       });
@@ -938,6 +939,7 @@ export default defineComponent({
       if (_.isEqual(this.messageStatus, 1)) {
         this.$socket.sendObj({
           code: 200,
+          token: this.$store.state.token,
           userID: this.$store.state.userID,
           msg: this.userID + "加入群聊"
         });
