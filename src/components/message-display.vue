@@ -26,10 +26,31 @@
     </div>
     <!--消息显示-->
     <div class="messages-panel" ref="messagesContainer">
-      <div class="row-panel" v-for="item in senderMessageList" :key="item.id">
-        <!--消息发送时间-->
-        <div class="snder-time-panel" v-if="item.createTime">
-          <span>{{ item.createTime.substring(5, 16) }}</span>
+      <div
+        class="row-panel"
+        v-for="(item, index) in senderMessageList"
+        :key="item.id"
+      >
+        <!--消息发送时间:当前发送消息为第一条显示时间-->
+        <div class="sender-time-panel" v-if="index === 0">
+          <span>{{ item.createTime.substring(11, 16) }}</span>
+        </div>
+        <!--当前消息与上一条消息发送时间截取时分进行相减大于1就显示时间-->
+        <div
+          class="sender-time-panel"
+          v-else-if="
+            parseInt(
+              item.createTime.substring(11, 13) +
+                item.createTime.substring(14, 16)
+            ) -
+              parseInt(
+                senderMessageList[index - 1].createTime.substring(11, 13) +
+                  senderMessageList[index - 1].createTime.substring(14, 16)
+              ) >
+              1
+          "
+        >
+          <span>{{ item.createTime.substring(11, 16) }}</span>
         </div>
         <!--发送者消息样式-->
         <div
@@ -668,20 +689,6 @@ export default defineComponent({
           userName: msgObj.userName,
           createTime: msgObj?.createTime
         };
-        // 找到消息记录列表中与新消息的同一分钟的消息，移除新消息的createTime对象
-        for (let i = 0; i < this.senderMessageList.length; i++) {
-          const messageObj: msgListType = this.senderMessageList[i];
-          // 截取当前消息与新消息发送时间的 年-月-日 时:分,判断其是否相等
-          if (
-            _.isEqual(
-              messageObj.createTime?.substring(0, 16),
-              thisSenderMessageObj.createTime?.substring(0, 16)
-            )
-          ) {
-            // 移除新消息的createTime属性
-            _.unset(thisSenderMessageObj, "createTime");
-          }
-        }
         // 解析并渲染
         this.messageParsing(thisSenderMessageObj);
       }
@@ -900,31 +907,8 @@ export default defineComponent({
             // 消息内容列表
             const messageTextList: Array<msgListType> =
               res.data.messageTextList;
-            // 处理好的消息内容数组
-            const finalTextList: Array<msgListType> = [];
-            // 时间存放对象
-            const timeObj: { [key: string]: boolean } = {};
-            // 处理消息内容列表，同一分钟的数据只保留一个创建时间
-            for (let i = 0; i < messageTextList.length; i++) {
-              // 消息对象
-              const messageObj = messageTextList[i];
-              // 获取时间的 年-月-日 时:分
-              const time = (messageObj.createTime as string).substring(0, 16);
-              // timeObj中已经存在time，则移除当前消息对象的createTime
-              if (_.has(timeObj, time)) {
-                // 移除createTime属性
-                _.unset(messageObj, "createTime");
-                // 将移除createTime属性的消息对象放进处理好的消息数组中
-                finalTextList.push(messageObj);
-              } else {
-                // 将time作为key放进timeObj中
-                timeObj[time] = true;
-                // 原封不动的将消息对象放进处理好的消息数组中
-                finalTextList.push(messageObj);
-              }
-            }
             // 渲染消息列表
-            this.renderPage(finalTextList, {});
+            this.renderPage(messageTextList, {});
           } else {
             alert(res.msg);
           }
