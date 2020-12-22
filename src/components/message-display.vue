@@ -408,8 +408,13 @@ export default defineComponent({
     // 处理剪切板粘贴
     pasteHandle: function() {
       document.body.addEventListener("paste", event => {
-        // 获取当前输入框内的文字
-        const oldText = this.$refs.msgInputContainer?.textContent;
+        // 处理文本数据，移除样式
+        event.preventDefault();
+        const text =
+          event.clipboardData && event.clipboardData.getData("text/plain");
+        if (!_.isEmpty(text) && !_.isNull(text)) {
+          document.execCommand("insertText", false, text);
+        }
         // 读取图片
         const items = event.clipboardData && event.clipboardData.items;
         let file: Blob | null = null;
@@ -458,8 +463,6 @@ export default defineComponent({
               imgContent as string,
               scale,
               (newBlob: Blob, newBase: string) => {
-                // 删除可编辑div中的图片名称
-                this.$refs.msgInputContainer.textContent = oldText;
                 img.src = newBase; // 设置链接
                 // 图片渲染
                 this.$refs.msgInputContainer.append(img);
@@ -467,7 +470,10 @@ export default defineComponent({
             );
           };
         };
-        reader.readAsDataURL(file as Blob);
+        if (file) {
+          // 文件不为空时渲染
+          reader.readAsDataURL(file);
+        }
       });
     },
     // base图片压缩
@@ -534,7 +540,8 @@ export default defineComponent({
     sendMessage: function(event: KeyboardEvent) {
       // 阻止编辑框默认生成div事件
       event.preventDefault();
-      let msgText = "";
+      // 获取输入框的内容
+      let msgText = this.$refs.msgInputContainer?.textContent || "";
       // 获取输入框下的所有子元素
       const allNodes = (event.target as Node).childNodes;
       for (const item of allNodes) {
@@ -566,7 +573,7 @@ export default defineComponent({
                 const img = new Image();
                 let imgWidth = 0;
                 let imgHeight = 0;
-                // 判断参数是否为url
+                // 赋值图片地址
                 img.src = imgSrc;
                 // 判断图片是否有缓存
                 if (img.complete) {
@@ -606,12 +613,8 @@ export default defineComponent({
                 (event.target as Element).innerHTML = "";
               });
           } else {
+            // 是表情，向msgText追加内容
             msgText += `/${(item as HTMLImageElement).alt}/`;
-          }
-        } else {
-          // 获取text节点的值
-          if (item.nodeValue !== null) {
-            msgText += item.nodeValue;
           }
         }
       }
@@ -705,7 +708,7 @@ export default defineComponent({
             );
           }
           // 判断是否为gif
-          if (item.indexOf("gif") !== -1) {
+          if (item.includes("gif")) {
             const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${item}`;
             // 解析为img标签
             const imgTag = `<img width="100%" height="100%" src="${imgSrc}" alt="聊天图片">`;
@@ -862,7 +865,7 @@ export default defineComponent({
     },
     // 判断是否为图片
     isImg: function(str: string) {
-      return str.indexOf(".jpeg") !== -1 || str.indexOf(".png") !== -1;
+      return str.includes("jpeg") || str.includes("png") || str.includes("jpg");
     },
     // 字符串指定位置添加字符
     insertStr: function(source: string, start: number, newStr: string) {
