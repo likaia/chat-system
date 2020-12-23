@@ -33,7 +33,7 @@
       >
         <!--消息发送时间:当前发送消息为第一条显示时间-->
         <div class="sender-time-panel" v-if="index === 0">
-          <span>{{ item.createTime.substring(11, 16) }}</span>
+          <span>{{ item.createTime.substring(5, 16) }}</span>
         </div>
         <!--当前消息与上一条消息发送时间截取时分进行相减大于1就显示时间-->
         <div
@@ -50,7 +50,7 @@
               1
           "
         >
-          <span>{{ item.createTime.substring(11, 16) }}</span>
+          <span>{{ item.createTime.substring(5, 16) }}</span>
         </div>
         <!--发送者消息样式-->
         <div
