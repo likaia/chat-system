@@ -227,11 +227,7 @@
         ref="emoticonPanel"
       >
         <div class="row-panel">
-          <div
-            class="item-panel"
-            v-for="item in this.emojiList"
-            :key="item.info"
-          >
+          <div class="item-panel" v-for="item in emojiList" :key="item.info">
             <img
               :src="require(`../assets/img/emoji/${item.src}`)"
               :alt="item.info"
