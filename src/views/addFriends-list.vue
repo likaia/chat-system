@@ -135,12 +135,13 @@
     v-if="isChecked"
     :arg-userName="argUserName"
     :arg-userId="argUserId"
+    :is-checked="isChecked"
+    @no-show-identity-checked="noShowIdentityChecked(noShow)"
   />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import _ from "lodash";
 import { responseDataType } from "@/type/ComponentDataType";
 import addFriendIdentityChecked from "./addFriends-identityChecked.vue";
 export default defineComponent({
@@ -149,12 +150,19 @@ export default defineComponent({
   methods: {
     // 关闭添加好友弹框
     removeAddAlert() {
-      this.$emit("no-show-add-friends-alert", !this.show);
+      this.$store.commit("updateAddFriendStatus", false);
+    },
+    // 关闭好友身份认证
+    noShowIdentityChecked(noShow: boolean) {
+      this.isChecked = noShow;
     },
     // 获取搜索好友列表
     searchFriendInfoResult() {
       // 获取最新好友信息初始化
       this.friendsList = [];
+      this.setAddIconH = [];
+      this.setAddIconN = [];
+      this.setAddIconP = [];
       // 当搜索框有内容
       if (this.searchFriendInfo) {
         this.showUserInfo = true;
@@ -165,8 +173,6 @@ export default defineComponent({
             userId: this.$store.state.userID
           })
           .then((res: responseDataType) => {
-            // console.log(res.data.length);
-
             // 对整体框位置做相当于的适应
             this.$refs.mainPanel.style = "height:auto;";
             this.$refs.mainPanelContentFriendsInfo.style =
@@ -329,24 +335,18 @@ export default defineComponent({
           this.setAddIconHover(el);
           this.setAddIconPress(el);
         }
-      } else {
-        this.setAddIconN = [];
       }
     },
     // 获取hover的添加图标元素
     setAddIconHover: function(el: Element) {
       if (el != null) {
         this.setAddIconH.push(el);
-      } else {
-        this.setAddIconH = [];
       }
     },
     // 获取click添加图标元素
     setAddIconPress: function(el: Element) {
       if (el != null) {
         this.setAddIconP.push(el);
-      } else {
-        this.setAddIconP = [];
       }
     },
     // 鼠标悬浮是显示hover的添加图标
@@ -368,6 +368,7 @@ export default defineComponent({
       this.setAddIconN[index].style.display = "none";
       this.setAddIconH[index].style.display = "none";
       this.setAddIconP[index].style.display = "block";
+      // 开启验证弹窗并传值
       this.isChecked = true;
       this.argUserName = this.friendsList[index].userName;
       this.argUserId = this.friendsList[index].userId;
@@ -400,12 +401,6 @@ export default defineComponent({
       argUserName: "",
       argUserId: ""
     };
-  },
-  emits: {
-    // vue3中建议对所有emit事件进行验证
-    "no-show-add-friends-alert": (val: boolean) => {
-      return !_.isNull(val);
-    }
   }
 });
 </script>
