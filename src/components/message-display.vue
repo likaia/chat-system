@@ -830,31 +830,49 @@ export default defineComponent({
     },
     // 发送图片
     sendImage: function(e: { target: { files: FileList } }) {
-      // 图片上传
+      // 获取File对象
       const file = e.target.files[0];
-      // 构造form对象
-      const formData = new FormData();
-      // 后台取值字段 | blob文件数据 | 文件名称
-      formData.append("file", file, "chatImg" + file.name);
-      // 调用上传api
-      this.$api.fileManageAPI.upload(formData).then((res: responseDataType) => {
-        // 文件上传失败
-        if (!_.isEqual(res.code, 0)) {
-          alert(res.msg);
-          return false;
-        }
-        const fileName = `/${res.fileName}/`;
-        // 消息发送: 发送图片
-        this.$socket.sendObj({
-          msg: fileName,
-          buddyId: this.buddyId,
-          messageStatus: this.messageStatus,
-          code: 0,
-          avatarSrc: this.$store.state.profilePicture,
-          token: this.$store.state.token,
-          msgId: this.listId
-        });
-      });
+      // 创建文件读取流
+      const fileReader = new FileReader();
+      // 读取File对象
+      fileReader.readAsDataURL(file);
+      // 在异步函数中获取图片信息
+      fileReader.onload = event => {
+        const base64 = event.target?.result;
+        const img = new Image();
+        img.src = base64 as string;
+        // 加载图片
+        img.onload = () => {
+          // 获取图片宽高
+          const imgWidth = img.naturalWidth;
+          const imgHeight = img.naturalHeight;
+          // 构造form对象
+          const formData = new FormData();
+          // 后台取值字段 | blob文件数据 | 文件名称
+          formData.append("file", file, "chatImg" + file.name);
+          // 调用上传api
+          this.$api.fileManageAPI
+            .upload(formData)
+            .then((res: responseDataType) => {
+              // 文件上传失败
+              if (!_.isEqual(res.code, 0)) {
+                alert(res.msg);
+                return false;
+              }
+              const fileName = `/${res.fileName}?width=${imgWidth}&height=${imgHeight}/`;
+              // 消息发送: 发送图片
+              this.$socket.sendObj({
+                msg: fileName,
+                buddyId: this.buddyId,
+                messageStatus: this.messageStatus,
+                code: 0,
+                avatarSrc: this.$store.state.profilePicture,
+                token: this.$store.state.token,
+                msgId: this.listId
+              });
+            });
+        };
+      };
     },
     // 表情框鼠标悬浮显示动态表情
     emojiConversion: function(
