@@ -4,16 +4,15 @@
     <input
       type="text"
       @focus="onFocus"
-      @blur="onBlur"
       :placeholder="placeholder"
       v-model="inputVal"
       ref="inputText"
     />
-    <div v-show="isShowBtn" class="edit" @click="edit">
+    <div v-if="isShowBtn" class="edit">
       <i class="icon"></i>
-      <span>修改</span>
+      <span @click="edit">修改</span>
     </div>
-    <div v-show="!isShowBtn" class="save">
+    <div v-else class="save">
       <span class="save-btn" @click="save">保存</span>
       <span class="cancel-btn" @click="cancel">取消</span>
     </div>
@@ -34,40 +33,34 @@ export default defineComponent({
     return {
       currentIndex: 0,
       isShowBtn: true,
-      inputVal: ""
+      inputVal: "123456"
     };
   },
   methods: {
-    isShowBtnFun() {
-      // 取反isShowBtn
-      this.isShowBtn = !this.isShowBtn;
-    },
     onFocus() {
       // 聚焦事件
-      if (this.isShowBtn) {
-        this.isShowBtnFun();
-      }
-    },
-    onBlur() {
-      // 失焦事件
-      if (this.value == this.inputVal) {
-        this.isShowBtnFun();
-      }
+      console.log("聚焦事件");
+      this.isShowBtn = false;
     },
     edit() {
       // 修改按钮
-      this.isShowBtnFun();
+      console.log("修改按钮----------------");
       this.$refs.inputText.focus();
+      this.isShowBtn = false;
     },
     cancel() {
       // 取消按钮
-      this.isShowBtnFun();
+      console.log("取消按钮");
       this.inputVal = this.value;
+      this.isShowBtn = true;
     },
     save() {
       // 保存按钮
-      this.isShowBtnFun();
-      console.log(this.inputVal);
+      console.log("保存按钮");
+      this.isShowBtn = true;
+      // console.log(this.value);
+      // console.log(this.inputVal);
+      this.$emit("save-info", this.inputVal);
     },
     changeValue() {
       // 把父组件传过来的值，保存到data中

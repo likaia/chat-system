@@ -42,10 +42,10 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import scroll from "@/components/common/scroll.vue";
-import tabControl from "./tabControl/tab-control.vue";
-import file from "./tabControl/file.vue";
-import feedBack from "./tabControl/feed-back.vue";
-import setting from "./tabControl/setting.vue";
+import tabControl from "./moreListChild/tab-control.vue";
+import file from "./moreListChild/file.vue";
+import feedBack from "./moreListChild/feed-back.vue";
+import setting from "./moreListChild/setting.vue";
 
 export default defineComponent({
   name: "more-list",

@@ -12,7 +12,7 @@ module.exports = {
       .rule("images")
       .use("url-loader")
       .loader("url-loader")
-      .tap(options => Object.assign(options, { limit: 10240 }));
+      .tap(options => Object.assign(options, { limit: 10240 }))
   },
   // 部署应用包时的基本 URL(解决build打包后资源文件404问题) :https://cli.vuejs.org/zh/config/#baseurl
   publicPath: "./",
@@ -25,10 +25,10 @@ module.exports = {
     proxy: null
   },
   // 关闭生产环境console
-  configureWebpack(config) {
+  configureWebpack (config) {
     if (process.env.NODE_ENV === "production") {
       // eslint-disable-next-line @typescript-eslint/camelcase
-      config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true;
+      config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
     }
   }
-};
+}

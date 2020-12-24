@@ -38,6 +38,11 @@ const websiteManageAPI = {
   // 更新在线状态
   updateOnlineStatus<T>(params: paramsType<T>) {
     return services.post(`${base.lk}/user/updateOnlineStatus`, params);
+  },
+
+  // 更新用户信息
+  updateUserInfo<T>(params: paramsType<T>) {
+    return services.post(`${base.lk}/user/updateUserInfo`, params);
   }
 };
 

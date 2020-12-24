@@ -218,17 +218,17 @@ export default defineComponent({
     }
   },
   mounted() {
-    //获取好友列表人员
+    // 获取好友列表人员
     this.$api.websiteManageAPI
       .getFriendsList({ userId: this.$store.state.userID })
       .then((res: responseDataType) => {
         console.log(res.data);
 
-        //遍历获取分组名称
+        // 遍历获取分组名称
         res.data.forEach((item: friendsDataType) => {
           this.groupList.push(item.groupName);
         });
-        //去重相同分组
+        // 去重相同分组
         this.groupList = [...new Set(this.groupList)];
         // 获取好友列表人员在线信息
         for (let index = 0; index < this.groupList.length; index++) {
@@ -252,7 +252,7 @@ export default defineComponent({
             }
           });
         }
-        //获取在线人员总数
+        // 获取在线人员总数
         for (let index = 0; index < this.friendsList.length; index++) {
           this.friendsList[index].totalPeople = this.friendsList[
             index
