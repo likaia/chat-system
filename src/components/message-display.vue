@@ -706,7 +706,7 @@ export default defineComponent({
       }
     },
     // 消息解析
-    messageParsing: function(msgObj: msgListType) {
+    messageParsing: async function(msgObj: msgListType) {
       // 消息内容为空不渲染
       if (msgObj.msgText == null) {
         return false;
@@ -721,28 +721,47 @@ export default defineComponent({
         for (let item of resultArray) {
           // 删除字符串中的/符号
           item = item.replace(/\//g, "");
-          // 判断是否为图片
+          // 图片渲染
           if (this.isImg(item)) {
             const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${item}`;
+            let thisImgWidth = 0;
+            let thisImgHeight = 0;
+            // 判断图片中是否包含宽高信息
+            if (imgSrc.includes("width")) {
+              // 从url中获取
+              thisImgWidth = this.getQueryVariable(imgSrc, "width");
+              thisImgHeight = this.getQueryVariable(imgSrc, "height");
+            } else {
+              // 读取图片获取信息
+              const imgInfo: {
+                imgWidth: number;
+                imgHeight: number;
+              } = await this.getImageInfo(imgSrc);
+              thisImgWidth = imgInfo.imgWidth;
+              thisImgHeight = imgInfo.imgHeight;
+            }
+            // 图片大于400px则缩放
+            if (thisImgWidth > 400) {
+              // 缩放四倍
+              thisImgWidth = thisImgWidth / 4;
+              thisImgHeight = thisImgHeight / 4;
+            }
             // 找到item中?位置，在?之前添加\\进行转义，解决正则无法匹配特殊字符问题
             const charIndex = item.indexOf("?");
             // 生成正则表达式条件，添加\\用于对？的转义
             const regularItem = this.insertStr(item, charIndex, "\\");
             // 解析为img标签
-            const imgTag = `<img width="100%" height="100%" src="${imgSrc}" alt="聊天图片">`;
-            // 替换匹配的字符串为img标签:全局替换
-            msgText = msgText.replace(
-              new RegExp(`/${regularItem}/`, "g"),
-              imgTag
-            );
-          }
-          // 判断是否为gif
-          if (item.includes("gif")) {
-            const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${item}`;
-            // 解析为img标签
-            const imgTag = `<img width="100%" height="100%" src="${imgSrc}" alt="聊天图片">`;
-            // 替换匹配的字符串为img标签:全局替换
-            msgText = msgText.replace(new RegExp(`/${item}/`, "g"), imgTag);
+            const imgTag = `<img width="${thisImgWidth}px" height="${thisImgHeight}px" src="${imgSrc}" alt="聊天图片">`;
+            if (item.includes("gif")) {
+              // 按照gif的规则替换匹配的字符串为img标签:全局替换
+              msgText = msgText.replace(new RegExp(`/${item}/`, "g"), imgTag);
+            } else {
+              // 替换匹配的字符串为img标签:全局替换
+              msgText = msgText.replace(
+                new RegExp(`/${regularItem}/`, "g"),
+                imgTag
+              );
+            }
           }
           // 表情渲染: 遍历表情配置文件
           for (const emojiItem of this.emojiList) {
@@ -764,10 +783,25 @@ export default defineComponent({
       // 渲染页面
       this.senderMessageList.push(msgObj);
       // 修改滚动条位置
-      this.$nextTick(() => {
+      await this.$nextTick(() => {
         if (this.$refs.messagesContainer?.scrollHeight) {
           this.$refs.messagesContainer.scrollTop = this.$refs.messagesContainer.scrollHeight;
         }
+      });
+    },
+    // 获取图片宽高
+    getImageInfo: async function(url: string) {
+      const img = new Image();
+      img.src = url;
+      return new Promise((resolve, reject) => {
+        img.onload = () => {
+          const imgWidth = img.naturalWidth;
+          const imgHeight = img.naturalHeight;
+          resolve({ imgWidth: imgWidth, imgHeight: imgHeight });
+        };
+        img.onerror = e => {
+          reject(e);
+        };
       });
     },
     // 获取url参数
@@ -916,7 +950,12 @@ export default defineComponent({
     },
     // 判断是否为图片
     isImg: function(str: string) {
-      return str.includes("jpeg") || str.includes("png") || str.includes("jpg");
+      return (
+        str.includes("jpeg") ||
+        str.includes("png") ||
+        str.includes("jpg") ||
+        str.includes("gif")
+      );
     },
     // 字符串指定位置添加字符
     insertStr: function(source: string, start: number, newStr: string) {
