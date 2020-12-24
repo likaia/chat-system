@@ -107,8 +107,6 @@
           min-height: 40px;
           background: #f4f3f3;
           border-radius: 5px;
-          display: flex;
-          align-items: center;
           padding: 10px;
           box-sizing: border-box;
           margin-top: 28px;
@@ -230,8 +228,6 @@
             line-height: 23px;
             // 强制换行
             word-break: break-all;
-            display: flex;
-            align-items: center;
             cursor: pointer;
 
             img{

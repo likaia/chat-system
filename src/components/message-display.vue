@@ -564,7 +564,7 @@ export default defineComponent({
     getThisWindowHeight: () => window.innerHeight,
     getThisWindowWidth: () => window.innerWidth,
     // 消息发送
-    sendMessage: function(event: KeyboardEvent) {
+    sendMessage: async function(event: KeyboardEvent) {
       // 阻止编辑框默认生成div事件
       event.preventDefault();
       // 获取输入框的内容
@@ -572,7 +572,7 @@ export default defineComponent({
       // 获取输入框下的所有子元素
       const allNodes = (event.target as Node).childNodes;
       for (const item of allNodes) {
-        // 判断当前类型获取元素内的内容
+        // 判断当前类型，获取元素内的内容
         switch (item.nodeName) {
           case "IMG":
             // 获取图片消息并拼接
@@ -592,59 +592,12 @@ export default defineComponent({
               const formData = new FormData();
               // 此处的file与后台取值时的属性一样,append时需要添加文件名，否则一直是blob
               formData.append("file", imgFile, fileName);
-              // 将图片上传至服务器
-              this.$api.fileManageAPI
-                .upload(formData)
-                .then((res: responseDataType) => {
-                  // 文件上传失败
-                  if (!_.isEqual(res.code, 0)) {
-                    alert(res.msg);
-                    return;
-                  }
-                  // 图片名
-                  let msgImgName = "";
-                  const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${res.fileName}`;
-                  // 获取图片大小
-                  const img = new Image();
-                  let imgWidth = 0;
-                  let imgHeight = 0;
-                  // 赋值图片地址
-                  img.src = imgSrc;
-                  // 判断图片是否有缓存
-                  if (img.complete) {
-                    imgWidth = img.width;
-                    imgHeight = img.height;
-                    msgImgName = `/${res.fileName}?width:${imgWidth}&height:${imgHeight}/`;
-                    // 消息发送: 发送图片
-                    this.$socket.sendObj({
-                      msg: msgImgName,
-                      buddyId: this.buddyId,
-                      messageStatus: this.messageStatus,
-                      code: 0,
-                      avatarSrc: this.$store.state.profilePicture,
-                      token: this.$store.state.token,
-                      msgId: this.listId
-                    });
-                  } else {
-                    img.onload = () => {
-                      imgWidth = img.width;
-                      imgHeight = img.height;
-                      msgImgName = `/${res.fileName}?width=${imgWidth}&height=${imgHeight}/`;
-                      // 消息发送: 发送图片
-                      this.$socket.sendObj({
-                        msg: msgImgName,
-                        buddyId: this.buddyId,
-                        messageStatus: this.messageStatus,
-                        code: 0,
-                        avatarSrc: this.$store.state.profilePicture,
-                        token: this.$store.state.token,
-                        msgId: this.listId
-                      });
-                    };
-                  }
-                  // 清空输入框中的内容
-                  (event.target as Element).innerHTML = "";
-                });
+              // 上传图片获取图片地址
+              const res: { code: number; msg: string } = await this.uploadImage(
+                formData
+              );
+              // 将图片地址拼接至待发送消息中
+              msgText += res.msg;
             } else {
               // 是表情，向msgText追加内容
               msgText += `/${(item as HTMLImageElement).alt}/`;
@@ -676,6 +629,44 @@ export default defineComponent({
         // 清空输入框中的内容
         (event.target as Element).innerHTML = "";
       }
+    },
+    // 上传图片
+    uploadImage: async function(formData: FormData) {
+      return new Promise((resolve, reject) => {
+        // 将图片上传至服务器
+        this.$api.fileManageAPI
+          .upload(formData)
+          .then((res: responseDataType) => {
+            // 文件上传失败
+            if (!_.isEqual(res.code, 0)) {
+              alert(res.msg);
+              reject({ msg: res.msg, code: -1 });
+            }
+            // 图片名
+            let msgImgName = "";
+            const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${res.fileName}`;
+            // 获取图片大小
+            const img = new Image();
+            let imgWidth = 0;
+            let imgHeight = 0;
+            // 赋值图片地址
+            img.src = imgSrc;
+            // 判断图片是否有缓存
+            if (img.complete) {
+              imgWidth = img.width;
+              imgHeight = img.height;
+              msgImgName = `/${res.fileName}?width:${imgWidth}&height:${imgHeight}/`;
+              resolve({ msg: msgImgName, code: 0 });
+            } else {
+              img.onload = () => {
+                imgWidth = img.width;
+                imgHeight = img.height;
+                msgImgName = `/${res.fileName}?width=${imgWidth}&height=${imgHeight}/`;
+                resolve({ msg: msgImgName, code: 0 });
+              };
+            }
+          });
+      });
     },
     //  渲染页面
     renderPage: function(msgArray: Array<msgListType>, msgObj: msgListType) {
@@ -751,7 +742,7 @@ export default defineComponent({
             // 生成正则表达式条件，添加\\用于对？的转义
             const regularItem = this.insertStr(item, charIndex, "\\");
             // 解析为img标签
-            const imgTag = `<img width="${thisImgWidth}px" height="${thisImgHeight}px" src="${imgSrc}" alt="聊天图片">`;
+            const imgTag = `<img style="display: block" width="${thisImgWidth}px" height="${thisImgHeight}px" src="${imgSrc}" alt="聊天图片">`;
             // 替换匹配的字符串为img标签:全局替换
             msgText = msgText.replace(
               new RegExp(`/${regularItem}/`, "g"),
