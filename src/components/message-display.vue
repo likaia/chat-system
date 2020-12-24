@@ -752,23 +752,17 @@ export default defineComponent({
             const regularItem = this.insertStr(item, charIndex, "\\");
             // 解析为img标签
             const imgTag = `<img width="${thisImgWidth}px" height="${thisImgHeight}px" src="${imgSrc}" alt="聊天图片">`;
-            if (item.includes("gif")) {
-              // 按照gif的规则替换匹配的字符串为img标签:全局替换
-              msgText = msgText.replace(new RegExp(`/${item}/`, "g"), imgTag);
-            } else {
-              // 替换匹配的字符串为img标签:全局替换
-              msgText = msgText.replace(
-                new RegExp(`/${regularItem}/`, "g"),
-                imgTag
-              );
-            }
+            // 替换匹配的字符串为img标签:全局替换
+            msgText = msgText.replace(
+              new RegExp(`/${regularItem}/`, "g"),
+              imgTag
+            );
           }
           // 表情渲染: 遍历表情配置文件
           for (const emojiItem of this.emojiList) {
             // 判断捕获到的字符串与配置文件中的字符串是否相同
             if (emojiItem.info === item) {
-              // eslint-disable-next-line @typescript-eslint/no-var-requires
-              const imgSrc = require(`../assets/img/emoji/${emojiItem.hover}`);
+              const imgSrc = require(`../assets/img/emoji/${emojiItem.hover}`) as string;
               const imgTag = `<img src="${imgSrc}" width="28" height="28" alt="${item}">`;
               // 替换匹配的字符串为img标签:全局替换
               msgText = msgText.replace(new RegExp(`/${item}/`, "g"), imgTag);
