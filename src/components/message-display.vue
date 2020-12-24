@@ -46,7 +46,7 @@
               parseInt(
                 senderMessageList[index - 1].createTime.substring(11, 13) +
                   senderMessageList[index - 1].createTime.substring(14, 16)
-              ) >
+              ) >=
               1
           "
         >
