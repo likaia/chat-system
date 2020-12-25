@@ -58,6 +58,11 @@ export type messageDisplayDataType<T> = {
   senderMessageList: Array<msgListType>; // 已发送消息列表
   audioCtx: number; // 当前要播放的音频频率
   arrFrequency: number[]; // 音频频率列表
+  pageStart: number; // 分页起始位置
+  pageEnd: number; // 分页结束位置
+  pageNo: number; // 业码
+  pageSize: number; // 数据量
+  sessionMessageData: Array<msgListType>; // session中存储的聊天记录
 };
 
 // 消息列表对象属性类型定义

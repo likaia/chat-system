@@ -319,7 +319,12 @@ export default defineComponent({
         880.0,
         987.77,
         1046.5
-      ]
+      ],
+      pageStart: 0,
+      pageEnd: 0,
+      pageNo: 1,
+      pageSize: 20,
+      sessionMessageData: []
     };
   },
   created() {
@@ -339,6 +344,8 @@ export default defineComponent({
     // 执行剪切板监听与全局点击事件监听
     this.pasteHandle();
     this.globalClick();
+    // 监听消息容器滚动
+    this.containerScroll();
     // 监听消息接收
     this.$options.sockets.onmessage = (res: { data: string }) => {
       const data = JSON.parse(res.data);
@@ -668,8 +675,62 @@ export default defineComponent({
           });
       });
     },
+    // 消息容器滚动监听
+    containerScroll: function() {
+      const messagesContainer = this.$refs.messagesContainer;
+      // 横向滚动条起始位置
+      let levelPosition = messagesContainer.scrollLeft;
+      messagesContainer.onscroll = () => {
+        // 触顶加载数据
+        if (messagesContainer.scrollTop === 0) {
+          // 横向滚动不加载数据
+          if (messagesContainer.scrollLeft !== levelPosition) {
+            // 更新滚动条位置
+            levelPosition = messagesContainer.scrollLeft;
+            return;
+          }
+          // 加载数据
+          this.readSessionData(this.pageStart, this.pageEnd);
+        }
+      };
+    },
+    // 从session中读取数据
+    readSessionData(pageStart: number, pageEnd: number) {
+      if (this.sessionMessageData.length === 0) {
+        // 第一次从本地存储中拿数据，将其放进sessionMessageData中
+        this.sessionMessageData = JSON.parse(
+          sessionStorage.getItem("messageTextList") as string
+        );
+      }
+      const finalMsgList: Array<msgListType> = [];
+      for (let i = pageStart; i < pageEnd; i++) {
+        // 向数组头部追加数据
+        finalMsgList.unshift(this.sessionMessageData[i]);
+      }
+      if (finalMsgList.length === 0) {
+        alert("数据已加载完毕");
+      } else {
+        // 渲染消息列表，插入到数组头部
+        this.renderPage(finalMsgList, {}, true);
+        // 更新起始位置与结束位置
+        if (pageStart < this.pageSize) {
+          // 数量不足，取出0至起始位置的值
+          this.pageStart = 0;
+          this.pageEnd = pageStart;
+        } else {
+          // 更新结束位置：起始位置
+          this.pageEnd = this.pageStart;
+          // 更新起始位置：结束位置-数据大小
+          this.pageStart = this.pageEnd - this.pageSize;
+        }
+      }
+    },
     //  渲染页面
-    renderPage: function(msgArray: Array<msgListType>, msgObj: msgListType) {
+    renderPage: function(
+      msgArray: Array<msgListType>,
+      msgObj: msgListType,
+      insertStart?: boolean
+    ) {
       if (msgArray.length > 0) {
         // 页面更新，渲染消息内容列表数据
         for (let i = 0; i < msgArray.length; i++) {
@@ -681,7 +742,7 @@ export default defineComponent({
             createTime: msgArray[i].createTime
           };
           // 解析并渲染
-          this.messageParsing(thisSenderMessageObj);
+          this.messageParsing(thisSenderMessageObj, insertStart);
         }
       } else {
         // 接收到服务端推送的新消息，渲染单个消息对象
@@ -693,11 +754,11 @@ export default defineComponent({
           createTime: msgObj?.createTime
         };
         // 解析并渲染
-        this.messageParsing(thisSenderMessageObj);
+        this.messageParsing(thisSenderMessageObj, insertStart);
       }
     },
     // 消息解析
-    messageParsing: async function(msgObj: msgListType) {
+    messageParsing: async function(msgObj: msgListType, insertStart?: boolean) {
       // 消息内容为空不渲染
       if (msgObj.msgText == null) {
         return false;
@@ -731,11 +792,17 @@ export default defineComponent({
               thisImgWidth = imgInfo.imgWidth;
               thisImgHeight = imgInfo.imgHeight;
             }
-            // 图片大于400px则缩放
+            // 图片宽度大于300px缩放4倍
             if (thisImgWidth > 400) {
               // 缩放四倍
               thisImgWidth = thisImgWidth / 4;
               thisImgHeight = thisImgHeight / 4;
+            }
+            // 缩放后的图片高度大于300再次缩放3倍
+            if (thisImgHeight > 300) {
+              // 缩放6倍
+              thisImgWidth = thisImgWidth / 3;
+              thisImgHeight = thisImgHeight / 3;
             }
             // 找到item中?位置，在?之前添加\\进行转义，解决正则无法匹配特殊字符问题
             const charIndex = item.indexOf("?");
@@ -766,13 +833,19 @@ export default defineComponent({
       }
       msgObj.msgText = finalMsgText;
       // 渲染页面
-      this.senderMessageList.push(msgObj);
-      // 修改滚动条位置
-      await this.$nextTick(() => {
-        if (this.$refs.messagesContainer?.scrollHeight) {
-          this.$refs.messagesContainer.scrollTop = this.$refs.messagesContainer.scrollHeight;
-        }
-      });
+      if (insertStart) {
+        // 向数组头部添加消息对象
+        this.senderMessageList.unshift(msgObj);
+      } else {
+        // 向数组尾部添加消息对象
+        this.senderMessageList.push(msgObj);
+        // 修改滚动条位置
+        await this.$nextTick(() => {
+          if (this.$refs.messagesContainer?.scrollHeight) {
+            this.$refs.messagesContainer.scrollTop = this.$refs.messagesContainer.scrollHeight;
+          }
+        });
+      }
     },
     // 获取图片宽高
     getImageInfo: async function(url: string) {
@@ -956,12 +1029,30 @@ export default defineComponent({
       this.$api.messageListAPI
         .getMessageTextList({ msgId: msgId, userId: this.userID })
         .then((res: responseDataType) => {
+          // 消息内容列表
+          const messageTextList: Array<msgListType> = res.data.messageTextList;
           if (res.code === 0) {
-            // 消息内容列表
-            const messageTextList: Array<msgListType> =
-              res.data.messageTextList;
+            // 将聊天记录放进sessionStorage中
+            sessionStorage.setItem(
+              "messageTextList",
+              JSON.stringify(messageTextList)
+            );
+            // 截取特定条数消息
+            const finalMsgList: Array<msgListType> = [];
+            // 结束位置：数组长度
+            this.pageEnd = messageTextList.length;
+            // 起始位置：结束位置-数据大小
+            this.pageStart = this.pageEnd - this.pageSize;
+            // 截取起始位置至结束位置的数据
+            for (let i = this.pageStart; i < this.pageEnd; i++) {
+              finalMsgList.push(messageTextList[i]);
+            }
+            // 更新结束位置：起始位置
+            this.pageEnd = this.pageStart;
+            // 更新起始位置：结束位置-数据大小
+            this.pageStart = this.pageEnd - this.pageSize;
             // 渲染消息列表
-            this.renderPage(messageTextList, {});
+            this.renderPage(finalMsgList, {});
           } else {
             alert(res.msg);
           }
