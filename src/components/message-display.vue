@@ -631,7 +631,7 @@ export default defineComponent({
       }
     },
     // 上传图片
-    uploadImage: async function(formData: FormData) {
+    uploadImage: function(formData: FormData) {
       return new Promise((resolve, reject) => {
         // 将图片上传至服务器
         this.$api.fileManageAPI
