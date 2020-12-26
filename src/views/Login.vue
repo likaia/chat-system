@@ -30,7 +30,7 @@
             class="file"
             name="file"
             type="file"
-            accept="image/png,image/gif,image/jpeg"
+            accept="image/png,image/gif,image/jpeg,image/jpg"
             @change="uploadAvatar($event)"
           />
         </div>
