@@ -26,6 +26,12 @@
     </div>
     <!--消息显示-->
     <div class="messages-panel" ref="messagesContainer">
+      <div class="loading-msg-panel" v-if="isLoading">
+        <img
+          src="../assets/img/messageDisplay/Translate_AIO_Loading@2x.png"
+          alt="加载消息"
+        />
+      </div>
       <div
         class="row-panel"
         v-for="(item, index) in senderMessageList"
@@ -324,7 +330,11 @@ export default defineComponent({
       pageEnd: 0,
       pageNo: 1,
       pageSize: 20,
-      sessionMessageData: []
+      sessionMessageData: [],
+      msgListPanelHeight: 0,
+      isLoading: false,
+      msgTotals: 0,
+      isFirstLoading: true
     };
   },
   created() {
@@ -680,17 +690,25 @@ export default defineComponent({
       const messagesContainer = this.$refs.messagesContainer;
       // 横向滚动条起始位置
       let levelPosition = messagesContainer.scrollLeft;
+      // 加载消息定时器
+      let loadingtime = 0;
       messagesContainer.onscroll = () => {
-        // 触顶加载数据
-        if (messagesContainer.scrollTop === 0) {
+        // 触顶加载数据且不是页面第一次加载
+        if (messagesContainer.scrollTop === 0 && !this.isFirstLoading) {
           // 横向滚动不加载数据
           if (messagesContainer.scrollLeft !== levelPosition) {
             // 更新滚动条位置
             levelPosition = messagesContainer.scrollLeft;
             return;
           }
-          // 加载数据
-          this.readSessionData(this.pageStart, this.pageEnd);
+          // 清理上次的消息定时器
+          clearTimeout(loadingtime);
+          // 显示加载动画
+          this.isLoading = true;
+          loadingtime = setTimeout(() => {
+            // 加载数据
+            this.readSessionData(this.pageStart, this.pageEnd);
+          }, 500);
         }
       };
     },
@@ -707,9 +725,7 @@ export default defineComponent({
         // 向数组头部追加数据
         finalMsgList.unshift(this.sessionMessageData[i]);
       }
-      if (finalMsgList.length === 0) {
-        alert("数据已加载完毕");
-      } else {
+      if (finalMsgList.length !== 0) {
         // 渲染消息列表，插入到数组头部
         this.renderPage(finalMsgList, {}, true);
         // 更新起始位置与结束位置
@@ -723,6 +739,9 @@ export default defineComponent({
           // 更新起始位置：结束位置-数据大小
           this.pageStart = this.pageEnd - this.pageSize;
         }
+      } else {
+        // 所有消息加载完成，隐藏加载动画
+        this.isLoading = false;
       }
     },
     //  渲染页面
@@ -732,6 +751,8 @@ export default defineComponent({
       insertStart?: boolean
     ) {
       if (msgArray.length > 0) {
+        // 待渲染消息总条数
+        this.msgTotals = msgArray.length;
         // 页面更新，渲染消息内容列表数据
         for (let i = 0; i < msgArray.length; i++) {
           const thisSenderMessageObj: msgListType = {
@@ -792,15 +813,15 @@ export default defineComponent({
               thisImgWidth = imgInfo.imgWidth;
               thisImgHeight = imgInfo.imgHeight;
             }
-            // 图片宽度大于300px缩放4倍
+            // 图片宽度大于400px缩放4倍
             if (thisImgWidth > 400) {
               // 缩放四倍
               thisImgWidth = thisImgWidth / 4;
               thisImgHeight = thisImgHeight / 4;
             }
-            // 缩放后的图片高度大于300再次缩放3倍
-            if (thisImgHeight > 300) {
-              // 缩放6倍
+            // 缩放后的图片高度大于400再次缩放3倍
+            if (thisImgHeight > 400) {
+              // 缩放3倍
               thisImgWidth = thisImgWidth / 3;
               thisImgHeight = thisImgHeight / 3;
             }
@@ -836,13 +857,36 @@ export default defineComponent({
       if (insertStart) {
         // 向数组头部添加消息对象
         this.senderMessageList.unshift(msgObj);
+        // 修改滚动条位置
+        await this.$nextTick(() => {
+          if (this.$refs.messagesContainer?.scrollHeight) {
+            // 加载历史消息，修改滚动条位置：当前消息记录容器高度 - 消息记录容器高度
+            this.$refs.messagesContainer.scrollTop =
+              this.$refs.messagesContainer.scrollHeight -
+              this.msgListPanelHeight;
+            // 一条消息渲染完成，待渲染消息总条数自减
+            this.msgTotals--;
+            // 判断消息是否渲染完成
+            if (this.msgTotals === 0) {
+              // 隐藏加载动画
+              this.isLoading = false;
+              // 加载历史消息完成，更新消息记录容器高度
+              this.msgListPanelHeight = this.$refs.messagesContainer.scrollHeight;
+            }
+          }
+        });
       } else {
         // 向数组尾部添加消息对象
         this.senderMessageList.push(msgObj);
         // 修改滚动条位置
         await this.$nextTick(() => {
           if (this.$refs.messagesContainer?.scrollHeight) {
+            // 新消息渲染完成，修改滚动条位置
             this.$refs.messagesContainer.scrollTop = this.$refs.messagesContainer.scrollHeight;
+            // 更新消息记录容器高度
+            this.msgListPanelHeight = this.$refs.messagesContainer.scrollHeight;
+            // 修改组件第一次加载状态
+            this.isFirstLoading = false;
           }
         });
       }
@@ -1032,27 +1076,33 @@ export default defineComponent({
           // 消息内容列表
           const messageTextList: Array<msgListType> = res.data.messageTextList;
           if (res.code === 0) {
-            // 将聊天记录放进sessionStorage中
-            sessionStorage.setItem(
-              "messageTextList",
-              JSON.stringify(messageTextList)
-            );
-            // 截取特定条数消息
-            const finalMsgList: Array<msgListType> = [];
-            // 结束位置：数组长度
-            this.pageEnd = messageTextList.length;
-            // 起始位置：结束位置-数据大小
-            this.pageStart = this.pageEnd - this.pageSize;
-            // 截取起始位置至结束位置的数据
-            for (let i = this.pageStart; i < this.pageEnd; i++) {
-              finalMsgList.push(messageTextList[i]);
+            if (messageTextList.length > 0) {
+              // 将聊天记录放进sessionStorage中
+              sessionStorage.setItem(
+                "messageTextList",
+                JSON.stringify(messageTextList)
+              );
+              // 截取特定条数消息
+              const finalMsgList: Array<msgListType> = [];
+              // 结束位置：数组长度
+              this.pageEnd = messageTextList.length;
+              // 起始位置：结束位置-数据大小
+              this.pageStart = this.pageEnd - this.pageSize;
+              if (this.pageStart < 0) {
+                // 起始位置不能为负数
+                this.pageStart = 0;
+              }
+              // 截取起始位置至结束位置的数据
+              for (let i = this.pageStart; i < this.pageEnd; i++) {
+                finalMsgList.push(messageTextList[i]);
+              }
+              // 更新结束位置：起始位置
+              this.pageEnd = this.pageStart;
+              // 更新起始位置：结束位置-数据大小
+              this.pageStart = this.pageEnd - this.pageSize;
+              // 渲染消息列表
+              this.renderPage(finalMsgList, {});
             }
-            // 更新结束位置：起始位置
-            this.pageEnd = this.pageStart;
-            // 更新起始位置：结束位置-数据大小
-            this.pageStart = this.pageEnd - this.pageSize;
-            // 渲染消息列表
-            this.renderPage(finalMsgList, {});
           } else {
             alert(res.msg);
           }
@@ -1075,8 +1125,18 @@ export default defineComponent({
   },
   watch: {
     listId: function(newMsgId: string) {
-      // 消息id发生改变,晴空消息列表数据
+      // 消息id发生改变,清空消息列表数据
       this.senderMessageList = [];
+      // 初始化分页数据
+      this.sessionMessageData = [];
+      this.pageStart = 0;
+      this.pageEnd = 0;
+      this.pageNo = 0;
+      this.msgTotals = 0;
+      this.msgListPanelHeight = 0;
+      this.isLoading = false;
+      this.isFirstLoading = true;
+      sessionStorage.removeItem("messageTextList");
       // 重新获取消息内容
       this.getMessageTextList(newMsgId);
       if (_.isEqual(this.messageStatus, 1)) {

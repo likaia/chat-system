@@ -63,6 +63,10 @@ export type messageDisplayDataType<T> = {
   pageNo: number; // 业码
   pageSize: number; // 数据量
   sessionMessageData: Array<msgListType>; // session中存储的聊天记录
+  msgListPanelHeight: number; // 消息记录容器高度
+  isLoading: boolean; // 是否正在加载消息
+  msgTotals: number; // 待渲染消息总条数
+  isFirstLoading: boolean; // 组件是否第一次加载
 };
 
 // 消息列表对象属性类型定义
