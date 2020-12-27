@@ -157,7 +157,7 @@ export default defineComponent({
     const username = localStorage.getItem("username");
     if (this.isMobile()) {
       // 移动端打开直接跳转至消息列表
-      if (document.domain.includes("kaisir.cn")) {
+      if (window.location.href.includes("kaisir.cn")) {
         // 跳转至生产环境404页面
         window.location.href = "/chat-system/404-page/index.html";
       }
