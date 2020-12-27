@@ -27,13 +27,9 @@ const websiteManageAPI = {
     return services.post(`${base.lk}/user/getUserDataByUid`, params);
   },
   // 根据用户id获取好友列表
-  getFriendsList<T>(params: paramsType<T>){
+  getFriendsList<T>(params: paramsType<T>) {
     return services.post(`${base.lk}/user/getFriendsList`, params);
   },
-  // 获取家里电量信息
-  getRoomBatteryInfo<T>(params: paramsType<T>) {
-    return services.post(`${base.lkBaseURL}/other/getRoomBatteryInfo`, params);
-
   // token续期
   tokenRenew<T>(params: paramsType<T>) {
     return services.post(`${base.lk}/user/tokenRenew`, params);
