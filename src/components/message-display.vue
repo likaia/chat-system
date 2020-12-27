@@ -26,7 +26,38 @@
     </div>
     <!--消息显示-->
     <div class="messages-panel" ref="messagesContainer">
-      <div class="row-panel" v-for="item in senderMessageList" :key="item.id">
+      <div class="loading-msg-panel" v-if="isLoading">
+        <img
+          src="../assets/img/messageDisplay/Translate_AIO_Loading@2x.png"
+          alt="加载消息"
+        />
+      </div>
+      <div
+        class="row-panel"
+        v-for="(item, index) in senderMessageList"
+        :key="item.id"
+      >
+        <!--消息发送时间:当前发送消息为第一条显示时间-->
+        <div class="sender-time-panel" v-if="index === 0">
+          <span>{{ item.createTime.substring(5, 16) }}</span>
+        </div>
+        <!--当前消息与上一条消息发送时间截取时分进行相减大于1就显示时间-->
+        <div
+          class="sender-time-panel"
+          v-else-if="
+            parseInt(
+              item.createTime.substring(11, 13) +
+                item.createTime.substring(14, 16)
+            ) -
+              parseInt(
+                senderMessageList[index - 1].createTime.substring(11, 13) +
+                  senderMessageList[index - 1].createTime.substring(14, 16)
+              ) >=
+              1
+          "
+        >
+          <span>{{ item.createTime.substring(5, 16) }}</span>
+        </div>
         <!--发送者消息样式-->
         <div
           class="sender-panel"
@@ -84,7 +115,63 @@
     <div class="user-input-panel" @click="getEditableDivFocus()">
       <div class="toolbar-panel">
         <div class="item-panel" v-for="item in toolbarList" :key="item.info">
+          <div v-if="item.name === 'selectImg'" class="file-panel">
+            <img
+              class="emoticon"
+              ref="selectImg"
+              :src="require(`../assets/img/${item.src}`)"
+              :alt="item.info"
+            />
+            <input
+              class="file"
+              name="file"
+              type="file"
+              accept="image/png,image/gif,image/jpeg"
+              @mouseenter="
+                toolbarSwitch(
+                  'hover',
+                  $event,
+                  item.src,
+                  item.hover,
+                  item.down,
+                  item.name
+                )
+              "
+              @mouseleave="
+                toolbarSwitch(
+                  'leave',
+                  $event,
+                  item.src,
+                  item.hover,
+                  item.down,
+                  item.name
+                )
+              "
+              @mousedown="
+                toolbarSwitch(
+                  'down',
+                  $event,
+                  item.src,
+                  item.hover,
+                  item.down,
+                  item.name
+                )
+              "
+              @mouseup="
+                toolbarSwitch(
+                  'up',
+                  $event,
+                  item.src,
+                  item.hover,
+                  item.down,
+                  item.name
+                )
+              "
+              @change="sendImage($event)"
+            />
+          </div>
           <img
+            v-else
             class="emoticon"
             :src="require(`../assets/img/${item.src}`)"
             @mouseenter="
@@ -135,7 +222,7 @@
         id="msgInputContainer"
         class="input-panel"
         ref="msgInputContainer"
-        @keydown.enter.exact="sendMessage($event)"
+        @keypress.enter.exact="sendMessage($event)"
         contenteditable="true"
         spellcheck="false"
       ></div>
@@ -146,11 +233,7 @@
         ref="emoticonPanel"
       >
         <div class="row-panel">
-          <div
-            class="item-panel"
-            v-for="item in this.emojiList"
-            :key="item.info"
-          >
+          <div class="item-panel" v-for="item in emojiList" :key="item.info">
             <img
               :src="require(`../assets/img/emoji/${item.src}`)"
               :alt="item.info"
@@ -202,12 +285,6 @@ export default defineComponent({
     buddyId: String, // 好友id
     buddyName: String // 好友昵称
   },
-  created() {
-    this.$socket.sendObj({
-      code: 200,
-      msg: "连接成功"
-    });
-  },
   data<T>(): messageDisplayDataType<T> {
     return {
       images: [],
@@ -248,8 +325,25 @@ export default defineComponent({
         880.0,
         987.77,
         1046.5
-      ]
+      ],
+      pageStart: 0,
+      pageEnd: 0,
+      pageNo: 1,
+      pageSize: 20,
+      sessionMessageData: [],
+      msgListPanelHeight: 0,
+      isLoading: false,
+      msgTotals: 0,
+      isFirstLoading: true
     };
+  },
+  created() {
+    this.$socket.sendObj({
+      code: 200,
+      token: this.$store.state.token,
+      userID: this.$store.state.userID,
+      msg: this.userID + "加入群聊"
+    });
   },
   mounted() {
     // 设置列容器高度
@@ -260,12 +354,18 @@ export default defineComponent({
     // 执行剪切板监听与全局点击事件监听
     this.pasteHandle();
     this.globalClick();
+    // 监听消息容器滚动
+    this.containerScroll();
     // 监听消息接收
     this.$options.sockets.onmessage = (res: { data: string }) => {
       const data = JSON.parse(res.data);
       if (data.code === 200) {
         // 更新在线人数
         this.$store.commit("updateOnlineUsers", data.onlineUsers);
+      } else if (data.code === -1) {
+        // 消息发送失败
+        alert(data.msg);
+        return;
       } else {
         // 更新在线人数
         this.$store.commit("updateOnlineUsers", data.onlineUsers);
@@ -273,9 +373,10 @@ export default defineComponent({
         const msgObj: msgListType = {
           msgText: data.msg,
           avatarSrc: data.avatarSrc,
-          id: data?.id,
           createTime: data.createTime,
           userId: data.userID,
+          buddyId: data.buddyId,
+          messageStatus: data.messageStatus,
           userName: data.username
         };
         // 播放消息提示音:判断当前消息是否为对方发送
@@ -315,8 +416,30 @@ export default defineComponent({
           // 2秒后停止声音
           oscillator.stop(this.audioCtx.currentTime + 2);
         }
-        // 渲染页面
-        this.renderPage([], msgObj);
+        // 接收方消息：列表id == 消息推送方id，且消息状态为单聊
+        if (
+          _.isEqual(this.listId, msgObj.userId) &&
+          msgObj.messageStatus === 0
+        ) {
+          // 渲染页面
+          this.renderPage([], msgObj);
+        }
+        // 发送方消息：当前登录用户id == 消息发送方id，且消息状态为单聊
+        if (
+          _.isEqual(this.userID, msgObj.userId) &&
+          msgObj.messageStatus === 0
+        ) {
+          // 渲染页面
+          this.renderPage([], msgObj);
+        }
+        // 群聊消息：消息状态为1，列表id == 消息接收方id
+        if (
+          msgObj.messageStatus === 1 &&
+          _.isEqual(this.listId, msgObj.buddyId)
+        ) {
+          // 渲染页面
+          this.renderPage([], msgObj);
+        }
       }
     };
   },
@@ -324,8 +447,18 @@ export default defineComponent({
     // 处理剪切板粘贴
     pasteHandle: function() {
       document.body.addEventListener("paste", event => {
-        // 获取当前输入框内的文字
-        const oldText = this.$refs.msgInputContainer.textContent;
+        // 处理文本数据，移除样式
+        event.preventDefault();
+        const text =
+          event.clipboardData && event.clipboardData.getData("text/plain");
+        if (text?.includes("gif")) {
+          alert("无法上传gif，请使用工具栏中的选择图片");
+          return;
+        }
+        // text存在且不是img则将其插入可编辑div中
+        if (!_.isEmpty(text) && !_.isNull(text) && !this.isImg(text)) {
+          document.execCommand("insertText", false, text);
+        }
         // 读取图片
         const items = event.clipboardData && event.clipboardData.items;
         let file: Blob | null = null;
@@ -360,10 +493,10 @@ export default defineComponent({
               // 输入框图片显示缩小10倍
               imgWidth = imgObj.width / 10;
               imgHeight = imgObj.height / 10;
-              // 图片宽度大于1920，图片压缩5倍
+              // 图片宽度大于1920，图片压缩1.5倍
               if (imgObj.width > 1920) {
-                // 真实比例缩小5倍
-                scale = 5;
+                // 真实比例缩小1.5倍
+                scale = 1.5;
               }
             }
             // 设置可编辑div中图片宽高
@@ -374,8 +507,6 @@ export default defineComponent({
               imgContent as string,
               scale,
               (newBlob: Blob, newBase: string) => {
-                // 删除可编辑div中的图片名称
-                this.$refs.msgInputContainer.textContent = oldText;
                 img.src = newBase; // 设置链接
                 // 图片渲染
                 this.$refs.msgInputContainer.append(img);
@@ -383,7 +514,10 @@ export default defineComponent({
             );
           };
         };
-        reader.readAsDataURL(file as Blob);
+        if (file) {
+          // 文件不为空时渲染
+          reader.readAsDataURL(file);
+        }
       });
     },
     // base图片压缩
@@ -447,17 +581,19 @@ export default defineComponent({
     getThisWindowHeight: () => window.innerHeight,
     getThisWindowWidth: () => window.innerWidth,
     // 消息发送
-    sendMessage: function(event: KeyboardEvent) {
-      if (event.key === "Enter") {
-        // 阻止编辑框默认生成div事件
-        event.preventDefault();
-        let msgText = "";
-        // 获取输入框下的所有子元素
-        const allNodes = (event.target as Node).childNodes;
-        for (const item of allNodes) {
-          // 判断当前元素是否为img元素
-          if (item.nodeName === "IMG") {
-            if ((item as HTMLImageElement).alt === "") {
+    sendMessage: async function(event: KeyboardEvent) {
+      // 阻止编辑框默认生成div事件
+      event.preventDefault();
+      // 获取输入框的内容
+      let msgText = "";
+      // 获取输入框下的所有子元素
+      const allNodes = (event.target as Node).childNodes;
+      for (const item of allNodes) {
+        // 判断当前类型，获取元素内的内容
+        switch (item.nodeName) {
+          case "IMG":
+            // 获取图片消息并拼接
+            if (_.isEmpty((item as HTMLImageElement).alt)) {
               // 是图片
               let base64Img = (item as HTMLImageElement).src;
               // 删除base64图片的前缀
@@ -473,111 +609,177 @@ export default defineComponent({
               const formData = new FormData();
               // 此处的file与后台取值时的属性一样,append时需要添加文件名，否则一直是blob
               formData.append("file", imgFile, fileName);
-              // 将图片上传至服务器
-              this.$api.fileManageAPI
-                .upload(formData)
-                .then((res: responseDataType) => {
-                  let msgImgName = "";
-                  const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${res.fileName}`;
-                  // 获取图片大小
-                  const img = new Image();
-                  let imgWidth = 0;
-                  let imgHeight = 0;
-                  // 判断参数是否为url
-                  img.src = imgSrc;
-                  // 判断图片是否有缓存
-                  if (img.complete) {
-                    imgWidth = img.width;
-                    imgHeight = img.height;
-                    msgImgName = `/${res.fileName}?width:${imgWidth}&height:${imgHeight}/`;
-                    // 消息发送: 发送图片
-                    this.$socket.sendObj({
-                      msg: msgImgName,
-                      buddyId: this.buddyId,
-                      code: 0,
-                      username: this.$store.state.username,
-                      avatarSrc: this.$store.state.profilePicture,
-                      userID: this.$store.state.userID,
-                      msgId: this.listId
-                    });
-                  } else {
-                    img.onload = () => {
-                      imgWidth = img.width;
-                      imgHeight = img.height;
-                      msgImgName = `/${res.fileName}?width=${imgWidth}&height=${imgHeight}/`;
-                      // 消息发送: 发送图片
-                      this.$socket.sendObj({
-                        msg: msgImgName,
-                        buddyId: this.buddyId,
-                        code: 0,
-                        username: this.$store.state.username,
-                        avatarSrc: this.$store.state.profilePicture,
-                        userID: this.$store.state.userID,
-                        msgId: this.listId
-                      });
-                    };
-                  }
-                  // 清空输入框中的内容
-                  (event.target as Element).innerHTML = "";
-                });
+              // 上传图片获取图片地址
+              const res: { code: number; msg: string } = await this.uploadImage(
+                formData
+              );
+              // 将图片地址拼接至待发送消息中
+              msgText += res.msg;
             } else {
+              // 是表情，向msgText追加内容
               msgText += `/${(item as HTMLImageElement).alt}/`;
             }
-          } else {
-            // 获取text节点的值
-            if (item.nodeValue !== null) {
-              msgText += item.nodeValue;
+            break;
+          case "DIV":
+            // 获取div元素节点的值
+            msgText += (item as HTMLDivElement)?.innerText;
+            break;
+          case "#text":
+            // 获取文本消息并拼接
+            msgText += item.nodeValue;
+            break;
+          default:
+            throw "不支持的元素类型" + item;
+        }
+      }
+      // 消息发送: 发送文字，为空则不发送
+      if (msgText.trim().length > 0) {
+        this.$socket.sendObj({
+          msg: msgText,
+          buddyId: this.buddyId,
+          messageStatus: this.messageStatus,
+          code: 0,
+          avatarSrc: this.$store.state.profilePicture,
+          token: this.$store.state.token,
+          msgId: this.listId
+        });
+        // 清空输入框中的内容
+        (event.target as Element).innerHTML = "";
+      }
+    },
+    // 上传图片
+    uploadImage: function(formData: FormData) {
+      return new Promise((resolve, reject) => {
+        // 将图片上传至服务器
+        this.$api.fileManageAPI
+          .upload(formData)
+          .then((res: responseDataType) => {
+            // 文件上传失败
+            if (!_.isEqual(res.code, 0)) {
+              alert(res.msg);
+              reject({ msg: res.msg, code: -1 });
             }
-          }
-        }
-        // 消息发送: 发送文字，为空则不发送
-        if (msgText.trim().length > 0) {
-          this.$socket.sendObj({
-            msg: msgText,
-            buddyId: this.buddyId,
-            code: 0,
-            username: this.$store.state.username,
-            avatarSrc: this.$store.state.profilePicture,
-            userID: this.$store.state.userID,
-            msgId: this.listId
+            // 图片名
+            let msgImgName = "";
+            const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${res.fileName}`;
+            // 获取图片大小
+            const img = new Image();
+            let imgWidth = 0;
+            let imgHeight = 0;
+            // 赋值图片地址
+            img.src = imgSrc;
+            // 判断图片是否有缓存
+            if (img.complete) {
+              imgWidth = img.width;
+              imgHeight = img.height;
+              msgImgName = `/${res.fileName}?width:${imgWidth}&height:${imgHeight}/`;
+              resolve({ msg: msgImgName, code: 0 });
+            } else {
+              img.onload = () => {
+                imgWidth = img.width;
+                imgHeight = img.height;
+                msgImgName = `/${res.fileName}?width=${imgWidth}&height=${imgHeight}/`;
+                resolve({ msg: msgImgName, code: 0 });
+              };
+            }
           });
-          // 清空输入框中的内容
-          (event.target as Element).innerHTML = "";
+      });
+    },
+    // 消息容器滚动监听
+    containerScroll: function() {
+      const messagesContainer = this.$refs.messagesContainer;
+      // 横向滚动条起始位置
+      let levelPosition = messagesContainer.scrollLeft;
+      // 加载消息定时器
+      let loadingtime = 0;
+      messagesContainer.onscroll = () => {
+        // 触顶加载数据且不是页面第一次加载
+        if (messagesContainer.scrollTop === 0 && !this.isFirstLoading) {
+          // 横向滚动不加载数据
+          if (messagesContainer.scrollLeft !== levelPosition) {
+            // 更新滚动条位置
+            levelPosition = messagesContainer.scrollLeft;
+            return;
+          }
+          // 清理上次的消息定时器
+          clearTimeout(loadingtime);
+          // 显示加载动画
+          this.isLoading = true;
+          loadingtime = setTimeout(() => {
+            // 加载数据
+            this.readSessionData(this.pageStart, this.pageEnd);
+          }, 500);
         }
+      };
+    },
+    // 从session中读取数据
+    readSessionData(pageStart: number, pageEnd: number) {
+      if (this.sessionMessageData.length === 0) {
+        // 第一次从本地存储中拿数据，将其放进sessionMessageData中
+        this.sessionMessageData = JSON.parse(
+          sessionStorage.getItem("messageTextList") as string
+        );
+      }
+      const finalMsgList: Array<msgListType> = [];
+      for (let i = pageStart; i < pageEnd; i++) {
+        // 向数组头部追加数据
+        finalMsgList.unshift(this.sessionMessageData[i]);
+      }
+      if (finalMsgList.length !== 0) {
+        // 渲染消息列表，插入到数组头部
+        this.renderPage(finalMsgList, {}, true);
+        // 更新起始位置与结束位置
+        if (pageStart < this.pageSize) {
+          // 数量不足，取出0至起始位置的值
+          this.pageStart = 0;
+          this.pageEnd = pageStart;
+        } else {
+          // 更新结束位置：起始位置
+          this.pageEnd = this.pageStart;
+          // 更新起始位置：结束位置-数据大小
+          this.pageStart = this.pageEnd - this.pageSize;
+        }
+      } else {
+        // 所有消息加载完成，隐藏加载动画
+        this.isLoading = false;
       }
     },
     //  渲染页面
-    renderPage: function(msgArray: Array<msgListType>, msgObj: msgListType) {
+    renderPage: function(
+      msgArray: Array<msgListType>,
+      msgObj: msgListType,
+      insertStart?: boolean
+    ) {
       if (msgArray.length > 0) {
+        // 待渲染消息总条数
+        this.msgTotals = msgArray.length;
         // 页面更新，渲染消息内容列表数据
         for (let i = 0; i < msgArray.length; i++) {
           const thisSenderMessageObj: msgListType = {
             msgText: msgArray[i].msgText,
-            id: msgArray[i].id,
             avatarSrc: msgArray[i].avatarSrc,
             userId: msgArray[i].userId,
             userName: msgArray[i].userName,
             createTime: msgArray[i].createTime
           };
           // 解析并渲染
-          this.messageParsing(thisSenderMessageObj);
+          this.messageParsing(thisSenderMessageObj, insertStart);
         }
       } else {
         // 接收到服务端推送的新消息，渲染单个消息对象
         const thisSenderMessageObj: msgListType = {
           msgText: msgObj.msgText,
-          id: msgObj?.id,
           avatarSrc: msgObj.avatarSrc,
           userId: msgObj.userId,
           userName: msgObj.userName,
           createTime: msgObj?.createTime
         };
         // 解析并渲染
-        this.messageParsing(thisSenderMessageObj);
+        this.messageParsing(thisSenderMessageObj, insertStart);
       }
     },
     // 消息解析
-    messageParsing: function(msgObj: msgListType) {
+    messageParsing: async function(msgObj: msgListType, insertStart?: boolean) {
       // 消息内容为空不渲染
       if (msgObj.msgText == null) {
         return false;
@@ -592,30 +794,43 @@ export default defineComponent({
         for (let item of resultArray) {
           // 删除字符串中的/符号
           item = item.replace(/\//g, "");
-          // 判断是否为图片: 后缀为.jpeg
+          // 图片渲染
           if (this.isImg(item)) {
             const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${item}`;
-            // 获取图片宽高
-            const imgInfo = {
-              imgWidth: this.getQueryVariable(imgSrc, "width"),
-              imgHeight: this.getQueryVariable(imgSrc, "height")
-            };
             let thisImgWidth = 0;
             let thisImgHeight = 0;
-            if (imgInfo.imgWidth < 400) {
+            // 判断图片中是否包含宽高信息
+            if (imgSrc.includes("width")) {
+              // 从url中获取
+              thisImgWidth = this.getQueryVariable(imgSrc, "width");
+              thisImgHeight = this.getQueryVariable(imgSrc, "height");
+            } else {
+              // 读取图片获取信息
+              const imgInfo: {
+                imgWidth: number;
+                imgHeight: number;
+              } = await this.getImageInfo(imgSrc);
               thisImgWidth = imgInfo.imgWidth;
               thisImgHeight = imgInfo.imgHeight;
-            } else {
+            }
+            // 图片宽度大于400px缩放4倍
+            if (thisImgWidth > 400) {
               // 缩放四倍
-              thisImgWidth = imgInfo.imgWidth / 4;
-              thisImgHeight = imgInfo.imgHeight / 4;
+              thisImgWidth = thisImgWidth / 4;
+              thisImgHeight = thisImgHeight / 4;
+            }
+            // 缩放后的图片高度大于400再次缩放3倍
+            if (thisImgHeight > 400) {
+              // 缩放3倍
+              thisImgWidth = thisImgWidth / 3;
+              thisImgHeight = thisImgHeight / 3;
             }
             // 找到item中?位置，在?之前添加\\进行转义，解决正则无法匹配特殊字符问题
             const charIndex = item.indexOf("?");
             // 生成正则表达式条件，添加\\用于对？的转义
             const regularItem = this.insertStr(item, charIndex, "\\");
             // 解析为img标签
-            const imgTag = `<img width="${thisImgWidth}" height="${thisImgHeight}" src="${imgSrc}" alt="聊天图片">`;
+            const imgTag = `<img style="display: block" width="${thisImgWidth}px" height="${thisImgHeight}px" src="${imgSrc}" alt="聊天图片">`;
             // 替换匹配的字符串为img标签:全局替换
             msgText = msgText.replace(
               new RegExp(`/${regularItem}/`, "g"),
@@ -626,8 +841,7 @@ export default defineComponent({
           for (const emojiItem of this.emojiList) {
             // 判断捕获到的字符串与配置文件中的字符串是否相同
             if (emojiItem.info === item) {
-              // eslint-disable-next-line @typescript-eslint/no-var-requires
-              const imgSrc = require(`../assets/img/emoji/${emojiItem.hover}`);
+              const imgSrc = require(`../assets/img/emoji/${emojiItem.hover}`) as string;
               const imgTag = `<img src="${imgSrc}" width="28" height="28" alt="${item}">`;
               // 替换匹配的字符串为img标签:全局替换
               msgText = msgText.replace(new RegExp(`/${item}/`, "g"), imgTag);
@@ -640,12 +854,56 @@ export default defineComponent({
       }
       msgObj.msgText = finalMsgText;
       // 渲染页面
-      this.senderMessageList.push(msgObj);
-      // 修改滚动条位置
-      this.$nextTick(() => {
-        if (this.$refs.messagesContainer?.scrollHeight) {
-          this.$refs.messagesContainer.scrollTop = this.$refs.messagesContainer.scrollHeight;
-        }
+      if (insertStart) {
+        // 向数组头部添加消息对象
+        this.senderMessageList.unshift(msgObj);
+        // 修改滚动条位置
+        await this.$nextTick(() => {
+          if (this.$refs.messagesContainer?.scrollHeight) {
+            // 加载历史消息，修改滚动条位置：当前消息记录容器高度 - 消息记录容器高度
+            this.$refs.messagesContainer.scrollTop =
+              this.$refs.messagesContainer.scrollHeight -
+              this.msgListPanelHeight;
+            // 一条消息渲染完成，待渲染消息总条数自减
+            this.msgTotals--;
+            // 判断消息是否渲染完成
+            if (this.msgTotals === 0) {
+              // 隐藏加载动画
+              this.isLoading = false;
+              // 加载历史消息完成，更新消息记录容器高度
+              this.msgListPanelHeight = this.$refs.messagesContainer.scrollHeight;
+            }
+          }
+        });
+      } else {
+        // 向数组尾部添加消息对象
+        this.senderMessageList.push(msgObj);
+        // 修改滚动条位置
+        await this.$nextTick(() => {
+          if (this.$refs.messagesContainer?.scrollHeight) {
+            // 新消息渲染完成，修改滚动条位置
+            this.$refs.messagesContainer.scrollTop = this.$refs.messagesContainer.scrollHeight;
+            // 更新消息记录容器高度
+            this.msgListPanelHeight = this.$refs.messagesContainer.scrollHeight;
+            // 修改组件第一次加载状态
+            this.isFirstLoading = false;
+          }
+        });
+      }
+    },
+    // 获取图片宽高
+    getImageInfo: async function(url: string) {
+      const img = new Image();
+      img.src = url;
+      return new Promise((resolve, reject) => {
+        img.onload = () => {
+          const imgWidth = img.naturalWidth;
+          const imgHeight = img.naturalHeight;
+          resolve({ imgWidth: imgWidth, imgHeight: imgHeight });
+        };
+        img.onerror = e => {
+          reject(e);
+        };
       });
     },
     // 获取url参数
@@ -672,24 +930,85 @@ export default defineComponent({
       toolItemName: string
     ) {
       if (status === "hover" || status === "up") {
-        (event.target as HTMLImageElement).src = require(`@/assets/img/${hoverPath}`);
+        // 选择图片
+        if (_.isEqual(toolItemName, "selectImg")) {
+          this.$refs.selectImg.src = require(`@/assets/img/${hoverPath}`);
+        } else {
+          (event.target as HTMLImageElement).src = require(`@/assets/img/${hoverPath}`);
+        }
       } else if (status === "leave") {
-        (event.target as HTMLImageElement).src = require(`@/assets/img/${path}`);
+        // 选择图片
+        if (_.isEqual(toolItemName, "selectImg")) {
+          this.$refs.selectImg.src = require(`@/assets/img/${path}`);
+        } else {
+          (event.target as HTMLImageElement).src = require(`@/assets/img/${path}`);
+        }
       } else {
         // 可编辑div获取焦点
         this.getEditableDivFocus();
-        (event.target as HTMLImageElement).src = require(`@/assets/img/${downPath}`);
-        // 表情框显示条件
-        if (toolItemName === "emoticon") {
-          if (this.emoticonShowStatus === "flex") {
-            this.emoticonShowStatus = "none";
-          } else {
-            this.emoticonShowStatus = "flex";
-          }
+        // 选择图片
+        if (_.isEqual(toolItemName, "selectImg")) {
+          this.$refs.selectImg.src = require(`@/assets/img/${downPath}`);
         } else {
-          this.emoticonShowStatus = "none";
+          (event.target as HTMLImageElement).src = require(`@/assets/img/${downPath}`);
+          // 表情框显示条件
+          if (toolItemName === "emoticon") {
+            if (this.emoticonShowStatus === "flex") {
+              this.emoticonShowStatus = "none";
+            } else {
+              this.emoticonShowStatus = "flex";
+            }
+          } else {
+            this.emoticonShowStatus = "none";
+          }
         }
       }
+    },
+    // 发送图片
+    sendImage: function(e: { target: { files: FileList } }) {
+      // 获取File对象
+      const file = e.target.files[0];
+      // 创建文件读取流
+      const fileReader = new FileReader();
+      // 读取File对象
+      fileReader.readAsDataURL(file);
+      // 在异步函数中获取图片信息
+      fileReader.onload = event => {
+        const base64 = event.target?.result;
+        const img = new Image();
+        img.src = base64 as string;
+        // 加载图片
+        img.onload = () => {
+          // 获取图片宽高
+          const imgWidth = img.naturalWidth;
+          const imgHeight = img.naturalHeight;
+          // 构造form对象
+          const formData = new FormData();
+          // 后台取值字段 | blob文件数据 | 文件名称
+          formData.append("file", file, "chatImg" + file.name);
+          // 调用上传api
+          this.$api.fileManageAPI
+            .upload(formData)
+            .then((res: responseDataType) => {
+              // 文件上传失败
+              if (!_.isEqual(res.code, 0)) {
+                alert(res.msg);
+                return false;
+              }
+              const fileName = `/${res.fileName}?width=${imgWidth}&height=${imgHeight}/`;
+              // 消息发送: 发送图片
+              this.$socket.sendObj({
+                msg: fileName,
+                buddyId: this.buddyId,
+                messageStatus: this.messageStatus,
+                code: 0,
+                avatarSrc: this.$store.state.profilePicture,
+                token: this.$store.state.token,
+                msgId: this.listId
+              });
+            });
+        };
+      };
     },
     // 表情框鼠标悬浮显示动态表情
     emojiConversion: function(
@@ -733,7 +1052,12 @@ export default defineComponent({
     },
     // 判断是否为图片
     isImg: function(str: string) {
-      return str.indexOf(".jpeg") !== -1;
+      return (
+        str.includes("jpeg") ||
+        str.includes("png") ||
+        str.includes("jpg") ||
+        str.includes("gif")
+      );
     },
     // 字符串指定位置添加字符
     insertStr: function(source: string, start: number, newStr: string) {
@@ -749,9 +1073,36 @@ export default defineComponent({
       this.$api.messageListAPI
         .getMessageTextList({ msgId: msgId, userId: this.userID })
         .then((res: responseDataType) => {
+          // 消息内容列表
+          const messageTextList: Array<msgListType> = res.data.messageTextList;
           if (res.code === 0) {
-            // 渲染消息列表
-            this.renderPage(res.data.messageTextList, {});
+            if (messageTextList.length > 0) {
+              // 将聊天记录放进sessionStorage中
+              sessionStorage.setItem(
+                "messageTextList",
+                JSON.stringify(messageTextList)
+              );
+              // 截取特定条数消息
+              const finalMsgList: Array<msgListType> = [];
+              // 结束位置：数组长度
+              this.pageEnd = messageTextList.length;
+              // 起始位置：结束位置-数据大小
+              this.pageStart = this.pageEnd - this.pageSize;
+              if (this.pageStart < 0) {
+                // 起始位置不能为负数
+                this.pageStart = 0;
+              }
+              // 截取起始位置至结束位置的数据
+              for (let i = this.pageStart; i < this.pageEnd; i++) {
+                finalMsgList.push(messageTextList[i]);
+              }
+              // 更新结束位置：起始位置
+              this.pageEnd = this.pageStart;
+              // 更新起始位置：结束位置-数据大小
+              this.pageStart = this.pageEnd - this.pageSize;
+              // 渲染消息列表
+              this.renderPage(finalMsgList, {});
+            }
           } else {
             alert(res.msg);
           }
@@ -774,10 +1125,28 @@ export default defineComponent({
   },
   watch: {
     listId: function(newMsgId: string) {
-      // 消息id发生改变,晴空消息列表数据
+      // 消息id发生改变,清空消息列表数据
       this.senderMessageList = [];
+      // 初始化分页数据
+      this.sessionMessageData = [];
+      this.pageStart = 0;
+      this.pageEnd = 0;
+      this.pageNo = 0;
+      this.msgTotals = 0;
+      this.msgListPanelHeight = 0;
+      this.isLoading = false;
+      this.isFirstLoading = true;
+      sessionStorage.removeItem("messageTextList");
       // 重新获取消息内容
       this.getMessageTextList(newMsgId);
+      if (_.isEqual(this.messageStatus, 1)) {
+        this.$socket.sendObj({
+          code: 200,
+          token: this.$store.state.token,
+          userID: this.$store.state.userID,
+          msg: this.userID + "加入群聊"
+        });
+      }
     }
   }
 });

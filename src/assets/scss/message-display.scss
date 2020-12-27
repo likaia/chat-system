@@ -60,6 +60,34 @@
     min-height: 260px;
     overflow-y: auto;
 
+    .loading-msg-panel {
+      width: 100%;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      img{
+        height: 100%;
+        animation: loading-msg 1s linear;
+        // 动画无限循环
+        animation-iteration-count:infinite;
+      }
+    }
+
+    // 加载消息动画
+    @keyframes loading-msg{
+      0%{
+        transform: rotate(0deg);
+      }
+      50%{
+        transform: rotate(180deg);
+      }
+      100%{
+        transform: rotate(360deg);
+      }
+    }
+
     .row-panel{
       width: 100%;
       min-height: 50px;
@@ -86,7 +114,7 @@
 
         .user-name-panel{
           width: 240px;
-          height: 20px;
+          height: auto;
           position: absolute;
           left: 42px;
           top: 2px;
@@ -107,8 +135,6 @@
           min-height: 40px;
           background: #f4f3f3;
           border-radius: 5px;
-          display: flex;
-          align-items: center;
           padding: 10px;
           box-sizing: border-box;
           margin-top: 28px;
@@ -143,6 +169,18 @@
         }
       }
 
+      .sender-time-panel{
+        width: 100%;
+        height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        span{
+          color: #CDCCCD;
+        }
+      }
+
       /*发送者消息样式*/
       .sender-panel{
         width: 96%;
@@ -169,7 +207,7 @@
 
         .user-name-panel{
           width: 240px;
-          height: 20px;
+          height: auto;
           position: absolute;
           right: 42px;
           top: 2px;
@@ -218,8 +256,6 @@
             line-height: 23px;
             // 强制换行
             word-break: break-all;
-            display: flex;
-            align-items: center;
             cursor: pointer;
 
             img{
@@ -251,6 +287,21 @@
         display: flex;
         justify-content: center;
         align-items: center;
+
+        .file-panel{
+          width: 24px;
+          height: 24px;
+          position: relative;
+
+          input[type="file"] {
+            width: 24px;
+            height: 24px;
+            opacity: 0;
+            position: absolute;
+            left: 0;
+            top: 0;
+          }
+        }
 
         img{
           width: 100%;

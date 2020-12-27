@@ -58,15 +58,25 @@ export type messageDisplayDataType<T> = {
   senderMessageList: Array<msgListType>; // 已发送消息列表
   audioCtx: number; // 当前要播放的音频频率
   arrFrequency: number[]; // 音频频率列表
+  pageStart: number; // 分页起始位置
+  pageEnd: number; // 分页结束位置
+  pageNo: number; // 业码
+  pageSize: number; // 数据量
+  sessionMessageData: Array<msgListType>; // session中存储的聊天记录
+  msgListPanelHeight: number; // 消息记录容器高度
+  isLoading: boolean; // 是否正在加载消息
+  msgTotals: number; // 待渲染消息总条数
+  isFirstLoading: boolean; // 组件是否第一次加载
 };
 
 // 消息列表对象属性类型定义
 export type msgListType = {
-  id?: number;
   msgText?: string;
   createTime?: string;
   userName?: string;
   userId?: string;
+  buddyId?: string;
+  messageStatus?: number;
   avatarSrc?: string;
   msgId?: number;
 };

@@ -157,8 +157,9 @@ export default defineComponent({
     const username = localStorage.getItem("username");
     if (this.isMobile()) {
       // 移动端打开直接跳转至消息列表
-      window.location.href =
-        "https://www.kaisir.cn/chat-system/index.html#/contents/message/message/messageDisplay/5309190090";
+      alert("暂未适配移动端，请在PC端使用");
+      // 跳转至404页面
+      window.location.href = "/404-page/index.html";
     }
     if (_.isEmpty(token) || _.isEmpty(username)) {
       // 跳转登录路由
@@ -229,8 +230,6 @@ export default defineComponent({
       return !!navigator.userAgent.match(
         /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
       );
-      // 在线状态
-      // onlineStatus: function() {}
     }
   },
   computed: {
