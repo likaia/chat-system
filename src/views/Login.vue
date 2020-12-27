@@ -193,8 +193,11 @@ export default defineComponent({
     };
   },
   created() {
-    if (this.isMobile()) {
-      // 跳转至404页面
+    if (!window.location.href.includes("8020")) {
+      // 跳转至生产环境404页面
+      window.location.href = "/chat-system/404-page/index.html";
+    } else {
+      // 跳转至开发环境404页面
       window.location.href = "/404-page/index.html";
     }
   },
