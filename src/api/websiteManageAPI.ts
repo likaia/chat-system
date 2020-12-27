@@ -34,10 +34,23 @@ const websiteManageAPI = {
   tokenRenew<T>(params: paramsType<T>) {
     return services.post(`${base.lk}/user/tokenRenew`, params);
   },
-
+  // 搜索好友
+  getSearchUserInfoList<T>(params: paramsType<T>) {
+    return services.post(`${base.lk}/user/searchUserInfo`, params);
+  },
+  // 添加好友
+  addFriend<T>(params: paramsType<T>) {
+    return services.post(`${base.lk}/user/addFriend`, params);
+  },
   // 更新在线状态
   updateOnlineStatus<T>(params: paramsType<T>) {
     return services.post(`${base.lk}/user/updateOnlineStatus`, params);
+  },
+  // 更新好友验证消息
+  getToBeVerifiedList<T>(params: paramsType<T>) {
+    return services.get(`${base.lk}/user/getToBeVerifiedList`, {
+      params: params
+    });
   }
 };
 

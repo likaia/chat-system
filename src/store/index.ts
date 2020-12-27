@@ -1,10 +1,13 @@
 import { createStore } from "vuex";
 import main from "../main";
-import { userInfoType } from "@/type/ComponentDataType";
+import { rightMenuAttribute, userInfoType } from "@/type/ComponentDataType";
+// antd的中文翻译库
+import zhCN from "ant-design-vue/lib/locale/zh_CN";
 export default createStore({
   state: {
     token: "",
     userID: "",
+    antdLocale: zhCN,
     // 用户头像
     profilePicture: "",
     username: "",
@@ -22,7 +25,16 @@ export default createStore({
       heartBeatInterval: 50000,
       // 心跳定时器
       heartBeatTimer: 0
-    }
+    },
+    // 右键菜单
+    rightMenu: {
+      status: "none",
+      top: "0px",
+      left: "0px",
+      list: []
+    },
+    // 关闭添加好友信息弹出框
+    closeFriendAllAlert: false
   },
   mutations: {
     // 连接打开
@@ -84,6 +96,17 @@ export default createStore({
       state.token = token;
       // 更新本地存储中的token
       localStorage.setItem("token", token);
+    },
+    // 更新右键菜单数据
+    updateRightMenuStatus(state, menuObj: rightMenuAttribute) {
+      state.rightMenu.status = menuObj.status;
+      state.rightMenu.top = menuObj.top;
+      state.rightMenu.left = menuObj.left;
+      state.rightMenu.list = menuObj.list;
+    },
+    // 更新添加好友弹出框是否存在
+    updateAddFriendStatus(state, value: boolean) {
+      state.closeFriendAllAlert = value;
     }
   },
   modules: {}

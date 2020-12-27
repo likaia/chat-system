@@ -8,7 +8,7 @@ export type loginDataType<T> = {
   password: string; // 密码
   confirmPassword: string; // 注册时的确认登录密码
   isLoginStatus: number; // 登录状态：0.未登录 1.登录中 2.注册
-  loginStatusEnum: Object; // 登录状态枚举
+  loginStatusEnum: Record<string, any>; // 登录状态枚举
   isDefaultAvatar: boolean; // 头像是否为默认头像
   avatarSrc: T; // 头像地址
   loadText: string; // 加载层的文字
@@ -55,23 +55,35 @@ export type messageDisplayDataType<T> = {
   emoticonShowStatus: string; // 表情面板显隐状态
   emojiList: {}; // 表情列表，从json文件中获取
   toolbarList: {}; // 工具栏列表，从json文件中获取
-  senderMessageList: T[]; // 已发送消息列表
+  senderMessageList: Array<msgListType>; // 已发送消息列表
   audioCtx: number; // 当前要播放的音频频率
   arrFrequency: number[]; // 音频频率列表
+  pageStart: number; // 分页起始位置
+  pageEnd: number; // 分页结束位置
+  pageNo: number; // 业码
+  pageSize: number; // 数据量
+  sessionMessageData: Array<msgListType>; // session中存储的聊天记录
+  msgListPanelHeight: number; // 消息记录容器高度
+  isLoading: boolean; // 是否正在加载消息
+  msgTotals: number; // 待渲染消息总条数
+  isFirstLoading: boolean; // 组件是否第一次加载
 };
 
 // 消息列表对象属性类型定义
 export type msgListType = {
-  username?: string;
-  userID?: string;
+  msgText?: string;
+  createTime?: string;
+  userName?: string;
+  userId?: string;
+  buddyId?: string;
+  messageStatus?: number;
   avatarSrc?: string;
-  msg?: string;
+  msgId?: number;
 };
 
-// 发送者消息对象类型定义
-export type senderMessageType = {
-  msgText: string;
-  msgId: number;
+// 服务端推送消息类型
+export type serverPushMessageType = {
+  msg: string;
   avatarSrc: string;
   userID: string;
   username: string;
@@ -86,6 +98,10 @@ export type contactListDataType<V> = {
   widgetIsNull: boolean; // 组件是否为空
   groupName: string; // 分组名称
   remarks: string; // 备注
+  rightMenuObj: {
+    text: Array<string>; // 文本数组
+    handler: Record<string, (...params: any) => void>; // 事件处理函数
+  }; // 右键菜单
 };
 
 // 联系人列表类型定义
@@ -103,10 +119,57 @@ export type friendsDataType = {
   signature?: string; // 个性签名
   onlineStatus?: boolean; // 在线状态
   userId?: string; // 用户id
-  groupId?: number; // 分组id
+  childrenId?: number; // 分组id
   groupName: string; // 分组名称
-  remarks: String; // 备注
+  remarks: string; // 备注
 };
 
 // 待处理请求定义
 export type pendingRequest = (...params: any[]) => void;
+
+// 右键菜单DOM属性定义
+export type rightMenuAttribute = {
+  status: string; // 右键菜单显隐状态
+  left: string; // 右键菜单显示位置: 左测距离
+  top: string; // 右键菜单显示位置: 顶部距离
+  list: []; // 右键菜单列表数据: 文本列表、事件处理函数
+};
+
+export type rightMenuListObj = {
+  text?: Array<string>;
+  handler?: Array<Record<string, (...params: any) => void>>;
+  id?: number;
+};
+
+// 消息列表组件Data对象属性定义
+export type msgListDataType = {
+  msgSubscriptIco: string; // 置顶图标
+  GroupBlocked: string; // 群消息免打扰图标
+  lastMessageContent: string; // 最后一条消息内容
+  currentIndex: number; // 当前点击项索引
+  widgetIsNull: boolean; // 消息内容组件显示状态
+  listId: string;
+  messageType: number | null;
+  buddyId: string;
+  buddyName: string;
+  msgList: Array<totalMessage>;
+};
+
+// 右键菜单类型定义
+export type rightMenuObjType = {
+  this: any;
+  text: Array<string | { status: boolean; content: string }>; // 文本数组
+  handler: Record<string, (...params: any) => void>; // 事件处理函数
+}; // 右键菜单
+
+// 消息列表数据类型定义
+export type totalMessage = {
+  id?: number; // 消息id
+  avatarSrc?: string; // 消息头像
+  userName?: string; // 消息名称
+  lastTime?: string; // 最后一条消息发送时间
+  lastMsgTxt?: string; // 最后一条消息内容
+  userId?: string; // 消息id
+  type?: number; // 消息类型: 0: 单聊 1: 群聊
+  buddyId?: string; // 好友id
+};

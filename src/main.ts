@@ -5,13 +5,16 @@ import store from "./store";
 import api from "./api/index";
 import base from "./api/base";
 import VueNativeSock from "vue-native-websocket-vue3";
+import vueRightMenu from "vue-right-click-menu-next";
 const app = createApp(App);
 // 挂载api
 app.config.globalProperties.$api = api;
+
 // 使用VueNativeSock插件，并进行相关配置
 app
   .use(store)
   .use(router)
+  .use(vueRightMenu)
   .mount("#app");
 // 使用VueNativeSock插件，并进行相关配置
 app.use(

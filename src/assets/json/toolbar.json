@@ -14,6 +14,13 @@
     "down": "toolbar_screenCapture_down@2x.png"
   },
   {
+    "name": "selectImg",
+    "src": "selectImg.png",
+    "info": "选择图片",
+    "hover": "selectImg_hover.png",
+    "down": "selectImg_hover.png"
+  },
+  {
     "name": "files",
     "src": "toolbar_files_normal@2x.png",
     "info": "文件图标",

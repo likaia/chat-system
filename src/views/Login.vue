@@ -30,7 +30,7 @@
             class="file"
             name="file"
             type="file"
-            accept="image/png,image/gif,image/jpeg"
+            accept="image/png,image/gif,image/jpeg,image/jpg"
             @change="uploadAvatar($event)"
           />
         </div>
@@ -192,6 +192,12 @@ export default defineComponent({
       loadText: "上传中"
     };
   },
+  created() {
+    if (this.isMobile()) {
+      // 跳转至404页面
+      window.location.href = "/404-page/index.html";
+    }
+  },
   methods: {
     login: function<T>(status: string) {
       let loginBtnTime = undefined;
@@ -323,6 +329,11 @@ export default defineComponent({
           break;
       }
     },
+    isMobile: () => {
+      return !!navigator.userAgent.match(
+        /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
+      );
+    },
     registered: function(status: boolean) {
       // 登录与注册之间的切换
       let degreeOfRotation = 0;
@@ -368,8 +379,13 @@ export default defineComponent({
       this.$refs.cancelBtn.style.background = "";
     },
     uploadAvatar: function<T>(e: { target: { files: FileList } }) {
+      const fileMaxSize = 1024 * 1024;
       // 头像上传
       const file = e.target.files[0];
+      if (file.size > fileMaxSize) {
+        alert("文件大小不能大于1MB");
+        return false;
+      }
       // 构造form对象
       const formData = new FormData();
       // 后台取值字段 | blob文件数据 | 文件名称

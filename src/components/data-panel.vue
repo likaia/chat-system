@@ -63,7 +63,10 @@
                 <p>年龄</p>
               </div>
             </div>
-            <div class="item-panel" v-if="JSON.stringify(userInfo.zodiacSign) !=='{}' ">
+            <div
+              class="item-panel"
+              v-if="JSON.stringify(userInfo.zodiacSign) !== '{}'"
+            >
               <div class="ico-panel">
                 <img :src="userInfo.zodiacSign.zodiacSignSrc" alt="" />
               </div>
@@ -73,7 +76,10 @@
             </div>
           </div>
           <div class="row-panel">
-            <div class="item-panel" v-if="JSON.stringify(userInfo.constellation) !=='{}' ">
+            <div
+              class="item-panel"
+              v-if="JSON.stringify(userInfo.constellation) !== '{}'"
+            >
               <div class="ico-panel">
                 <img :src="userInfo.constellation.constellationSrc" alt="" />
               </div>
@@ -200,7 +206,7 @@ export default defineComponent({
   props: {
     paramsId: String,
     groupName: String,
-    remarks: String,
+    remarks: String
   },
   created() {
     // 页面创建时获取好友详情信息
@@ -213,7 +219,7 @@ export default defineComponent({
       qzone: require("../assets/img/list/profile_qzone_normal@2x.png"),
       gender: {
         man: require("../assets/img/gender/gender_man@2x.png"),
-        woman: require("../assets/img/gender/gender_woman@2x.png"),
+        woman: require("../assets/img/gender/gender_woman@2x.png")
       },
       ageNumber: {
         man: {
@@ -226,7 +232,7 @@ export default defineComponent({
           six: require("../assets/img/ageNumber/profile_age_num_6@2x.png"),
           seven: require("../assets/img/ageNumber/profile_age_num_7@2x.png"),
           eight: require("../assets/img/ageNumber/profile_age_num_8@2x.png"),
-          nine: require("../assets/img/ageNumber/profile_age_num_9@2x.png"),
+          nine: require("../assets/img/ageNumber/profile_age_num_9@2x.png")
         },
         woman: {
           zero: require("../assets/img/ageNumber/profile_birth_num_0@2x.png"),
@@ -238,8 +244,8 @@ export default defineComponent({
           six: require("../assets/img/ageNumber/profile_birth_num_6@2x.png"),
           seven: require("../assets/img/ageNumber/profile_birth_num_7@2x.png"),
           eight: require("../assets/img/ageNumber/profile_birth_num_8@2x.png"),
-          nine: require("../assets/img/ageNumber/profile_birth_num_9@2x.png"),
-        },
+          nine: require("../assets/img/ageNumber/profile_birth_num_9@2x.png")
+        }
       },
       zodiacSign: {
         monkey: require("../assets/img/zodiacSign/zodiac_monkey@2x.png"),
@@ -253,28 +259,28 @@ export default defineComponent({
         dragon: require("../assets/img/zodiacSign/zodiac_dragon@2x.png"),
         snake: require("../assets/img/zodiacSign/zodiac_snake@2x.png"),
         horse: require("../assets/img/zodiacSign/zodiac_horse@2x.png"),
-        sheep: require("../assets/img/zodiacSign/zodiac_sheep@2x.png"),
+        sheep: require("../assets/img/zodiacSign/zodiac_sheep@2x.png")
       },
       constellation: {
-        Capricorn: require("../assets/img/constellation/constellation_Capricorn@2x.png"), //摩羯座
-        Aquarius: require("../assets/img/constellation/constellation_Aquarius@2x.png"), //水瓶
-        Pisces: require("../assets/img/constellation/constellation_Pisces@2x.png"), //双鱼座
-        Aries: require("../assets/img/constellation/constellation_Aries@2x.png"), //白羊
-        Taurus: require("../assets/img/constellation/constellation_Taurus@2x.png"), //金牛座
-        Gemini: require("../assets/img/constellation/constellation_Gemini@2x.png"), //双子座
-        Cancer: require("../assets/img/constellation/constellation_cancer@2x.png"), //巨蟹座
-        Leo: require("../assets/img/constellation/constellation_Leo@2x.png"), //狮子座
-        Virgo: require("../assets/img/constellation/constellation_Virgo@2x.png"), //处女座
-        Libra: require("../assets/img/constellation/constellation_Libra@2x.png"), //天平
-        Scorpio: require("../assets/img/constellation/constellation_Scorpio@2x.png"), //天蝎座
-        Sagittarius: require("../assets/img/constellation/constellation_Sagittarius@2x.png"), //射手座
+        Capricorn: require("../assets/img/constellation/constellation_Capricorn@2x.png"), // 摩羯座
+        Aquarius: require("../assets/img/constellation/constellation_Aquarius@2x.png"), // 水瓶座
+        Pisces: require("../assets/img/constellation/constellation_Pisces@2x.png"), // 双鱼座
+        Aries: require("../assets/img/constellation/constellation_Aries@2x.png"), // 白羊座
+        Taurus: require("../assets/img/constellation/constellation_Taurus@2x.png"), // 金牛座
+        Gemini: require("../assets/img/constellation/constellation_Gemini@2x.png"), // 双子座
+        Cancer: require("../assets/img/constellation/constellation_cancer@2x.png"), // 巨蟹座
+        Leo: require("../assets/img/constellation/constellation_Leo@2x.png"), // 狮子座
+        Virgo: require("../assets/img/constellation/constellation_Virgo@2x.png"), // 处女座
+        Libra: require("../assets/img/constellation/constellation_Libra@2x.png"), // 天平座
+        Scorpio: require("../assets/img/constellation/constellation_Scorpio@2x.png"), // 天蝎座
+        Sagittarius: require("../assets/img/constellation/constellation_Sagittarius@2x.png") // 射手座
       },
       bloods: {
         A: require("../assets/img/blood/blood_A@2x.png"),
         AB: require("../assets/img/blood/blood_AB@2x.png"),
         B: require("../assets/img/blood/blood_B@2x.png"),
         O: require("../assets/img/blood/blood_O@2x.png"),
-        Other: require("../assets/img/blood/blood_other@2x.png"),
+        Other: require("../assets/img/blood/blood_other@2x.png")
       },
       userInfo: {
         avatarSrc: "",
@@ -295,7 +301,7 @@ export default defineComponent({
         constellation: {},
         blood: "",
         remarks: "",
-        contactNumber: "",
+        contactNumber: ""
       },
       ageNumberOfAgeValue: [],
       zodiacSignValue: {
@@ -313,31 +319,30 @@ export default defineComponent({
           "龙",
           "蛇",
           "马",
-          "羊",
-        ],
+          "羊"
+        ]
       },
       constellationValue: {
         constellationName: "",
         constellationSrc: [],
         constellationFieldData:
           "魔羯水瓶双鱼白羊金牛双子巨蟹狮子处女天秤天蝎射手魔羯",
-        constellationDay: [20, 19, 21, 21, 21, 22, 23, 23, 23, 23, 22, 22],
+        constellationDay: [20, 19, 21, 21, 21, 22, 23, 23, 23, 23, 22, 22]
       },
       ageNumberOfBrithdayMouthValue: [],
-      ageNumberOfBrithdayDayValue: [],
+      ageNumberOfBrithdayDayValue: []
     };
   },
   methods: {
     // 获取用户信息
-    getUserDataByUid: function (userId: string) {
+    getUserDataByUid: function(userId: string) {
       if (_.isEmpty(userId)) {
         return false;
       }
       this.$api.websiteManageAPI
         .getUserDataByUid({ userId: userId })
         .then((res: responseDataType) => {
-          console.log(res.data);
-          //好友资料赋值
+          // 好友资料赋值
           this.userInfo.userId = userId;
           this.userInfo.gender = res.data.gender;
           this.userInfo.groupName = this.groupName;
@@ -351,34 +356,34 @@ export default defineComponent({
           this.userInfo.blood = res.data.bloodGroup;
           this.userInfo.remarks = this.remarks;
           this.userInfo.contactNumber = res.data.contactNumber;
-          //分割数据为年月日
+          // 分割数据为年月日
           this.dateOfBirth = [];
           this.userInfo.zodiacSign = {};
           this.userInfo.constellation = {};
-          this.userInfo.age="";
-          this.userInfo.mouth="";
-          this.userInfo.day="";
-          if (res.data.dateOfBirth !== undefined) {
+          this.userInfo.age = "";
+          this.userInfo.mouth = "";
+          this.userInfo.day = "";
+          if (res.data.dateOfBirth != null) {
             this.dateOfBirth = res.data.dateOfBirth.split("-");
-            //显示年龄
+            // 显示年龄
             this.manageAge();
-            //显示生肖
+            // 显示生肖
             this.manageAgeZodiacSign();
-            //显示星座
+            // 显示星座
             this.manageConstellation(
               Number(this.dateOfBirth[1]),
               Number(this.dateOfBirth[2])
             );
-            //显示生日的月份
+            // 显示生日的月份
             this.manageBrithdayMouth(Number(this.dateOfBirth[1]));
-            //显示生日的日期
+            // 显示生日的日期
             this.manageBrithdayDay(Number(this.dateOfBirth[2]));
-            //显示血型
+            // 显示血型
             this.manageBlood(this.userInfo.blood);
           }
         });
     },
-    //处理年龄的数据
+    // 处理年龄的数据
     manageAge() {
       this.ageNumberOfAgeValue = [];
       this.userInfo.age =
@@ -401,10 +406,13 @@ export default defineComponent({
           }
         }
       }
-      this.userInfo.age[0] = this.ageNumberOfAgeValue[this.userInfo.age[0]];
-      this.userInfo.age[1] = this.ageNumberOfAgeValue[this.userInfo.age[1]];
+      this.userInfo.age.forEach((item: number, index: number) => {
+        this.userInfo.age[index] = this.ageNumberOfAgeValue[
+          this.userInfo.age[index]
+        ];
+      });
     },
-    //处理生肖的数据
+    // 处理生肖的数据
     manageAgeZodiacSign() {
       this.zodiacSignValue.zodiacSignSrc = [];
       this.zodiacSignValue.zodiacSignName = this.zodiacSignValue.zodiacSignField[
@@ -420,12 +428,11 @@ export default defineComponent({
         Number(this.dateOfBirth[0]) % 12
       ];
       this.userInfo.zodiacSign = this.zodiacSignValue;
-      console.log(this.userInfo.zodiacSign);
     },
-    //处理星座数据
+    // 处理星座数据
     manageConstellation(mouth: number, day: number) {
       this.constellationValue.constellationSrc = [];
-      //字段对应的值
+      // 字段对应的值
       this.constellationValue.constellationName = this.constellationValue.constellationFieldData.substr(
         mouth * 2 -
           (day < this.constellationValue.constellationDay[mouth - 1] ? 2 : 0),
@@ -439,7 +446,7 @@ export default defineComponent({
           );
         }
       }
-      //当月的星座的判断小于该节点为该星座，否则是下一个月的星座
+      // 当月的星座的判断小于该节点为该星座，否则是下一个月的星座
       if (day < this.constellationValue.constellationDay[mouth - 1]) {
         this.constellationValue.constellationSrc = this.constellationValue.constellationSrc[
           mouth - 1
@@ -451,7 +458,7 @@ export default defineComponent({
       }
       this.userInfo.constellation = this.constellationValue;
     },
-    //处理生日的月份数据
+    // 处理生日的月份数据
     manageBrithdayMouth(mouth: number) {
       this.ageNumberOfBrithdayMouthValue = [];
       this.userInfo.mouth = mouth + "";
@@ -474,14 +481,14 @@ export default defineComponent({
           }
         }
       }
-      this.userInfo.mouth[0] = this.ageNumberOfBrithdayMouthValue[
-        this.userInfo.mouth[0]
-      ];
-      this.userInfo.mouth[1] = this.ageNumberOfBrithdayMouthValue[
-        this.userInfo.mouth[1]
-      ];
+      this.userInfo.mouth.forEach((item: number, index: number) => {
+        this.userInfo.mouth[index] = this.ageNumberOfBrithdayMouthValue[
+          this.userInfo.mouth[index]
+        ];
+      });
+      console.log(this.userInfo.mouth);
     },
-    //处理生日的日期数据
+    // 处理生日的日期数据
     manageBrithdayDay(day: number) {
       this.ageNumberOfBrithdayDayValue = [];
       this.userInfo.day = day + "";
@@ -504,14 +511,13 @@ export default defineComponent({
           }
         }
       }
-      this.userInfo.day[0] = this.ageNumberOfBrithdayDayValue[
-        this.userInfo.day[0]
-      ];
-      this.userInfo.day[1] = this.ageNumberOfBrithdayDayValue[
-        this.userInfo.day[1]
-      ];
+      this.userInfo.day.forEach((item: number, index: number) => {
+        this.userInfo.day[index] = this.ageNumberOfBrithdayDayValue[
+          this.userInfo.day[index]
+        ];
+      });
     },
-    //处理血型
+    // 处理血型
     manageBlood(blood: string) {
       for (const key in this.bloods) {
         if (key == blood) {
@@ -525,15 +531,13 @@ export default defineComponent({
           this.userInfo.blood = this.bloods["Other"];
         }
       }
-    },
+    }
   },
   watch: {
-    paramsId: function (val: string) {
+    paramsId: function(val: string) {
       this.getUserDataByUid(val);
-    },
-  },
+    }
+  }
 });
 </script>
-
 <style lang="scss" src="../assets/scss/data-panel.scss" scoped></style>
-

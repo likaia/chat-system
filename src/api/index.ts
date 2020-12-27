@@ -7,8 +7,11 @@
 import websiteManageAPI from "./websiteManageAPI";
 // 文件管理接口
 import fileManageAPI from "./fileManageAPI";
+// 消息列表接口
+import messageListAPI from "@/api/messageListAPI";
 // 导出接口
 export default {
   websiteManageAPI,
-  fileManageAPI
+  fileManageAPI,
+  messageListAPI
 };

@@ -30,12 +30,16 @@
   },
   "dependencies": {
     "@types/lodash": "^4.14.161",
+    "ant-design-vue": "^2.0.0-rc.3",
     "axios": "^0.20.0",
+    "babel-plugin-import": "^1.13.3",
     "core-js": "^3.6.5",
     "vue": "^3.0.0-0",
     "vue-class-component": "^8.0.0-0",
     "vue-native-websocket-vue3": "^3.0.0",
+    "vue-right-click-menu-next": "^1.0.0",
     "vue-router": "^4.0.0-0",
+    "vue-solar-lunar": "^1.0.1",
     "vuex": "^4.0.0-0"
   },
   "devDependencies": {

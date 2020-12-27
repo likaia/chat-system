@@ -12,30 +12,34 @@ $rightWidth: 85%;
   justify-content: center;
   align-items: center;
 
-  img{
+  img {
     width: 9px;
     height: 9px;
   }
 }
-.close-ico{
+
+.close-ico {
   background: #F06C5A;
 }
+
 .mini-ico {
   background: #F9BE45;
 
-  img{
+  img {
     width: 11px;
     height: 11px;
   }
 }
+
 .max-ico {
   background: #61C350;
 
-  img{
+  img {
     width: 11px;
     height: 11px;
   }
 }
+
 #main-content {
   width: 75%;
   height: 80%;
@@ -57,7 +61,7 @@ $rightWidth: 85%;
     display: flex;
     align-items: center;
 
-    .left-panel{
+    .left-panel {
       min-width: 214px;
       width: $leftWidth;
       height: 100%;
@@ -65,19 +69,20 @@ $rightWidth: 85%;
       justify-content: flex-end;
       align-items: center;
 
-      .icon-panel{
+      .icon-panel {
         width: 30%;
         height: 30px;
         display: flex;
         align-items: center;
       }
-      .search-panel{
+
+      .search-panel {
         width: 60%;
         height: 30px;
         display: flex;
         align-items: center;
 
-        .search{
+        .search {
           width: 92px;
           height: 24px;
           background: #FFFFFF;
@@ -88,22 +93,23 @@ $rightWidth: 85%;
           align-items: center;
           position: relative;
 
-          img{
+          img {
             width: 14px;
             height: 14px;
             position: absolute;
             left: 11px;
           }
 
-          input{
+          input {
             width: 80%;
             height: 100%;
+            margin-left: 12px;
             outline: none;
             border: none;
           }
         }
 
-        .add-panel{
+        .add-panel {
           width: 24px;
           height: 24px;
           border-radius: 50%;
@@ -113,7 +119,7 @@ $rightWidth: 85%;
           justify-content: center;
           align-items: center;
 
-          img{
+          img {
             width: 16px;
             height: 16px;
           }
@@ -121,13 +127,13 @@ $rightWidth: 85%;
       }
     }
 
-    .right-panel{
+    .right-panel {
       width: $rightWidth;
       height: 100%;
       display: flex;
       align-items: center;
 
-      .function-switching-panel{
+      .function-switching-panel {
         width: 90%;
         min-width: 180px;
         height: 30px;
@@ -135,19 +141,19 @@ $rightWidth: 85%;
         justify-content: center;
         align-items: center;
 
-        .main-ico-area{
+        .main-ico-area {
           width: 28px;
           height: 28px;
           margin-right: 38px;
 
-          img{
+          img {
             width: 100%;
             height: 100%;
           }
         }
       }
 
-      .avatar-area-panel{
+      .avatar-area-panel {
         width: 10%;
         min-width: 80px;
         height: 30px;
@@ -156,7 +162,7 @@ $rightWidth: 85%;
         align-items: center;
         position: relative;
 
-        .status-panel{
+        .status-panel {
           width: 12px;
           height: 12px;
           border-radius: 50%;
@@ -166,16 +172,18 @@ $rightWidth: 85%;
           bottom: -2px;
           right: 55.1%;
         }
-        .offline{
+
+        .offline {
           background: #B4B8BA;
         }
-        .avatar-panel{
+
+        .avatar-panel {
           width: 30px;
           height: 30px;
           overflow: hidden;
           border-radius: 50%;
 
-          img{
+          img {
             width: 100%;
             height: 100%;
           }
@@ -186,8 +194,67 @@ $rightWidth: 85%;
   }
 
   /*主题内容样式*/
-  .main-content-view{
+  .main-content-view {
     width: 100%;
     height: calc(100% - 55px);
+  }
+
+  // 右键菜单样式
+  .right-menu {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 166px;
+    height: auto;
+    background-color: rgb(242, 242, 242);
+    border: solid 1px #C2C1C2;
+    box-shadow: 0 10px 10px #C2C1C2;
+    display: none;
+    border-radius: 5px;
+
+    ul {
+      padding: 0;
+      margin: 0;
+      font-size: 15px;
+
+      li {
+        list-style: none;
+        box-sizing: border-box;
+        padding: 6px 0;
+        border-bottom: 1px solid rgb(216, 216, 217);
+
+        &:nth-child(1) {
+          padding-top: 2px;
+        }
+
+        &:nth-last-child(1) {
+          border-bottom: none;
+        }
+
+        span {
+          display: block;
+          height: 20px;
+          line-height: 20px;
+          padding-left: 16px;
+
+          &:hover {
+            background-color: #0070F5;
+            cursor: pointer;
+            color: #FFFFFF;
+          }
+        }
+
+        // 禁止点击样式
+        .disable {
+          color: #666666;
+
+          &:hover {
+            cursor:not-allowed;
+            background-color: #F2F2F2;
+            color: #666666;
+          }
+        }
+      }
+    }
   }
 }

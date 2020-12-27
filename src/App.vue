@@ -70,6 +70,20 @@ export default defineComponent({
 body {
   box-sizing: border-box;
 }
+//自动移滚动条样式
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 1em;
+  background-color: rgba(50, 50, 50, 0.3);
+}
+::-webkit-scrollbar-track {
+  border-radius: 1em;
+  background-color: rgba(50, 50, 50, 0.1);
+}
+
 #app {
   width: 100%;
   height: 100%;
