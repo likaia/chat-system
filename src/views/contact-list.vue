@@ -10,6 +10,8 @@
         </div>
       </div>
       <div
+        v-if="friendsCheckedList.friendsCheckedInfo.length > 0"
+        class="friend-checked-panel"
         style="width: 100%;
     height: 70px;
     list-style: none;
@@ -23,7 +25,7 @@
     justify-content: space-between;
     align-items: center;"
       >
-        <div>
+        <div class="clear-checked-Icon">
           <img
             src="@/assets/img/list/AIO_Tab_Close_Normal@2x.png"
             alt=""
@@ -31,6 +33,7 @@
           />
         </div>
         <div
+          class=""
           style="width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -91,7 +94,7 @@
     justify-content: center;background:red;color:white;"
           >
             <span>
-              9
+              {{ friendsCheckedList.friendsCheckedInfo.length }}
             </span>
           </div>
         </div>
@@ -275,6 +278,10 @@ export default defineComponent({
             console.log("分组重命名事件");
           }
         }
+      },
+      friendsCheckedList: {
+        serverTime: "",
+        friendsCheckedInfo: []
       }
     };
   },
@@ -334,72 +341,84 @@ export default defineComponent({
     // 添加好友弹框
     addFriendsInfoSearch: function() {
       this.$store.commit("updateAddFriendStatus", true);
+    },
+    getToBeVerifiedList() {
+      // 获取好友验证人员信息
+      this.$api.websiteManageAPI
+        .getToBeVerifiedList()
+        .then((res: responseDataType) => {
+          // console.log(res.data);
+          if (res.data.verifiedList.length > 0) {
+            this.friendsCheckedList.serverTime = res.data.serverTime;
+            this.friendsCheckedList.friendsCheckedInfo = res.data.verifiedList;
+          }
+          console.log(this.friendsCheckedList);
+        });
+    },
+    getFriendsList() {
+      // 获取好友列表人员
+      this.$api.websiteManageAPI
+        .getFriendsList({ userId: this.$store.state.userID })
+        .then((res: responseDataType) => {
+          // 遍历获取分组名称
+          res.data.forEach((item: friendsDataType) => {
+            this.groupList.push(
+              JSON.stringify({
+                childrenId: item.childrenId,
+                groupName: item.groupName
+              })
+            );
+          });
+          // 去重相同分组
+          this.groupList = [...new Set(this.groupList)];
+          // 获取好友列表人员在线信息
+          for (let index = 0; index < this.groupList.length; index++) {
+            // 将字符串转为对象
+            this.groupList[index] = JSON.parse(this.groupList[index]);
+            // 处理好友列表数据
+            this.friendsList.push({
+              groupName: this.groupList[index].groupName,
+              totalPeople: 0,
+              onlineUsers: 0,
+              friendsData: [],
+              childrenId: this.groupList[index].childrenId
+            });
+            // 处理好友陈列数据
+            res.data.forEach((item: friendsDataType) => {
+              if (this.groupList[index].childrenId == item.childrenId) {
+                this.friendsList[index].friendsData.push({
+                  userName: item.userName,
+                  avatarSrc: item.avatarSrc,
+                  signature: item.signature,
+                  onlineStatus: item.onlineStatus,
+                  userId: item.userId,
+                  groupName: item.groupName,
+                  remarks: item.remarks,
+                  childrenId: item.childrenId
+                });
+                // 获取对应的每个好友分组总人数
+                if (item.userId) {
+                  this.friendsList[index].totalPeople++;
+                }
+              }
+            });
+          }
+          // 获取对应的每个好友分组在线人员
+          for (let index = 0; index < this.friendsList.length; index++) {
+            this.friendsList[index].friendsData.forEach(
+              (item: friendsDataType) => {
+                if (item.onlineStatus) {
+                  this.friendsList[index].onlineUsers++;
+                }
+              }
+            );
+          }
+        });
     }
   },
   mounted() {
-    this.$api.websiteManageAPI
-      .getToBeVerifiedList()
-      .then((res: responseDataType) => {
-        console.log(res.data);
-      });
-    // 获取好友列表人员
-    this.$api.websiteManageAPI
-      .getFriendsList({ userId: this.$store.state.userID })
-      .then((res: responseDataType) => {
-        // 遍历获取分组名称
-        res.data.forEach((item: friendsDataType) => {
-          this.groupList.push(
-            JSON.stringify({
-              childrenId: item.childrenId,
-              groupName: item.groupName
-            })
-          );
-        });
-        // 去重相同分组
-        this.groupList = [...new Set(this.groupList)];
-        // 获取好友列表人员在线信息
-        for (let index = 0; index < this.groupList.length; index++) {
-          // 将字符串转为对象
-          this.groupList[index] = JSON.parse(this.groupList[index]);
-          // 处理好友列表数据
-          this.friendsList.push({
-            groupName: this.groupList[index].groupName,
-            totalPeople: 0,
-            onlineUsers: 0,
-            friendsData: [],
-            childrenId: this.groupList[index].childrenId
-          });
-          // 处理好友陈列数据
-          res.data.forEach((item: friendsDataType) => {
-            if (this.groupList[index].childrenId == item.childrenId) {
-              this.friendsList[index].friendsData.push({
-                userName: item.userName,
-                avatarSrc: item.avatarSrc,
-                signature: item.signature,
-                onlineStatus: item.onlineStatus,
-                userId: item.userId,
-                groupName: item.groupName,
-                remarks: item.remarks,
-                childrenId: item.childrenId
-              });
-              // 获取对应的每个好友分组总人数
-              if (item.userId) {
-                this.friendsList[index].totalPeople++;
-              }
-            }
-          });
-        }
-        // 获取对应的每个好友分组在线人员
-        for (let index = 0; index < this.friendsList.length; index++) {
-          this.friendsList[index].friendsData.forEach(
-            (item: friendsDataType) => {
-              if (item.onlineStatus) {
-                this.friendsList[index].onlineUsers++;
-              }
-            }
-          );
-        }
-      });
+    this.getToBeVerifiedList();
+    this.getFriendsList();
   },
   // 页面更新前晴空分组列表dom
   beforeUpdate() {
