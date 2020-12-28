@@ -406,8 +406,11 @@ export default defineComponent({
           }
         }
       }
-      this.userInfo.age[0] = this.ageNumberOfAgeValue[this.userInfo.age[0]];
-      this.userInfo.age[1] = this.ageNumberOfAgeValue[this.userInfo.age[1]];
+      this.userInfo.age.forEach((item: number, index: number) => {
+        this.userInfo.age[index] = this.ageNumberOfAgeValue[
+          this.userInfo.age[index]
+        ];
+      });
     },
     // 处理生肖的数据
     manageAgeZodiacSign() {
@@ -478,12 +481,12 @@ export default defineComponent({
           }
         }
       }
-      this.userInfo.mouth[0] = this.ageNumberOfBrithdayMouthValue[
-        this.userInfo.mouth[0]
-      ];
-      this.userInfo.mouth[1] = this.ageNumberOfBrithdayMouthValue[
-        this.userInfo.mouth[1]
-      ];
+      this.userInfo.mouth.forEach((item: number, index: number) => {
+        this.userInfo.mouth[index] = this.ageNumberOfBrithdayMouthValue[
+          this.userInfo.mouth[index]
+        ];
+      });
+      console.log(this.userInfo.mouth);
     },
     // 处理生日的日期数据
     manageBrithdayDay(day: number) {
@@ -508,12 +511,11 @@ export default defineComponent({
           }
         }
       }
-      this.userInfo.day[0] = this.ageNumberOfBrithdayDayValue[
-        this.userInfo.day[0]
-      ];
-      this.userInfo.day[1] = this.ageNumberOfBrithdayDayValue[
-        this.userInfo.day[1]
-      ];
+      this.userInfo.day.forEach((item: number, index: number) => {
+        this.userInfo.day[index] = this.ageNumberOfBrithdayDayValue[
+          this.userInfo.day[index]
+        ];
+      });
     },
     // 处理血型
     manageBlood(blood: string) {
