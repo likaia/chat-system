@@ -5,7 +5,8 @@
       type="text"
       @focus="onFocus"
       :placeholder="placeholder"
-      v-model="inputVal"
+      :value="inputVal"
+      @input="vModel($event.target.value)"
       ref="inputText"
     />
     <div v-if="isShowBtn" class="edit">
@@ -27,24 +28,27 @@ export default defineComponent({
   props: {
     placeholder: String,
     title: String,
-    value: String
+    keyNum: Number,
+    value: {
+      type: String,
+      default: () => ""
+    }
   },
   data() {
     return {
       currentIndex: 0,
       isShowBtn: true,
-      inputVal: "123456"
+      inputVal: this.value,
+      saveVal: ""
     };
   },
   methods: {
     onFocus() {
       // 聚焦事件
-      console.log("聚焦事件");
       this.isShowBtn = false;
     },
     edit() {
       // 修改按钮
-      console.log("修改按钮----------------");
       this.$refs.inputText.focus();
       this.isShowBtn = false;
     },
@@ -56,19 +60,33 @@ export default defineComponent({
     },
     save() {
       // 保存按钮
-      console.log("保存按钮");
+      if (this.inputVal == "") {
+        alert("保存信息不能为空");
+        return;
+      }
+      this.inputVal = this.saveVal;
       this.isShowBtn = true;
-      // console.log(this.value);
-      // console.log(this.inputVal);
-      this.$emit("save-info", this.inputVal);
+      this.$emit("save-info", this.inputVal, this.keyNum);
     },
     changeValue() {
       // 把父组件传过来的值，保存到data中
       this.inputVal = this.value;
+    },
+    vModel(val: string) {
+      this.saveVal = val;
+      this.inputVal = val;
     }
   },
   created() {
     this.changeValue();
+  },
+  mounted() {
+    console.log(this.value);
+  },
+  watch: {
+    inputVal(val) {
+      console.log(val);
+    }
   }
 });
 </script>

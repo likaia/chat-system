@@ -5,6 +5,7 @@ import store from "./store";
 import api from "./api/index";
 import base from "./api/base";
 import VueNativeSock from "vue-native-websocket-vue3";
+
 const app = createApp(App);
 // 挂载api
 app.config.globalProperties.$api = api;

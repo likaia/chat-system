@@ -1,5 +1,6 @@
 <template>
   <div id="setting">
+    <toast class="toast" v-if="isShow" :info="toastMsg" />
     <table>
       <tbody>
         <tr>
@@ -18,7 +19,12 @@
                 <p class="tips">支持jipg、png、 jpeg格式大小5M以内的图片</p>
                 <div class="up-btn">
                   点击上传
-                  <input type="file" name="file" />
+                  <input
+                    type="file"
+                    name="file"
+                    accept="image/png,image/gif,image/jpeg"
+                    @change="uploadAvatar($event)"
+                  />
                 </div>
               </div>
             </div>
@@ -28,6 +34,7 @@
           <td>
             <inputBox
               title="用户名"
+              :keyNum="1"
               :value="userInfo.userName"
               placeholder="填写用户名"
               @save-info="saveInfo"
@@ -51,7 +58,7 @@
                 >
               </select>
               <!-- 城市 -->
-              <select v-model="cityVal">
+              <select v-model="cityVal" @change="updateNativePlace">
                 <option value="">请选择</option>
                 <option
                   v-for="(item, optionIndex) in city"
@@ -65,60 +72,99 @@
         </tr>
         <tr>
           <td>
-            <inputBox title="职业" placeholder="填写你的职业" />
+            <inputBox
+              title="职业"
+              :value="userInfo.occupation"
+              :keyNum="2"
+              placeholder="填写你的职业"
+              @save-info="saveInfo"
+            />
           </td>
           <td>
             <div class="input-box">
               <span class="title">生日</span>
-              <input type="date" />
+              <input
+                type="date"
+                v-model="userInfo.dateOfBirth"
+                @change="updateBirth"
+              />
             </div>
           </td>
         </tr>
+
         <tr>
           <td>
-            <inputBox title="个性签名" placeholder="填写你的个性签名" />
+            <inputBox
+              title="个性签名"
+              placeholder="填写你的个性签名"
+              :keyNum="3"
+              :value="userInfo.signature"
+              @save-info="saveInfo"
+            />
           </td>
           <td>
             <div class="input-box">
               <span class="title">性别</span>
-              <select>
+              <select v-model="userInfo.gender" @change="updateGender">
                 <option value="">性别</option>
-                <option
-                  value="0"
-                  :selected="userInfo.gender == 0 ? true : false"
-                  >男</option
-                >
-                <option
-                  value="1"
-                  :selected="userInfo.gender == 1 ? true : false"
-                  >女</option
-                >
+                <option value="0">男</option>
+                <option value="1">女</option>
               </select>
             </div>
           </td>
         </tr>
         <tr>
           <td>
-            <inputBox title="邮箱地址" placeholder="填写你的邮箱地址" />
+            <inputBox
+              title="邮箱地址"
+              placeholder="填写你的邮箱地址"
+              :keyNum="4"
+              :value="userInfo.emailAddress"
+              @save-info="saveInfo"
+            />
           </td>
           <td>
-            <inputBox title="联系电话" placeholder="填写联系点话" />
+            <inputBox
+              title="联系电话"
+              placeholder="填写联系点话"
+              :keyNum="7"
+              :value="userInfo.contactNumber"
+              @save-info="saveInfo"
+            />
           </td>
         </tr>
         <tr>
           <td>
-            <inputBox title="学校" placeholder="填写你的学校" />
+            <inputBox
+              title="学校"
+              placeholder="填写你的学校"
+              :keyNum="5"
+              :value="userInfo.schoolName"
+              @save-info="saveInfo"
+            />
           </td>
           <td>
-            <inputBox title="详细地址" placeholder="填写详细地址" />
+            <inputBox
+              title="详细地址"
+              placeholder="填写详细地址"
+              :keyNum="8"
+              :value="userInfo.address"
+              @save-info="saveInfo"
+            />
           </td>
         </tr>
         <tr>
           <td>
-            <inputBox title="公司" placeholder="填写你的公司" />
+            <inputBox
+              title="公司"
+              placeholder="填写你的公司"
+              :keyNum="6"
+              :value="userInfo.corporationName"
+              @save-info="saveInfo"
+            />
           </td>
           <td>
-            <button class="layout">退出登录</button>
+            <button class="layout" @click="updateOnlineStatus">退出登录</button>
           </td>
         </tr>
       </tbody>
@@ -130,11 +176,16 @@
 import { defineComponent } from "vue";
 
 import inputBox from "@/components/common/input-box.vue";
+import toast from "@/components/common/toast.vue";
+import { set } from "lodash";
+import { responseDataType } from "@/type/ComponentDataType";
+import base from "../../api/base";
 
 export default defineComponent({
   name: "setting",
   components: {
-    inputBox
+    inputBox,
+    toast
   },
   props: {},
   data() {
@@ -144,15 +195,13 @@ export default defineComponent({
       list: require("@/assets/json/provinces.json"), // 导入省市数据
       province: "", // 省份
       city: [], // 城市
-      cityVal: ""
+      cityVal: "",
+      toastMsg: "",
+      isShow: false
     };
   },
   methods: {
-    getProvinces() {
-      // 省市联动
-      const optionIndex = this.$refs.provinces.selectedIndex - 1;
-      this.city = this.list[optionIndex].children;
-    },
+    // -----网络相关请求-----------
     // 获取个人信息
     async getUserDataByUid() {
       const { data } = await this.$api.websiteManageAPI.getUserDataByUid({
@@ -160,22 +209,145 @@ export default defineComponent({
       });
       this.userInfo = data;
       console.log(this.userInfo);
+      this.province = this.userInfo.province;
+      this.getProvinces(this.province);
     },
-    async saveInfo(val: string) {
-      console.log("保存按钮发出的事件", val);
+    uploadAvatar: function<T>(e: { target: { files: FileList } }) {
+      // 头像上传
+      const file = e.target.files[0];
+      // 构造form对象
+      const formData = new FormData();
+      // 后台取值字段 | blob文件数据 | 文件名称
+      formData.append("file", file, file.name);
+      // 调用上传api
+      this.$api.fileManageAPI
+        .upload(formData)
+        .then((res: responseDataType<T>) => {
+          const fileName = `${base.lkBaseURL}/uploads/${res.fileName}`;
+          // 头像赋值
+          this.avatarSrc = fileName;
+          console.log(fileName);
+          this.saveInfo(fileName, 0);
+        });
+    },
+    // 更新用户信息
+    async saveInfo(val: string, keyNum: number) {
+      const userObj = this.switchInfo(val, keyNum);
       const { data } = await this.$api.websiteManageAPI.updateUserInfo({
-        avatarSrc: this.userInfo.avatarSrc,
         userId: this.$store.state.userID,
-        userName: val
+        ...userObj
       });
       console.log(data);
+      if (data == "用户信息更新成功") {
+        this.toastMsg = data;
+        this.isShow = true;
+        setTimeout(() => {
+          this.toastMsg = "";
+          this.isShow = false;
+        }, 2000);
+      } else {
+        alert("用户信息更新失败");
+      }
+      this.getUserDataByUid();
+    },
+    // 更新用户状态（退出登录）
+    async updateOnlineStatus() {
+      await this.$api.websiteManageAPI.updateOnlineStatus({
+        userId: this.$store.state.userID,
+        status: false
+      });
+      localStorage.removeItem("token");
+      localStorage.removeItem("profilePicture");
+      localStorage.removeItem("userID");
+      localStorage.removeItem("username");
+      this.$router.push("/login");
+    },
+    // ------其他方法-------------
+    getProvinces() {
+      setTimeout(() => {
+        const optionIndex = this.$refs.provinces.selectedIndex - 1;
+        console.log("------------", optionIndex);
+        this.city = this.list[optionIndex].children;
+      }, 1000);
+    },
+    updateBirth() {
+      // 更新出生日期
+      this.saveInfo(this.userInfo.dateOfBirth, 9);
+    },
+    updateGender() {
+      // 更新性别
+      this.saveInfo(this.userInfo.gender, 10);
+    },
+    updateNativePlace() {
+      // 更新籍贯
+      console.log(this.cityVal);
+      this.saveInfo(this.province, 11, this.cityVal);
+    },
+    switchInfo(val: string, keyNum: number, cityVal: string) {
+      console.log(val, keyNum, cityVal);
+      let userObj = {};
+      switch (keyNum) {
+        case 0:
+          // 头像
+          userObj = { avatarSrc: val };
+          break;
+        case 1:
+          // 用户名
+          userObj = { userName: val };
+          break;
+        case 2:
+          // 职业
+          userObj = { occupation: val };
+          break;
+        case 3:
+          // 个性签名
+          userObj = { signature: val };
+          break;
+        case 4:
+          // 邮箱
+          userObj = { emailAddress: val };
+          break;
+        case 5:
+          // 学校
+          userObj = { schoolName: val };
+          break;
+        case 6:
+          // 公司
+          userObj = { corporationName: val };
+          break;
+        case 7:
+          // 联系电话
+          userObj = { contactNumber: val };
+          break;
+        case 8:
+          // 地址
+          userObj = { address: val };
+          break;
+        case 9:
+          // 出生日期
+          userObj = { dateOfBirth: val };
+          break;
+        case 10:
+          // 性别
+          userObj = { gender: val };
+          break;
+        case 11:
+          // 籍贯
+          userObj = { province: val, city: cityVal };
+          break;
+        default:
+          userObj = { msg: "没有值" };
+          break;
+      }
+      return userObj;
     }
   },
   created() {
+    this.getUserDataByUid();
+    console.log(this.city, "-----");
     console.log(111);
   },
   mounted() {
-    this.getUserDataByUid();
     console.log(222);
   }
 });
@@ -288,5 +460,12 @@ $boderColor: #f5f5f6;
     margin-right: 10px;
     outline: none;
   }
+}
+.toast {
+  position: fixed;
+  top: 100px;
+  left: 0;
+  right: 0;
+  margin: auto;
 }
 </style>
