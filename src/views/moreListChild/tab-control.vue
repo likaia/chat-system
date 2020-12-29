@@ -1,0 +1,125 @@
+<template>
+  <div>
+    <ul class="tabbar">
+      <li
+        v-for="(item, index) in titles"
+        :key="index"
+        @click="itemClick(index)"
+      >
+        <div :class="[index == currentIndex ? classList[index] : '']"></div>
+        <p :class="index == currentIndex ? 'activecolor' : ''">{{ item }}</p>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+
+export default defineComponent({
+  name: "tab-control",
+  props: {
+    titles: {
+      type: Array,
+      default() {
+        return [];
+      }
+    }
+  },
+  data() {
+    return {
+      currentIndex: -1,
+      classList: ["activeIcon0", "activeIcon1", "activeIcon2"]
+    };
+  },
+  methods: {
+    itemClick(index: string) {
+      this.currentIndex = index;
+      this.$emit("tab-click", index);
+    }
+  }
+});
+</script>
+
+<style scoped lang="scss">
+$borderColor: #ededed;
+$hoverColor: #f5f5f6;
+$fontColor: #bbbbbb;
+$listFontColor: #777777;
+$hoverFontColor: #12b7f5;
+
+ul {
+  display: flex;
+  flex: 1;
+  margin-top: 5px;
+  li {
+    list-style: none;
+    cursor: pointer;
+    margin: 0 20px;
+    color: $listFontColor;
+    font-size: 12px;
+    text-align: center;
+    div {
+      width: 30px;
+      height: 30px;
+    }
+  }
+  li:nth-child(1) div {
+    background: url(../../assets/img/more/file_normal_ap@2x.png) center
+      no-repeat;
+    background-size: cover;
+  }
+  li:nth-child(1):hover {
+    color: $hoverFontColor;
+    div {
+      background: url(../../assets/img/more/file_hover_ap@2x.png) center
+        no-repeat;
+      background-size: cover;
+    }
+  }
+  li:nth-child(2) div {
+    background: url(../../assets/img/more/feedback_normal_ap@2x.png) center
+      no-repeat;
+    background-size: cover;
+  }
+  li:nth-child(2):hover {
+    color: $hoverFontColor;
+    div {
+      background: url(../../assets/img/more/feedback_press_ap@2x.png) center
+        no-repeat;
+      background-size: cover;
+    }
+  }
+
+  li:nth-child(3) div {
+    background: url(../../assets/img/more/setting_normal_ap@2x.png) center
+      no-repeat;
+    background-size: cover;
+  }
+  li:nth-child(3):hover {
+    color: $hoverFontColor;
+    div {
+      background: url(../../assets/img/more/setting_hover_ap@2x.png) center
+        no-repeat;
+      background-size: cover;
+    }
+  }
+}
+.activeIcon0 {
+  background: url(../../assets/img/more/file_hover_ap@2x.png) center no-repeat !important;
+  background-size: cover !important;
+}
+.activeIcon1 {
+  background: url(../../assets/img/more/feedback_press_ap@2x.png) center
+    no-repeat !important;
+  background-size: cover !important;
+}
+.activeIcon2 {
+  background: url(../../assets/img/more/setting_hover_ap@2x.png) center
+    no-repeat !important;
+  background-size: cover !important;
+}
+.activecolor {
+  color: #12b7f5 !important;
+}
+</style>

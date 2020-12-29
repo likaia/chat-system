@@ -5,95 +5,8 @@
     <div class="list-panel">
       <!--加好友-->
       <div class="top-panel">
-        <div class="add-friend-panel" @click="addFriendsInfoSearch">
+        <div class="add-friend-panel">
           <p>加好友</p>
-        </div>
-      </div>
-      <div
-        style="width: 100%;
-    height: 70px;
-    list-style: none;
-    background: #fdfdfd;
-    cursor: default;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;"
-      >
-        <div>
-          <img
-            src="@/assets/img/list/AIO_Tab_Close_Normal@2x.png"
-            alt=""
-            style="width:18px;height:18px;margin-left: 4px;"
-          />
-        </div>
-        <div
-          style="width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    overflow: hidden;"
-        >
-          <div>
-            <img
-              src="@/assets/img/list/aio_buddy_validate_icon@2x.png"
-              style="width:38px;height:38px;"
-              alt=""
-            />
-          </div>
-        </div>
-        <div
-          style="width: 35%;
-    min-width: 75px;
-    height: 40px;"
-        >
-          <p
-            style="font-size: 15px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis; font-weight:bold; "
-          >
-            好友验证信息
-          </p>
-          <p
-            style="color: #7b7b7b;
-    font-size: 12px;
-      overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    width: 50px;
-    "
-          >
-            我是测试一号2
-          </p>
-        </div>
-        <div
-          style="min-width: 61px;
-    width: 28%;
-    height: 40px;
-    font-size: 13px;
-    color: #7b7b7b;
-    position: relative;
-    right: 3px;
-    "
-        >
-          <p
-            style=" overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;"
-          >
-            上午10:42
-          </p>
-          <div
-            style="width:18px;height:18px;border-radius:10px;position:absolute;right:0;bottom: 0;display: flex;
-    justify-content: center;background:red;color:white;"
-          >
-            <span>
-              9
-            </span>
-          </div>
         </div>
       </div>
       <!--设备组-->
@@ -158,13 +71,9 @@
         <div
           class="row-panel"
           v-for="(item, index) in friendsList"
-          :key="item.childrenId"
+          :key="index"
         >
-          <div
-            class="main-content"
-            @click="groupingStatus(index)"
-            v-right-click="rightMenuObj"
-          >
+          <div class="main-content" @click="groupingStatus(index)">
             <div class="icon-panel">
               <img
                 :ref="setGroupArrow"
@@ -181,37 +90,33 @@
           </div>
           <!--好友列表-->
           <div class="buddy-panel" :ref="setGroupList" style="display: none">
-            <template v-for="(list, index) in item.friendsData" :key="index">
+            <div
+              class="item-panel"
+              v-for="(list, index) in item.friendsData"
+              :key="index"
+              tabindex="0"
+            >
               <div
-                class="item-panel"
-                tabindex="0"
-                v-if="list.userId !== undefined"
+                class="main-panel"
+                @click="getBuddyInfo(list.userId, list.groupName, list.remarks)"
               >
-                <div
-                  class="main-panel"
-                  @click="
-                    getBuddyInfo(list.userId, list.groupName, list.remarks)
-                  "
-                >
-                  <div class="head-img-panel">
-                    <img :src="list.avatarSrc" alt="用户头像" />
+                <div class="head-img-panel">
+                  <img :src="list.avatarSrc" alt="用户头像" />
+                </div>
+                <div class="nickname-panel">
+                  <!--昵称-->
+                  <div class="name-panel">
+                    {{ list.userName }}({{ list.remarks }})
                   </div>
-                  <div class="nickname-panel">
-                    <!--昵称-->
-                    <div class="name-panel">
-                      <span>{{ list.userName }}</span>
-                      <span v-if="list.remarks">({{ list.remarks }})</span>
-                    </div>
-                    <!--签名-->
-                    <div class="signature-panel">
-                      [{{ list.onlineStatus ? "在线" : "离线" }}]{{
-                        list.signature
-                      }}
-                    </div>
+                  <!--签名-->
+                  <div class="signature-panel">
+                    [{{ list.onlineStatus ? "在线" : "离线" }}]{{
+                      list.signature
+                    }}
                   </div>
                 </div>
               </div>
-            </template>
+            </div>
           </div>
         </div>
       </div>
@@ -232,10 +137,6 @@
         v-else
       ></data-panel>
     </div>
-    <!--添加好友弹框-->
-    <teleport to="body">
-      <addFriendsList v-if="getSendData"></addFriendsList>
-    </teleport>
   </div>
 </template>
 
@@ -243,7 +144,6 @@
 import _ from "lodash";
 import { defineComponent } from "vue";
 import dataPanel from "@/components/data-panel.vue";
-import addFriendsList from "./addFriends-list.vue";
 import {
   contactListDataType,
   friendsListType,
@@ -261,26 +161,11 @@ export default defineComponent({
       paramsID: "",
       widgetIsNull: true,
       groupName: "",
-      remarks: "",
-      rightMenuObj: {
-        text: ["添加分组", "删除分组", "分组重命名"],
-        handler: {
-          addGroup() {
-            console.log("添加分组事件");
-          },
-          delGroup() {
-            console.log("删除分组事件");
-          },
-          renameGroup() {
-            console.log("分组重命名事件");
-          }
-        }
-      }
+      remarks: ""
     };
   },
   components: {
-    dataPanel,
-    addFriendsList
+    dataPanel
   },
   methods: {
     // 获取列表好友信息
@@ -330,48 +215,31 @@ export default defineComponent({
         this.groupArrow[index].style.transform = "rotate(90deg)";
         this.groupList[index].style.display = "block";
       }
-    },
-    // 添加好友弹框
-    addFriendsInfoSearch: function() {
-      this.$store.commit("updateAddFriendStatus", true);
     }
   },
   mounted() {
-    this.$api.websiteManageAPI
-      .getToBeVerifiedList()
-      .then((res: responseDataType) => {
-        console.log(res.data);
-      });
     // 获取好友列表人员
     this.$api.websiteManageAPI
       .getFriendsList({ userId: this.$store.state.userID })
       .then((res: responseDataType) => {
+        console.log(res.data);
+
         // 遍历获取分组名称
         res.data.forEach((item: friendsDataType) => {
-          this.groupList.push(
-            JSON.stringify({
-              childrenId: item.childrenId,
-              groupName: item.groupName
-            })
-          );
+          this.groupList.push(item.groupName);
         });
         // 去重相同分组
         this.groupList = [...new Set(this.groupList)];
         // 获取好友列表人员在线信息
         for (let index = 0; index < this.groupList.length; index++) {
-          // 将字符串转为对象
-          this.groupList[index] = JSON.parse(this.groupList[index]);
-          // 处理好友列表数据
           this.friendsList.push({
-            groupName: this.groupList[index].groupName,
+            groupName: this.groupList[index],
             totalPeople: 0,
             onlineUsers: 0,
-            friendsData: [],
-            childrenId: this.groupList[index].childrenId
+            friendsData: []
           });
-          // 处理好友陈列数据
           res.data.forEach((item: friendsDataType) => {
-            if (this.groupList[index].childrenId == item.childrenId) {
+            if (this.groupList[index] == item.groupName) {
               this.friendsList[index].friendsData.push({
                 userName: item.userName,
                 avatarSrc: item.avatarSrc,
@@ -379,18 +247,16 @@ export default defineComponent({
                 onlineStatus: item.onlineStatus,
                 userId: item.userId,
                 groupName: item.groupName,
-                remarks: item.remarks,
-                childrenId: item.childrenId
+                remarks: item.remarks
               });
-              // 获取对应的每个好友分组总人数
-              if (item.userId) {
-                this.friendsList[index].totalPeople++;
-              }
             }
           });
         }
-        // 获取对应的每个好友分组在线人员
+        // 获取在线人员总数
         for (let index = 0; index < this.friendsList.length; index++) {
+          this.friendsList[index].totalPeople = this.friendsList[
+            index
+          ].friendsData.length;
           this.friendsList[index].friendsData.forEach(
             (item: friendsDataType) => {
               if (item.onlineStatus) {
@@ -405,12 +271,6 @@ export default defineComponent({
   beforeUpdate() {
     this.groupArrow = [];
     this.groupList = [];
-  },
-  // 更新最新添加好友弹窗状态
-  computed: {
-    getSendData() {
-      return this.$store.state.closeFriendAllAlert;
-    }
   }
 });
 </script>
