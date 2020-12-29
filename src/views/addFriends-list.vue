@@ -1,13 +1,20 @@
 <template>
   <div class="addFriends-list-outer-mask">
-    <div class="addFriends-list-content" ref="addFriendsListContent">
+    <div
+      class="addFriends-list-content"
+      ref="addFriendsListContent"
+      @mousedown="alertDown($event)"
+      @mousemove="alertMove($event)"
+      @mouseup="alertUp"
+      @blur="alertUp"
+    >
       <div class="top-panel">
         <div class="top-panel-left">
           <div
             class="top-panel-left-icon"
             @mouseover="showLeftIco(true)"
             @mouseleave="showLeftIco(false)"
-            @click="removeAddAlert"
+            @click.stop="removeAddAlert"
           >
             <img
               :style="{ display: leftIco }"
@@ -19,8 +26,8 @@
 
           <div
             class="top-panel-left-icon"
-            @mouseover="showLeftIco(true)"
-            @mouseleave="showLeftIco(false)"
+            @mouseover="showLeftIco()"
+            @mouseleave="showLeftIco()"
           >
             <img
               :style="{ display: leftIco }"
@@ -49,6 +56,10 @@
               v-model="searchFriendInfo"
               placeholder="用户id/用户名"
               @keyup.enter="searchFriendInfoResult"
+              @focus.stop="clearMouseEvent"
+              @dblclick.stop=""
+              @mousemove.stop=""
+              ref="serachInput"
             />
             <img
               src="@/assets/img/list/search_tokenfield_delete@2x.png"
@@ -67,7 +78,7 @@
             class="main-panel-content-friends-info"
           >
             <div
-              v-for="list in friendsList"
+              v-for="(list, index) in friendsList"
               :key="list.userId"
               class="main-panel-content-friendsList"
             >
@@ -79,9 +90,33 @@
                   {{ list.userName }}({{ list.userId }})
                 </div>
                 <div class="friendsList-isFriend" v-if="!list.isFriend">
-                  <img src="@/assets/img/list/+normal@2x.png" alt="" />
+                  <img
+                    :ref="setAddIconNormal"
+                    src="@/assets/img/list/+normal@2x.png"
+                    alt=""
+                    style="display:block;"
+                    @mouseover="Hover(index, false)"
+                  />
+                  <img
+                    :ref="setAddIconHover"
+                    src="@/assets/img/list/+hover@2x.png"
+                    alt=""
+                    style="display:none;"
+                    @click.stop="Press(index)"
+                    @mouseout="Normal(index)"
+                  />
+                  <img
+                    :ref="setAddIconPress"
+                    src="@/assets/img/list/+press@2x.png"
+                    alt=""
+                    style="display:none;"
+                  />
                 </div>
-                <div class="friendsList-isNotFriend" v-else>
+                <div
+                  class="friendsList-isNotFriend"
+                  :ref="setAddIconNormal"
+                  v-else
+                >
                   已添加
                 </div>
               </template>
@@ -96,41 +131,77 @@
       </div>
     </div>
   </div>
+  <addFriendIdentityChecked
+    v-if="isChecked"
+    :arg-userName="argUserName"
+    :arg-userId="argUserId"
+    :is-checked="isChecked"
+    @no-show-identity-checked="noShowIdentityChecked(noShow)"
+  />
 </template>
+
 <script lang="ts">
 import { defineComponent } from "vue";
-import _ from "lodash";
 import { responseDataType } from "@/type/ComponentDataType";
+import addFriendIdentityChecked from "./addFriends-identityChecked.vue";
 export default defineComponent({
+  components: { addFriendIdentityChecked },
   name: "addFriends-list",
   methods: {
+    // 关闭添加好友弹框
     removeAddAlert() {
-      this.$emit("no-show-add-friends-alert", !this.show);
+      this.$store.commit("updateAddFriendStatus", false);
     },
+    // 关闭好友身份认证
+    noShowIdentityChecked(noShow: boolean) {
+      this.isChecked = noShow;
+    },
+    // 获取搜索好友列表
     searchFriendInfoResult() {
+      // 获取最新好友信息初始化
       this.friendsList = [];
+      this.setAddIconH = [];
+      this.setAddIconN = [];
+      this.setAddIconP = [];
+      // 当搜索框有内容
       if (this.searchFriendInfo) {
         this.showUserInfo = true;
+        // 调用接口获取搜索好友数据列表
         this.$api.websiteManageAPI
           .getSearchUserInfoList({
             content: this.searchFriendInfo,
             userId: this.$store.state.userID
           })
           .then((res: responseDataType) => {
-            console.log(res.data);
-
-            this.$refs.addFriendsListContent.style = "margin-top:-220px;";
+            // 对整体框位置做相当于的适应
             this.$refs.mainPanel.style = "height:auto;";
             this.$refs.mainPanelContentFriendsInfo.style =
               " height: 269px;overflow: auto; ";
+            this.$refs.addFriendsListContent.style.marginTop =
+              -(this.$refs.addFriendsListContent.offsetHeight / 2) + "px";
+            // 整体框位置在上边界贴上边界
+            if (this.$refs.addFriendsListContent.offsetTop < 0) {
+              this.$refs.addFriendsListContent.style.marginTop = -126 + "px";
+            }
+            // 整体框位置在下边界贴下边界
+            if (
+              this.$refs.addFriendsListContent.offsetTop +
+                this.$refs.addFriendsListContent.offsetHeight >
+              window.innerHeight
+            ) {
+              this.$refs.addFriendsListContent.style.marginTop = -340 + "px";
+            }
+            // 当好友数量大于一个
             if (res.data.length > 0) {
               res.data.forEach((item: any) => {
+                // 是好友
                 if (!item.isFriend) {
                   this.friendsList.push({
                     userName: item.userName,
                     userId: item.userId,
                     avatarSrc: item.avatarSrc
                   });
+                  // 不是好友
                 } else {
                   this.friendsList.push({
                     userName: item.userName,
@@ -141,25 +212,166 @@ export default defineComponent({
                 }
               });
             }
+            // 没有好友
             if (res.data.length == 0) {
               this.friendsList.push({ msg: "该用户不存在" });
             }
           });
       } else {
-        this.$refs.addFriendsListContent.style = "";
+        this.$refs.addFriendsListContent.style.marginTop = "";
         this.$refs.mainPanel.style = "";
         this.showUserInfo = false;
       }
     },
+    // 清空搜索框的内容并获取焦点
     clearSearchFriendInfo() {
       this.searchFriendInfo = "";
+      this.$refs.serachInput.focus();
     },
+    // 判断关闭与最小化图标是否出现
     showLeftIco: function(status: boolean) {
       if (status) {
         this.leftIco = "block";
       } else {
         this.leftIco = "none";
       }
+    },
+    // 按下触发可拖曳事件
+    alertDown: function(e: any) {
+      // 获取初始时当前框距离对应边界的大小位置和当前鼠标左键点下时事件的位置
+      this.moveAlertData.x = e.clientX;
+      this.moveAlertData.y = e.clientY;
+      this.moveAlertData.t =
+        this.$refs.addFriendsListContent.offsetTop +
+        this.$refs.addFriendsListContent.offsetHeight / 2;
+      this.moveAlertData.l =
+        this.$refs.addFriendsListContent.offsetLeft +
+        this.$refs.addFriendsListContent.offsetWidth / 2;
+      this.moveAlertData.isDown = true;
+      // 将鼠标图标换成可拖动
+      this.$refs.addFriendsListContent.style.cursor = "move";
+    },
+    // 按下并持续触发可拖曳事件
+    alertMove: function(e: any) {
+      // 防止未按下事件触发时，可获取并持续触发可拖曳事件
+      if (this.moveAlertData.isDown == false) {
+        return;
+      }
+
+      this.$refs.addFriendsListContent.style.marginTop =
+        -this.$refs.addFriendsListContent.offsetHeight / 2 + "px";
+      // 获取移动时最新的鼠标位位置
+      this.moveAlertData.moveX = e.clientX;
+      this.moveAlertData.moveY = e.clientY;
+      // 移动时最新位置 = 移动时最新的鼠标位位置 - （初始时的鼠标大小位置 - 初始时鼠标左键点下时事件的位置）
+      this.moveAlertData.movel =
+        this.moveAlertData.moveX -
+        (this.moveAlertData.x - this.moveAlertData.l);
+      this.moveAlertData.movet =
+        this.moveAlertData.moveY -
+        (this.moveAlertData.y - this.moveAlertData.t);
+      // 对左边界进行边界处理
+      if (
+        window.innerWidth -
+          this.moveAlertData.movel -
+          this.$refs.addFriendsListContent.offsetWidth / 2 <
+        0
+      ) {
+        this.moveAlertData.movel =
+          window.innerWidth -
+          this.$refs.addFriendsListContent.offsetWidth +
+          this.$refs.addFriendsListContent.offsetWidth / 2;
+      }
+      // 对右边界进行边界处理
+      if (
+        this.moveAlertData.movel -
+          this.$refs.addFriendsListContent.offsetWidth / 2 <
+        0
+      ) {
+        this.moveAlertData.movel =
+          this.$refs.addFriendsListContent.offsetWidth / 2;
+      }
+      // 对下边界进行边界处理
+      if (
+        window.innerHeight -
+          this.moveAlertData.movet -
+          this.$refs.addFriendsListContent.offsetHeight / 2 <
+        0
+      ) {
+        this.moveAlertData.movet =
+          window.innerHeight -
+          this.$refs.addFriendsListContent.offsetHeight +
+          this.$refs.addFriendsListContent.offsetHeight / 2;
+      }
+      // 对上边界进行边界处理
+      if (
+        this.moveAlertData.movet -
+          this.$refs.addFriendsListContent.offsetHeight / 2 <
+        0
+      ) {
+        this.moveAlertData.movet =
+          this.$refs.addFriendsListContent.offsetHeight / 2;
+      }
+      // 渲染最新位置
+      this.$refs.addFriendsListContent.style.left =
+        this.moveAlertData.movel + "px";
+      this.$refs.addFriendsListContent.style.top =
+        this.moveAlertData.movet + "px";
+    },
+    // 可拖曳事件完成事件
+    alertUp: function() {
+      this.moveAlertData.isDown = false;
+      this.$refs.addFriendsListContent.style.cursor = "default";
+    },
+    // 获取搜索框焦点事件
+    clearMouseEvent: function() {
+      this.moveAlertData.isDown = false;
+    },
+    // 获取normal添加图标元素
+    setAddIconNormal: function(el: Element) {
+      if (el != null) {
+        this.setAddIconN.push(el);
+        if (el.tagName == "DIV") {
+          this.setAddIconHover(el);
+          this.setAddIconPress(el);
+        }
+      }
+    },
+    // 获取hover的添加图标元素
+    setAddIconHover: function(el: Element) {
+      if (el != null) {
+        this.setAddIconH.push(el);
+      }
+    },
+    // 获取click添加图标元素
+    setAddIconPress: function(el: Element) {
+      if (el != null) {
+        this.setAddIconP.push(el);
+      }
+    },
+    // 鼠标悬浮是显示hover的添加图标
+    Hover(index: number) {
+      this.setAddIconN[index].style.display = "none";
+      this.setAddIconH[index].style.display = "block";
+      this.setAddIconP[index].style.display = "none";
+    },
+    // 鼠标离开目标是显示normal的添加图标
+    Normal(index: number) {
+      setTimeout(() => {
+        this.setAddIconN[index].style.display = "block";
+        this.setAddIconH[index].style.display = "none";
+        this.setAddIconP[index].style.display = "none";
+      }, 20);
+    },
+    // 鼠标单击时是显示click的添加图标
+    Press(index: number) {
+      this.setAddIconN[index].style.display = "none";
+      this.setAddIconH[index].style.display = "none";
+      this.setAddIconP[index].style.display = "block";
+      // 开启验证弹窗并传值
+      this.isChecked = true;
+      this.argUserName = this.friendsList[index].userName;
+      this.argUserId = this.friendsList[index].userId;
     }
   },
   props: {
@@ -170,14 +382,25 @@ export default defineComponent({
       searchFriendInfo: "",
       friendsList: [],
       showUserInfo: false,
-      leftIco: "none"
+      leftIco: "none",
+      moveAlertData: {
+        x: 0,
+        y: 0,
+        l: 0,
+        t: 0,
+        moveX: 0,
+        moveY: 0,
+        movel: 0,
+        movet: 0,
+        isDown: false
+      },
+      setAddIconN: [],
+      setAddIconH: [],
+      setAddIconP: [],
+      isChecked: false,
+      argUserName: "",
+      argUserId: ""
     };
-  },
-  emits: {
-    // vue3中建议对所有emit事件进行验证
-    "no-show-add-friends-alert": (val: boolean) => {
-      return !_.isNull(val);
-    }
   }
 });
 </script>
