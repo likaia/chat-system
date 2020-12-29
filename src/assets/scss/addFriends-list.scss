@@ -9,7 +9,7 @@
  
 .addFriends-list-content {
   width: 700px;
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
   margin-left: -350px;
@@ -32,20 +32,20 @@
       align-items: center;
 
       .top-panel-left-icon {
-        width: 23px;
-        height: 23px;
+        width: 20px;
+        height: 20px;
         border-radius: 50%;
 
         .close-icon{
-          margin-left: 20%;
-          margin-top:20%;
+          margin-left: 16%;
+          margin-top:16%;
           width: 15px;
           height: 15px;
         }
 
         .min-icon{
-          margin-left: 20%;
-          margin-top: 20%;
+          margin-left: 16%;
+          margin-top: 16%;
           width: 15px;
           height: 15px;
         }
@@ -53,12 +53,12 @@
 
       div:nth-child(1) {
         background: #fc4646;
-        margin-left: 30px;
+        margin-left: 20px;
       }
 
       div:nth-child(2) {
         background: #fbb323;
-        margin-left: 15px;
+        margin-left: 10px;
       }
     }
 

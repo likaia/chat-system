@@ -9,6 +9,7 @@ import vueRightMenu from "vue-right-click-menu-next";
 const app = createApp(App);
 // 挂载api
 app.config.globalProperties.$api = api;
+
 // 使用VueNativeSock插件，并进行相关配置
 app
   .use(store)

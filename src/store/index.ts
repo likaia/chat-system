@@ -26,12 +26,15 @@ export default createStore({
       // 心跳定时器
       heartBeatTimer: 0
     },
+    // 右键菜单
     rightMenu: {
       status: "none",
       top: "0px",
       left: "0px",
       list: []
-    }
+    },
+    // 关闭添加好友信息弹出框
+    closeFriendAllAlert: false
   },
   mutations: {
     // 连接打开
@@ -100,6 +103,10 @@ export default createStore({
       state.rightMenu.top = menuObj.top;
       state.rightMenu.left = menuObj.left;
       state.rightMenu.list = menuObj.list;
+    },
+    // 更新添加好友弹出框是否存在
+    updateAddFriendStatus(state, value: boolean) {
+      state.closeFriendAllAlert = value;
     }
   },
   modules: {}

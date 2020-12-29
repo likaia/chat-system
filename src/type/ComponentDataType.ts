@@ -98,7 +98,6 @@ export type contactListDataType<V> = {
   widgetIsNull: boolean; // 组件是否为空
   groupName: string; // 分组名称
   remarks: string; // 备注
-  showAddAlert: boolean; // 添加好友弹框
   rightMenuObj: {
     text: Array<string>; // 文本数组
     handler: Record<string, (...params: any) => void>; // 事件处理函数
