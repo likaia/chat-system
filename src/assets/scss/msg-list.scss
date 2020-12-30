@@ -132,6 +132,8 @@
 
   .content-panel{
     width: 85%;
+    // 设置最小宽度避免出现横向滚动条
+    min-width: calc(100% - 214px);
     height: 100%;
     display: flex;
     justify-content: center;

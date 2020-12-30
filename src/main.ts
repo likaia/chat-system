@@ -6,6 +6,7 @@ import api from "./api/index";
 import base from "./api/base";
 import VueNativeSock from "vue-native-websocket-vue3";
 import vueRightMenu from "vue-right-click-menu-next";
+
 const app = createApp(App);
 // 挂载api
 app.config.globalProperties.$api = api;

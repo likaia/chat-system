@@ -36,11 +36,7 @@
         </div>
       </li>
     </ul>
-    <div
-      class="content-panel"
-      ref="contentPanel"
-      :style="{ width: contentPanelWidth }"
-    >
+    <div class="content-panel" ref="contentPanel">
       <img
         src="@/assets/img/list/contact_non_selected@2x.png"
         width="280"

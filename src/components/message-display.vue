@@ -720,6 +720,12 @@ export default defineComponent({
           sessionStorage.getItem("messageTextList") as string
         );
       }
+      if (pageStart < 0) {
+        pageStart = 0;
+      }
+      if (pageEnd < 0) {
+        pageEnd = 0;
+      }
       const finalMsgList: Array<msgListType> = [];
       for (let i = pageStart; i < pageEnd; i++) {
         // 向数组头部追加数据

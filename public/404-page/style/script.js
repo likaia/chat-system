@@ -5,7 +5,8 @@ gsap.to("#headStripe", {
   yoyo: true,
   repeat: -1,
   ease: "sine.inOut",
-  duration: 1 });
+  duration: 1
+});
 
 gsap.to("#spaceman", {
   y: 0.5,
@@ -13,21 +14,24 @@ gsap.to("#spaceman", {
   yoyo: true,
   repeat: -1,
   ease: "sine.inOut",
-  duration: 1 });
+  duration: 1
+});
 
 gsap.to("#craterSmall", {
   x: -3,
   yoyo: true,
   repeat: -1,
   duration: 1,
-  ease: "sine.inOut" });
+  ease: "sine.inOut"
+});
 
 gsap.to("#craterBig", {
   x: 3,
   yoyo: true,
   repeat: -1,
   duration: 1,
-  ease: "sine.inOut" });
+  ease: "sine.inOut"
+});
 
 gsap.to("#planet", {
   rotation: -2,
@@ -35,35 +39,38 @@ gsap.to("#planet", {
   repeat: -1,
   duration: 1,
   ease: "sine.inOut",
-  transformOrigin: "50% 50%" });
-
+  transformOrigin: "50% 50%"
+});
 
 gsap.to("#starsBig g", {
   rotation: "random(-30,30)",
   transformOrigin: "50% 50%",
   yoyo: true,
   repeat: -1,
-  ease: "sine.inOut" });
+  ease: "sine.inOut"
+});
 
 gsap.fromTo(
-"#starsSmall g",
-{ scale: 0, transformOrigin: "50% 50%" },
-{ scale: 1, transformOrigin: "50% 50%", yoyo: true, repeat: -1, stagger: 0.1 });
+  "#starsSmall g",
+  { scale: 0, transformOrigin: "50% 50%" },
+  { scale: 1, transformOrigin: "50% 50%", yoyo: true, repeat: -1, stagger: 0.1 }
+);
 
 gsap.to("#circlesSmall circle", {
   y: -4,
   yoyo: true,
   duration: 1,
   ease: "sine.inOut",
-  repeat: -1 });
+  repeat: -1
+});
 
 gsap.to("#circlesBig circle", {
   y: -2,
   yoyo: true,
   duration: 1,
   ease: "sine.inOut",
-  repeat: -1 });
-
+  repeat: -1
+});
 
 gsap.set("#glassShine", { x: -68 });
 
@@ -75,13 +82,8 @@ gsap.to("#glassShine", {
   transformOrigin: "50% 50%",
   repeat: -1,
   repeatDelay: 8,
-  delay: 2 });
-
-
-const burger = document.querySelector('.burger');
-const nav = document.querySelector('nav');
-
-burger.addEventListener('click', e => {
-  burger.dataset.state === 'closed' ? burger.dataset.state = "open" : burger.dataset.state = "closed";
-  nav.dataset.state === "closed" ? nav.dataset.state = "open" : nav.dataset.state = "closed";
+  delay: 2
 });
+
+const burger = document.querySelector(".burger");
+const nav = document.querySelector("nav");
