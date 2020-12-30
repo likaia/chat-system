@@ -39,7 +39,17 @@
       >
         <!--消息发送时间:当前发送消息为第一条显示时间-->
         <div class="sender-time-panel" v-if="index === 0">
-          <span>{{ item.createTime.substring(5, 16) }}</span>
+          <!--非今天的消息显示日期与时间-->
+          <span
+            v-if="
+              new Date(serverTime).getDate() -
+                new Date(item.createTime).getDate() >
+                1
+            "
+            >{{ item.createTime.substring(5, 16) }}</span
+          >
+          <!--今天的消息显示时间-->
+          <span v-else>{{ item.createTime.substring(10, 16) }}</span>
         </div>
         <!--当前消息与上一条消息发送时间间隔1分钟就显示-->
         <div
@@ -50,7 +60,17 @@
               60000
           "
         >
-          <span>{{ item.createTime.substring(5, 16) }}</span>
+          <!--非今天的消息显示日期与时间-->
+          <span
+            v-if="
+              new Date(serverTime).getDate() -
+                new Date(item.createTime).getDate() >
+                1
+            "
+            >{{ item.createTime.substring(5, 16) }}</span
+          >
+          <!--今天的消息显示时间-->
+          <span v-else>{{ item.createTime.substring(10, 16) }}</span>
         </div>
         <!--发送者消息样式-->
         <div
@@ -277,7 +297,8 @@ export default defineComponent({
     listId: String, // 消息id
     messageStatus: Number, // 消息类型
     buddyId: String, // 好友id
-    buddyName: String // 好友昵称
+    buddyName: String, // 好友昵称
+    serverTime: String // 服务器时间
   },
   data<T>(): messageDisplayDataType<T> {
     return {
