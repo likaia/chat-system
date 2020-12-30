@@ -102,7 +102,7 @@ export default defineComponent({
         msgObj.id = data.id;
         msgObj.lastMsgTxt = data.text;
         msgObj.lastTime = data.time;
-        localStorage.setItem("msgList", [msgObj]);
+        localStorage.setItem("msgList", JSON.stringify([msgObj]));
       }
       // 更新消息列表中的消息内容与时间
       for (let i = 0; i < this.msgList.length; i++) {

@@ -177,7 +177,7 @@ export type totalMessage = {
 
 // 本地消息列表数据类型定义
 export type localMsgObj = {
-  id: string; // 列表id
+  id?: string; // 列表id
   lastMsgTxt?: string; // 最后一条消息内容
   lastTime?: string; // 最后一条消息发送时间
 };
