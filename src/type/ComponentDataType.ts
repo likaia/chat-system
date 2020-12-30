@@ -151,6 +151,7 @@ export type msgListDataType = {
   listId: string;
   messageType: number | null;
   buddyId: string;
+  serverTime: string | null;
   buddyName: string;
   msgList: Array<totalMessage>;
 };
@@ -172,4 +173,17 @@ export type totalMessage = {
   userId?: string; // 消息id
   type?: number; // 消息类型: 0: 单聊 1: 群聊
   buddyId?: string; // 好友id
+};
+
+// 本地消息列表数据类型定义
+export type localMsgObj = {
+  id: string; // 列表id
+  lastMsgTxt?: string; // 最后一条消息内容
+  lastTime?: string; // 最后一条消息发送时间
+};
+
+export type LastMessageObj = {
+  id: string; // 列表ID
+  text: string; // 最后一条消息内容
+  time: string; // 最后一条消息发送时间
 };

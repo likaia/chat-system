@@ -1,10 +1,10 @@
 <!--消息选项卡-->
 <template>
   <div id="mainBody">
-    <ul class="list-panel" ref="listPanel" v-if="messageList.length > 0">
+    <ul class="list-panel" ref="listPanel" v-if="msgList.length > 0">
       <li
         class="row-panel"
-        v-for="(item, index) in messageList"
+        v-for="(item, index) in msgList"
         :key="item.id"
         @click="
           showChatInterface(
@@ -29,10 +29,21 @@
           </p>
         </div>
         <div class="item-time-panel">
-          <p>{{ item.lastTime }}</p>
-          <!--          <div class="msg-count-panel msg-count-more-panel">-->
-          <!--            <p></p>-->
-          <!--          </div>-->
+          <!--非今天的消息显示日期-->
+          <p
+            v-if="
+              new Date(serverTime).getDate() -
+                new Date(item.lastTime).getDate() >
+                1
+            "
+          >
+            {{ item.lastTime.substring(5, 10) }}
+          </p>
+          <!--今天的消息显示具体时间-->
+          <p v-else>{{ item.lastTime.substring(10, 16) }}</p>
+          <!--          <div class="msg-count-panel msg-count-more-panel">
+            <p>12</p>
+          </div>-->
         </div>
       </li>
     </ul>
@@ -61,6 +72,8 @@ import { defineComponent } from "vue";
 import _ from "lodash";
 import messageDisplay from "@/components/message-display.vue";
 import {
+  LastMessageObj,
+  localMsgObj,
   msgListDataType,
   responseDataType,
   totalMessage
@@ -75,8 +88,44 @@ export default defineComponent({
   methods: {
     getThisWindowWidth: () => window.innerWidth,
     // 获取子组件传过来的值
-    updateLastMessage: function(data: string) {
-      this.lastMessageContent = data;
+    updateLastMessage: function(data: LastMessageObj) {
+      // 获取localStorage中的消息内容与时间
+      let localMsgList: Array<localMsgObj> = [];
+      if (!_.isNull(JSON.parse(localStorage.getItem("msgList") as string))) {
+        localMsgList = JSON.parse(localStorage.getItem("msgList") as string);
+      }
+      // 本地存储没有数据则重新赋值
+      if (_.isNull(JSON.parse(localStorage.getItem("msgList") as string))) {
+        // 向本地存储里设置值
+        const msgObj: localMsgObj = {};
+        msgObj.id = data.id;
+        msgObj.lastMsgTxt = data.text;
+        msgObj.lastTime = data.time;
+        localStorage.setItem("msgList", [msgObj]);
+      }
+      // 更新消息列表中的消息内容与时间
+      for (let i = 0; i < this.msgList.length; i++) {
+        const msgObj: totalMessage = this.msgList[i];
+        // 找到消息列表中buddyId与子组件id相等的值
+        if (_.isEqual(msgObj.buddyId, data.id)) {
+          // 修改消息对象中最后一条消息内容与时间
+          msgObj.lastMsgTxt = data.text;
+          msgObj.lastTime = data.time;
+        }
+      }
+      // 更新本地存储中的消息内容与时间
+      for (let i = 0; i < localMsgList.length; i++) {
+        const msgObj: localMsgObj = localMsgList[i];
+        if (_.isEqual(msgObj.id, data.id)) {
+          // 修改本地存储中消息对象的最后一条消息内容与时间
+          msgObj.lastMsgTxt = data.text;
+          msgObj.lastTime = data.time;
+        }
+      }
+      if (localMsgList.length > 0) {
+        // 将修改后的数据放回本地存储
+        localStorage.setItem("msgList", JSON.stringify(localMsgList));
+      }
     },
     // 显示消息面板组件
     showChatInterface: function(
@@ -110,11 +159,52 @@ export default defineComponent({
         })
         .then((res: responseDataType) => {
           if (res.code === 0) {
-            this.msgList = res.data.messageList;
+            // 接口返回的数据
+            const messageList: Array<totalMessage> = res.data.messageList;
+            // 需要向本地存储的数据
+            let localMsgList: Array<localMsgObj> = [];
+            // 拿出本地存储中的数据
+            if (
+              !_.isNull(JSON.parse(localStorage.getItem("msgList") as string))
+            ) {
+              localMsgList = JSON.parse(
+                localStorage.getItem("msgList") as string
+              );
+            }
+            // 判断本地存储中的数据与接口已渲染的数据条数是否一致
+            if (!_.isEqual(localMsgList.length, messageList.length)) {
+              // 不一致则重置本地存储的数据
+              for (let i = 0; i < messageList.length; i++) {
+                const msgobj: totalMessage = messageList[i];
+                localMsgList.push({
+                  id: msgobj.buddyId
+                });
+              }
+              // 将新的数据放入本地存储
+              localStorage.setItem("msgList", JSON.stringify(localMsgList));
+            }
+            // 修改消息列表的最后发送内容与时间
+            for (let i = 0; i < localMsgList.length; i++) {
+              const msgObj = localMsgList[i];
+              if (
+                _.isEqual(msgObj.id, messageList[i].buddyId) &&
+                Object.keys(msgObj).length > 1
+              ) {
+                // 更新messageList[i]的最后发送消息内容与时间
+                messageList[i].lastTime = msgObj.lastTime;
+                messageList[i].lastMsgTxt = msgObj.lastMsgTxt;
+              }
+            }
+            // 渲染页面
+            this.msgList = messageList;
           } else {
             alert(res.msg);
           }
         });
+      // 获取当前服务器时间
+      this.$api.serverAPI.getServerTime().then((res: responseDataType) => {
+        this.serverTime = res.data;
+      });
     }
   },
   data(): msgListDataType {
@@ -127,30 +217,12 @@ export default defineComponent({
       listId: "",
       messageType: null,
       buddyId: "",
+      serverTime: null,
       buddyName: "",
       msgList: []
     };
   },
   computed: {
-    // 处理消息列表
-    messageList(): Array<totalMessage> {
-      const list: Array<totalMessage> = [];
-      const msgList: Array<totalMessage> = this.msgList;
-      for (let i = 0; i < msgList.length; i++) {
-        const msgObj = msgList[i];
-        // 对时间进行处理，截取小时和分钟
-        msgObj.lastTime = msgObj.lastTime?.substring(10, 16);
-        list.push(msgObj);
-      }
-      return list;
-    },
-    // 内容区域宽度
-    contentPanelWidth(): string {
-      if (this.messageList.length === 0) {
-        return "100%";
-      }
-      return "85%";
-    },
     rightMenuObj(): rightMenuType {
       // 右键菜单对象，菜单内容和处理事件
       const obj: rightMenuType = {
