@@ -59,6 +59,7 @@
         v-else
         :message-status="messageType"
         :list-id="listId"
+        :server-time="serverTime"
         :buddy-id="buddyId"
         :buddy-name="buddyName"
         @update-last-message="updateLastMessage($event)"
