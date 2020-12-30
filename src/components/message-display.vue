@@ -882,6 +882,20 @@ export default defineComponent({
           }
         });
       } else {
+        // 更新最后发送时间与消息内容
+        if (msgObj.msgText.includes("img")) {
+          this.$emit("update-last-message", {
+            text: "[图片消息]",
+            id: this.listId,
+            time: msgObj.createTime
+          });
+        } else {
+          this.$emit("update-last-message", {
+            text: msgObj.msgText,
+            id: this.listId,
+            time: msgObj.createTime
+          });
+        }
         // 向数组尾部添加消息对象
         this.senderMessageList.push(msgObj);
         // 修改滚动条位置
@@ -1117,7 +1131,11 @@ export default defineComponent({
   },
   emits: {
     // vue3中建议对所有emit事件进行验证
-    "update-last-message": (val: string) => {
+    "update-last-message": (val: {
+      id: string;
+      text: string;
+      time: string;
+    }) => {
       return !_.isEmpty(val);
     }
   },
