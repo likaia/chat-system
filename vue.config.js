@@ -1,6 +1,6 @@
 module.exports = {
   // 项目打包生成目录
-  outputDir: "dist",
+  outputDir: "/usr/local/Cellar/tomcat/9.0.41/libexec/webapps/chat-system/",
   // 静态资源生成目录（相对于outputDir
   assetsDir: "static",
   // 关闭线上源码
