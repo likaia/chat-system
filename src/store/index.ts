@@ -1,13 +1,10 @@
 import { createStore } from "vuex";
 import main from "../main";
 import { rightMenuAttribute, userInfoType } from "@/type/ComponentDataType";
-// antd的中文翻译库
-import zhCN from "ant-design-vue/lib/locale/zh_CN";
 export default createStore({
   state: {
     token: "",
     userID: "",
-    antdLocale: zhCN,
     // 用户头像
     profilePicture: "",
     username: "",

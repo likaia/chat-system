@@ -46,6 +46,10 @@ const websiteManageAPI = {
   updateOnlineStatus<T>(params: paramsType<T>) {
     return services.post(`${base.lk}/user/updateOnlineStatus`, params);
   },
+  // 更新用户信息
+  updateUserInfo<T>(params: paramsType<T>) {
+    return services.post(`${base.lk}/user/updateUserInfo`, params);
+  },
   // 更新好友验证消息
   getToBeVerifiedList<T>(params: paramsType<T>) {
     return services.get(`${base.lk}/user/getToBeVerifiedList`, {
