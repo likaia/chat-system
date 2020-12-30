@@ -105,6 +105,16 @@ export type contactListDataType<V> = {
   friendsCheckedList: {
     serverTime:string;
     friendsCheckedInfo: Array<V>;
+    newest: {
+      time: string
+      userName: string,
+      date: string,
+      dayValueTime: {
+       nowTime: number;
+       tomTime:number;
+      }
+    };
+    
   };// 好友验证数据
 };
 

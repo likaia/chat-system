@@ -69,7 +69,7 @@
     width: 50px;
     "
           >
-            我是测试一号2
+            我是 {{ friendsCheckedList.newest.userName }}
           </p>
         </div>
         <div
@@ -87,7 +87,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;"
           >
-            上午10:42
+            {{ friendsCheckedList.newest.date }}
           </p>
           <div
             style="width:18px;height:18px;border-radius:10px;position:absolute;right:0;bottom: 0;display: flex;
@@ -281,7 +281,16 @@ export default defineComponent({
       },
       friendsCheckedList: {
         serverTime: "",
-        friendsCheckedInfo: []
+        friendsCheckedInfo: [],
+        newest: {
+          time: "",
+          userName: "",
+          date: "",
+          dayValueTime: {
+            nowTime: 0,
+            tomTime: 0
+          }
+        }
       }
     };
   },
@@ -347,12 +356,143 @@ export default defineComponent({
       this.$api.websiteManageAPI
         .getToBeVerifiedList()
         .then((res: responseDataType) => {
-          // console.log(res.data);
+          console.log(res.data);
           if (res.data.verifiedList.length > 0) {
             this.friendsCheckedList.serverTime = res.data.serverTime;
             this.friendsCheckedList.friendsCheckedInfo = res.data.verifiedList;
+            // 时间由新到旧
+            if (this.friendsCheckedList.friendsCheckedInfo.length > 1) {
+              this.friendsCheckedList.friendsCheckedInfo = this.forwardRankingDate(
+                this.friendsCheckedList.friendsCheckedInfo,
+                "createTime"
+              );
+            }
+            // 显示最新好友添加时间
+            this.friendsCheckedList.newest.dayValueTime.nowTime =
+              1 * 24 * 3600 * 1000 -
+              (Date.parse(
+                this.friendsCheckedList.friendsCheckedInfo[0].createTime
+              ) %
+                (1 * 24 * 3600 * 1000));
+            this.friendsCheckedList.newest.dayValueTime.tomTime =
+              Date.parse(
+                this.friendsCheckedList.friendsCheckedInfo[0].createTime
+              ) -
+              this.friendsCheckedList.newest.dayValueTime.nowTime +
+              1 * 24 * 3600 * 1000;
+            if (
+              Date.parse(this.friendsCheckedList.serverTime) -
+                this.friendsCheckedList.newest.dayValueTime.tomTime >
+              0
+            ) {
+              if (
+                Math.floor(
+                  Date.parse(this.friendsCheckedList.serverTime) /
+                    (1 * 24 * 3600 * 1000)
+                ) -
+                  Math.floor(
+                    Date.parse(
+                      this.friendsCheckedList.friendsCheckedInfo[0].createTime
+                    ) /
+                      (1 * 24 * 3600 * 1000)
+                  ) ==
+                1
+              ) {
+                this.friendsCheckedList.newest.date =
+                  "昨天" +
+                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
+                    this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
+                      ":"
+                    ) - 2,
+                    5
+                  );
+              } else if (
+                Math.floor(
+                  Date.parse(this.friendsCheckedList.serverTime) /
+                    (1 * 24 * 3600 * 1000)
+                ) -
+                  Math.floor(
+                    Date.parse(
+                      this.friendsCheckedList.friendsCheckedInfo[0].createTime
+                    ) /
+                      (1 * 24 * 3600 * 1000)
+                  ) >
+                1
+              ) {
+                this.friendsCheckedList.newest.date =
+                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
+                    this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
+                      "-"
+                    ) + 1,
+                    5
+                  ) +
+                  " " +
+                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
+                    this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
+                      ":"
+                    ) - 2,
+                    5
+                  );
+              }
+            } else {
+              if (
+                Math.floor(
+                  Date.parse(this.friendsCheckedList.serverTime) /
+                    (1 * 3600 * 1000)
+                ) -
+                  Math.floor(
+                    Date.parse(
+                      this.friendsCheckedList.friendsCheckedInfo[0].createTime
+                    ) /
+                      (1 * 3600 * 1000)
+                  ) <=
+                1 * 12 * 3600 * 1000
+              ) {
+                this.friendsCheckedList.newest.date =
+                  "上午" +
+                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
+                    this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
+                      ":"
+                    ) - 2,
+                    5
+                  );
+              } else if (
+                Math.floor(
+                  Date.parse(this.friendsCheckedList.serverTime) /
+                    (1 * 3600 * 1000)
+                ) -
+                  Math.floor(
+                    Date.parse(
+                      this.friendsCheckedList.friendsCheckedInfo[0].createTime
+                    ) /
+                      (1 * 3600 * 1000)
+                  ) <=
+                (1 * 24 * 3600 * 1000 * 3) / 4
+              ) {
+                this.friendsCheckedList.newest.date =
+                  "下午" +
+                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
+                    this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
+                      ":"
+                    ) - 2,
+                    5
+                  );
+              } else {
+                this.friendsCheckedList.newest.date =
+                  "晚上" +
+                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
+                    this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
+                      ":"
+                    ) - 2,
+                    5
+                  );
+              }
+            }
+            // 显示最新好友添加名称
+            this.friendsCheckedList.newest.userName = this.friendsCheckedList.friendsCheckedInfo[0].userName;
+          } else {
+            return;
           }
-          console.log(this.friendsCheckedList);
         });
     },
     getFriendsList() {
@@ -414,6 +554,19 @@ export default defineComponent({
             );
           }
         });
+    },
+    // 封装的日期排序方法
+    forwardRankingDate(data: any, p: string) {
+      for (let i = 0; i < data.length - 1; i++) {
+        for (let j = 0; j < data.length - 1 - i; j++) {
+          if (Date.parse(data[j][p]) < Date.parse(data[j + 1][p])) {
+            const temp = data[j];
+            data[j] = data[j + 1];
+            data[j + 1] = temp;
+          }
+        }
+      }
+      return data;
     }
   },
   mounted() {

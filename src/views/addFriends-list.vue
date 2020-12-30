@@ -196,11 +196,14 @@ export default defineComponent({
               res.data.forEach((item: any) => {
                 // 是好友
                 if (!item.isFriend) {
-                  this.friendsList.push({
-                    userName: item.userName,
-                    userId: item.userId,
-                    avatarSrc: item.avatarSrc
-                  });
+                  if (item.userId != this.$store.state.userID) {
+                    this.friendsList.push({
+                      userName: item.userName,
+                      userId: item.userId,
+                      avatarSrc: item.avatarSrc
+                    });
+                  }
+
                   // 不是好友
                 } else {
                   this.friendsList.push({
@@ -213,8 +216,8 @@ export default defineComponent({
               });
             }
             // 没有好友
-            if (res.data.length == 0) {
-              this.friendsList.push({ msg: "该用户不存在" });
+            if (this.friendsList.length == 0) {
+              this.friendsList.push({ msg: "该用户不存在或是你本人" });
             }
           });
       } else {
