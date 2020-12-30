@@ -41,19 +41,13 @@
         <div class="sender-time-panel" v-if="index === 0">
           <span>{{ item.createTime.substring(5, 16) }}</span>
         </div>
-        <!--当前消息与上一条消息发送时间截取时分进行相减大于1就显示时间-->
+        <!--当前消息与上一条消息发送时间间隔1分钟就显示-->
         <div
           class="sender-time-panel"
           v-else-if="
-            parseInt(
-              item.createTime.substring(11, 13) +
-                item.createTime.substring(14, 16)
-            ) -
-              parseInt(
-                senderMessageList[index - 1].createTime.substring(11, 13) +
-                  senderMessageList[index - 1].createTime.substring(14, 16)
-              ) >=
-              1
+            Date.parse(item.createTime) -
+              Date.parse(senderMessageList[index - 1].createTime) >=
+              60000
           "
         >
           <span>{{ item.createTime.substring(5, 16) }}</span>
