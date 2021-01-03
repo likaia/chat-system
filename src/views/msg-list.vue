@@ -25,7 +25,7 @@
         <div class="item-nickname-panel">
           <p class="title">{{ item.userName }}</p>
           <p class="subtitle">
-            {{ item.lastMsgTxt ? item.lastMsgTxt : "暂无消息" }}
+            {{ item?.lastMsgTxt ? item?.lastMsgTxt : "暂无消息" }}
           </p>
         </div>
         <div class="item-time-panel">
