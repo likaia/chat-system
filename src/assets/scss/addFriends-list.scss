@@ -10,10 +10,9 @@
 .addFriends-list-content {
   width: 700px;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-left: -350px;
-  margin-top: -126px;
+  background:white;
+  position: absolute;
+  z-index: 999;
   border: #bebebe 1px solid;
   border-radius: 5px;
   box-shadow: 0 0 10px #000000;

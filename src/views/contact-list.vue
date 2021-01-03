@@ -9,96 +9,66 @@
           <p>加好友</p>
         </div>
       </div>
-      <div
-        v-if="friendsCheckedList.friendsCheckedInfo.length > 0"
-        class="friend-checked-panel"
-        style="width: 100%;
-    height: 70px;
-    list-style: none;
-    background: #fdfdfd;
-    cursor: default;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;"
-      >
-        <div class="clear-checked-Icon">
-          <img
-            src="@/assets/img/list/AIO_Tab_Close_Normal@2x.png"
-            alt=""
-            style="width:18px;height:18px;margin-left: 4px;"
-          />
-        </div>
+      <!--好友验证-->
+      <template v-if="showFriendCheckedContent">
         <div
-          class=""
-          style="width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    overflow: hidden;"
+          v-if="friendsCheckedList.friendsCheckedInfo.length > 0"
+          class="friend-checked-panel"
+          ref="friendCheckedPanel"
+          @click="friendsCheckedAlert"
         >
-          <div>
+          <div class="clear-checked-icon">
             <img
-              src="@/assets/img/list/aio_buddy_validate_icon@2x.png"
-              style="width:38px;height:38px;"
+              src="@/assets/img/list/AIO_Tab_Close_Normal@2x.png"
               alt=""
+              @click.stop="clearFriendCheckedPanel"
             />
           </div>
-        </div>
-        <div
-          style="width: 35%;
-    min-width: 75px;
-    height: 40px;"
-        >
-          <p
-            style="font-size: 15px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis; font-weight:bold; "
-          >
-            好友验证信息
-          </p>
-          <p
-            style="color: #7b7b7b;
-    font-size: 12px;
-      overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    width: 50px;
-    "
-          >
-            我是 {{ friendsCheckedList.newest.userName }}
-          </p>
-        </div>
-        <div
-          style="min-width: 61px;
-    width: 28%;
-    height: 40px;
-    font-size: 13px;
-    color: #7b7b7b;
-    position: relative;
-    right: 3px;
-    "
-        >
-          <p
-            style=" overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;"
-          >
-            {{ friendsCheckedList.newest.date }}
-          </p>
-          <div
-            style="width:18px;height:18px;border-radius:10px;position:absolute;right:0;bottom: 0;display: flex;
-    justify-content: center;background:red;color:white;"
-          >
-            <span>
-              {{ friendsCheckedList.friendsCheckedInfo.length }}
-            </span>
+          <div class="validate-icon">
+            <div>
+              <img
+                src="@/assets/img/list/aio_buddy_validate_icon@2x.png"
+                alt=""
+              />
+            </div>
+          </div>
+          <div class="checked-userName">
+            <p>
+              好友验证信息
+            </p>
+            <p>我是 {{ friendsCheckedList.newest.userName }}</p>
+          </div>
+          <div class="checked-Time">
+            <p>
+              {{ friendsCheckedList.newest.date }}
+            </p>
+            <div v-if="friendsCheckedList.friendsCheckedInfo.length < 10">
+              <span>
+                {{ friendsCheckedList.friendsCheckedInfo.length }}
+              </span>
+            </div>
+            <div
+              class="count-ten"
+              v-if="
+                friendsCheckedList.friendsCheckedInfo.length >= 10 &&
+                  friendsCheckedList.friendsCheckedInfo.length < 99
+              "
+            >
+              <span>
+                {{ friendsCheckedList.friendsCheckedInfo.length }}
+              </span>
+            </div>
+            <div
+              class="count-hundred"
+              v-if="friendsCheckedList.friendsCheckedInfo.length > 99"
+            >
+              <span>
+                99+
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
       <!--设备组-->
       <div class="group-panel">
         <div class="title-panel">
@@ -238,6 +208,11 @@
     <!--添加好友弹框-->
     <teleport to="body">
       <addFriendsList v-if="getSendData"></addFriendsList>
+      <friendsCheckedAlert
+        v-if="showCheckedAlert"
+        :showCheckedAlert="showCheckedAlert"
+        @close-checked-alert="closeCheckedAlert(noShow)"
+      ></friendsCheckedAlert>
     </teleport>
   </div>
 </template>
@@ -247,6 +222,7 @@ import _ from "lodash";
 import { defineComponent } from "vue";
 import dataPanel from "@/components/data-panel.vue";
 import addFriendsList from "./addFriends-list.vue";
+import friendsCheckedAlert from "./friendsChecked-alert.vue";
 import {
   contactListDataType,
   friendsListType,
@@ -285,18 +261,17 @@ export default defineComponent({
         newest: {
           time: "",
           userName: "",
-          date: "",
-          dayValueTime: {
-            nowTime: 0,
-            tomTime: 0
-          }
+          date: ""
         }
-      }
+      },
+      showFriendCheckedContent: true,
+      showCheckedAlert: false
     };
   },
   components: {
     dataPanel,
-    addFriendsList
+    addFriendsList,
+    friendsCheckedAlert
   },
   methods: {
     // 获取列表好友信息
@@ -356,7 +331,6 @@ export default defineComponent({
       this.$api.websiteManageAPI
         .getToBeVerifiedList()
         .then((res: responseDataType) => {
-          console.log(res.data);
           if (res.data.verifiedList.length > 0) {
             this.friendsCheckedList.serverTime = res.data.serverTime;
             this.friendsCheckedList.friendsCheckedInfo = res.data.verifiedList;
@@ -368,85 +342,28 @@ export default defineComponent({
               );
             }
             // 显示最新好友添加时间
-            this.friendsCheckedList.newest.dayValueTime.nowTime =
-              1 * 24 * 3600 * 1000 -
-              (Date.parse(
-                this.friendsCheckedList.friendsCheckedInfo[0].createTime
-              ) %
-                (1 * 24 * 3600 * 1000));
-            this.friendsCheckedList.newest.dayValueTime.tomTime =
-              Date.parse(
-                this.friendsCheckedList.friendsCheckedInfo[0].createTime
-              ) -
-              this.friendsCheckedList.newest.dayValueTime.nowTime +
-              1 * 24 * 3600 * 1000;
             if (
-              Date.parse(this.friendsCheckedList.serverTime) -
-                this.friendsCheckedList.newest.dayValueTime.tomTime >
+              Math.floor(
+                Date.parse(this.friendsCheckedList.serverTime) /
+                  (1 * 24 * 3600 * 1000)
+              ) -
+                Math.floor(
+                  Date.parse(
+                    this.friendsCheckedList.friendsCheckedInfo[0].createTime
+                  ) /
+                    (1 * 24 * 3600 * 1000)
+                ) ==
               0
             ) {
               if (
-                Math.floor(
-                  Date.parse(this.friendsCheckedList.serverTime) /
-                    (1 * 24 * 3600 * 1000)
-                ) -
-                  Math.floor(
-                    Date.parse(
-                      this.friendsCheckedList.friendsCheckedInfo[0].createTime
-                    ) /
-                      (1 * 24 * 3600 * 1000)
-                  ) ==
-                1
-              ) {
-                this.friendsCheckedList.newest.date =
-                  "昨天" +
+                Number(
                   this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
                     this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
                       ":"
                     ) - 2,
-                    5
-                  );
-              } else if (
-                Math.floor(
-                  Date.parse(this.friendsCheckedList.serverTime) /
-                    (1 * 24 * 3600 * 1000)
-                ) -
-                  Math.floor(
-                    Date.parse(
-                      this.friendsCheckedList.friendsCheckedInfo[0].createTime
-                    ) /
-                      (1 * 24 * 3600 * 1000)
-                  ) >
-                1
-              ) {
-                this.friendsCheckedList.newest.date =
-                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
-                    this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
-                      "-"
-                    ) + 1,
-                    5
-                  ) +
-                  " " +
-                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
-                    this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
-                      ":"
-                    ) - 2,
-                    5
-                  );
-              }
-            } else {
-              if (
-                Math.floor(
-                  Date.parse(this.friendsCheckedList.serverTime) /
-                    (1 * 3600 * 1000)
-                ) -
-                  Math.floor(
-                    Date.parse(
-                      this.friendsCheckedList.friendsCheckedInfo[0].createTime
-                    ) /
-                      (1 * 3600 * 1000)
-                  ) <=
-                1 * 12 * 3600 * 1000
+                    2
+                  )
+                ) < 12
               ) {
                 this.friendsCheckedList.newest.date =
                   "上午" +
@@ -457,17 +374,14 @@ export default defineComponent({
                     5
                   );
               } else if (
-                Math.floor(
-                  Date.parse(this.friendsCheckedList.serverTime) /
-                    (1 * 3600 * 1000)
-                ) -
-                  Math.floor(
-                    Date.parse(
-                      this.friendsCheckedList.friendsCheckedInfo[0].createTime
-                    ) /
-                      (1 * 3600 * 1000)
-                  ) <=
-                (1 * 24 * 3600 * 1000 * 3) / 4
+                Number(
+                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
+                    this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
+                      ":"
+                    ) - 2,
+                    2
+                  )
+                ) < 18
               ) {
                 this.friendsCheckedList.newest.date =
                   "下午" +
@@ -487,6 +401,54 @@ export default defineComponent({
                     5
                   );
               }
+            } else if (
+              Math.floor(
+                Date.parse(this.friendsCheckedList.serverTime) /
+                  (1 * 24 * 3600 * 1000)
+              ) -
+                Math.floor(
+                  Date.parse(
+                    this.friendsCheckedList.friendsCheckedInfo[0].createTime
+                  ) /
+                    (1 * 24 * 3600 * 1000)
+                ) ==
+              1
+            ) {
+              this.friendsCheckedList.newest.date =
+                "昨天" +
+                this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
+                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
+                    ":"
+                  ) - 2,
+                  5
+                );
+            } else if (
+              Math.floor(
+                Date.parse(this.friendsCheckedList.serverTime) /
+                  (1 * 24 * 3600 * 1000)
+              ) -
+                Math.floor(
+                  Date.parse(
+                    this.friendsCheckedList.friendsCheckedInfo[0].createTime
+                  ) /
+                    (1 * 24 * 3600 * 1000)
+                ) >
+              1
+            ) {
+              this.friendsCheckedList.newest.date =
+                this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
+                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
+                    "-"
+                  ) + 1,
+                  5
+                ) +
+                " " +
+                this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
+                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
+                    ":"
+                  ) - 2,
+                  5
+                );
             }
             // 显示最新好友添加名称
             this.friendsCheckedList.newest.userName = this.friendsCheckedList.friendsCheckedInfo[0].userName;
@@ -567,6 +529,18 @@ export default defineComponent({
         }
       }
       return data;
+    },
+    // 清除好友验证框
+    clearFriendCheckedPanel() {
+      this.showFriendCheckedContent = false;
+    },
+    // 出现好友添加时选择框
+    friendsCheckedAlert() {
+      this.showCheckedAlert = true;
+    },
+    // 关闭好友添加时选择框
+    closeCheckedAlert(noShow: boolean) {
+      this.showCheckedAlert = noShow;
     }
   },
   mounted() {

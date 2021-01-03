@@ -1,130 +1,134 @@
 <template>
   <div class="addFriends-list-outer-mask">
     <div
-      class="addFriends-list-content"
-      ref="addFriendsListContent"
-      @mousedown="alertDown($event)"
-      @mousemove="alertMove($event)"
-      @mouseup="alertUp"
-      @blur="alertUp"
+      style="width: 100vw;height: 100vh;display:flex;align-items:center;justify-content: center; position:unset;z-index:-999;"
     >
-      <div class="top-panel">
-        <div class="top-panel-left">
-          <div
-            class="top-panel-left-icon"
-            @mouseover="showLeftIco(true)"
-            @mouseleave="showLeftIco(false)"
-            @click.stop="removeAddAlert"
-          >
-            <img
-              :style="{ display: leftIco }"
-              src="../assets/img/close.png"
-              class="close-icon"
-              alt=""
-            />
-          </div>
-
-          <div
-            class="top-panel-left-icon"
-            @mouseover="showLeftIco()"
-            @mouseleave="showLeftIco()"
-          >
-            <img
-              :style="{ display: leftIco }"
-              class="min-icon"
-              src="../assets/img/min.png"
-              alt=""
-            />
-          </div>
-        </div>
-        <div class="top-panel-right">
-          <p>添加联系人/群聊</p>
-        </div>
-      </div>
-      <div class="main-panel" ref="mainPanel">
-        <div class="main-panel-search">
-          <div class="main-panel-search-icon">
-            <img
-              src="../assets/img/list/aio_group_search_normal@2x.png"
-              alt=""
-            />
-          </div>
-          <div class="main-panel-search-input">
-            <input
-              type="text"
-              style=""
-              v-model="searchFriendInfo"
-              placeholder="用户id/用户名"
-              @keyup.enter="searchFriendInfoResult"
-              @focus.stop="clearMouseEvent"
-              @dblclick.stop=""
-              @mousemove.stop=""
-              ref="serachInput"
-            />
-            <img
-              src="@/assets/img/list/search_tokenfield_delete@2x.png"
-              alt=""
-              v-if="searchFriendInfo"
-              @click="clearSearchFriendInfo"
-            />
-          </div>
-        </div>
-        <div class="main-panel-content" v-if="showUserInfo">
-          <div class="main-panel-content-name">
-            联系人
-          </div>
-          <div
-            ref="mainPanelContentFriendsInfo"
-            class="main-panel-content-friends-info"
-          >
+      <div
+        class="addFriends-list-content"
+        ref="addFriendsListContent"
+        @mousedown="alertDown($event)"
+        @mousemove="alertMove($event)"
+        @mouseup="alertUp"
+        @blur="alertUp"
+      >
+        <div class="top-panel">
+          <div class="top-panel-left">
             <div
-              v-for="(list, index) in friendsList"
-              :key="list.userId"
-              class="main-panel-content-friendsList"
+              class="top-panel-left-icon"
+              @mouseover="showLeftIco(true)"
+              @mouseleave="showLeftIco(false)"
+              @click.stop="removeAddAlert"
             >
-              <template v-if="!list.msg">
-                <div class="friendsList-img-avatarSrc">
-                  <img :src="list.avatarSrc" alt="" />
-                </div>
-                <div class="friendsList-userName">
-                  {{ list.userName }}({{ list.userId }})
-                </div>
-                <div class="friendsList-isFriend" v-if="!list.isFriend">
-                  <img
+              <img
+                :style="{ display: leftIco }"
+                src="../assets/img/close.png"
+                class="close-icon"
+                alt=""
+              />
+            </div>
+
+            <div
+              class="top-panel-left-icon"
+              @mouseover="showLeftIco()"
+              @mouseleave="showLeftIco()"
+            >
+              <img
+                :style="{ display: leftIco }"
+                class="min-icon"
+                src="../assets/img/min.png"
+                alt=""
+              />
+            </div>
+          </div>
+          <div class="top-panel-right">
+            <p>添加联系人/群聊</p>
+          </div>
+        </div>
+        <div class="main-panel" ref="mainPanel">
+          <div class="main-panel-search">
+            <div class="main-panel-search-icon">
+              <img
+                src="../assets/img/list/aio_group_search_normal@2x.png"
+                alt=""
+              />
+            </div>
+            <div class="main-panel-search-input">
+              <input
+                type="text"
+                style=""
+                v-model="searchFriendInfo"
+                placeholder="用户id/用户名"
+                @keyup.enter="searchFriendInfoResult"
+                @focus.stop="clearMouseEvent"
+                @dblclick.stop=""
+                @mousemove.stop=""
+                ref="serachInput"
+              />
+              <img
+                src="@/assets/img/list/search_tokenfield_delete@2x.png"
+                alt=""
+                v-if="searchFriendInfo"
+                @click="clearSearchFriendInfo"
+              />
+            </div>
+          </div>
+          <div class="main-panel-content" v-if="showUserInfo">
+            <div class="main-panel-content-name">
+              联系人
+            </div>
+            <div
+              ref="mainPanelContentFriendsInfo"
+              class="main-panel-content-friends-info"
+            >
+              <div
+                v-for="(list, index) in friendsList"
+                :key="list.userId"
+                class="main-panel-content-friendsList"
+              >
+                <template v-if="!list.msg">
+                  <div class="friendsList-img-avatarSrc">
+                    <img :src="list.avatarSrc" alt="" />
+                  </div>
+                  <div class="friendsList-userName">
+                    {{ list.userName }}({{ list.userId }})
+                  </div>
+                  <div class="friendsList-isFriend" v-if="!list.isFriend">
+                    <img
+                      :ref="setAddIconNormal"
+                      src="@/assets/img/list/+normal@2x.png"
+                      alt=""
+                      style="display:block;"
+                      @mouseover="Hover(index, false)"
+                    />
+                    <img
+                      :ref="setAddIconHover"
+                      src="@/assets/img/list/+hover@2x.png"
+                      alt=""
+                      style="display:none;"
+                      @click.stop="Press(index)"
+                      @mouseout="Normal(index)"
+                    />
+                    <img
+                      :ref="setAddIconPress"
+                      src="@/assets/img/list/+press@2x.png"
+                      alt=""
+                      style="display:none;"
+                    />
+                  </div>
+                  <div
+                    class="friendsList-isNotFriend"
                     :ref="setAddIconNormal"
-                    src="@/assets/img/list/+normal@2x.png"
-                    alt=""
-                    style="display:block;"
-                    @mouseover="Hover(index, false)"
-                  />
-                  <img
-                    :ref="setAddIconHover"
-                    src="@/assets/img/list/+hover@2x.png"
-                    alt=""
-                    style="display:none;"
-                    @click.stop="Press(index)"
-                    @mouseout="Normal(index)"
-                  />
-                  <img
-                    :ref="setAddIconPress"
-                    src="@/assets/img/list/+press@2x.png"
-                    alt=""
-                    style="display:none;"
-                  />
-                </div>
-                <div
-                  class="friendsList-isNotFriend"
-                  :ref="setAddIconNormal"
-                  v-else
-                >
-                  已添加
-                </div>
-              </template>
-              <template v-else>
-                <div class="friendsList-isNotFriendsInfo">
-                  --{{ list.msg }}--
-                </div>
-              </template>
+                    v-else
+                  >
+                    已添加
+                  </div>
+                </template>
+                <template v-else>
+                  <div class="friendsList-isNotFriendsInfo">
+                    --{{ list.msg }}--
+                  </div>
+                </template>
+              </div>
             </div>
           </div>
         </div>
@@ -177,19 +181,17 @@ export default defineComponent({
             this.$refs.mainPanel.style = "height:auto;";
             this.$refs.mainPanelContentFriendsInfo.style =
               " height: 269px;overflow: auto; ";
-            this.$refs.addFriendsListContent.style.marginTop =
-              -(this.$refs.addFriendsListContent.offsetHeight / 2) + "px";
-            // 整体框位置在上边界贴上边界
-            if (this.$refs.addFriendsListContent.offsetTop < 0) {
-              this.$refs.addFriendsListContent.style.marginTop = -126 + "px";
-            }
+
             // 整体框位置在下边界贴下边界
             if (
               this.$refs.addFriendsListContent.offsetTop +
                 this.$refs.addFriendsListContent.offsetHeight >
               window.innerHeight
             ) {
-              this.$refs.addFriendsListContent.style.marginTop = -340 + "px";
+              this.$refs.addFriendsListContent.style.top =
+                window.innerHeight -
+                this.$refs.addFriendsListContent.offsetHeight +
+                "px";
             }
             // 当好友数量大于一个
             if (res.data.length > 0) {
@@ -244,12 +246,8 @@ export default defineComponent({
       // 获取初始时当前框距离对应边界的大小位置和当前鼠标左键点下时事件的位置
       this.moveAlertData.x = e.clientX;
       this.moveAlertData.y = e.clientY;
-      this.moveAlertData.t =
-        this.$refs.addFriendsListContent.offsetTop +
-        this.$refs.addFriendsListContent.offsetHeight / 2;
-      this.moveAlertData.l =
-        this.$refs.addFriendsListContent.offsetLeft +
-        this.$refs.addFriendsListContent.offsetWidth / 2;
+      this.moveAlertData.t = this.$refs.addFriendsListContent.offsetTop;
+      this.moveAlertData.l = this.$refs.addFriendsListContent.offsetLeft;
       this.moveAlertData.isDown = true;
       // 将鼠标图标换成可拖动
       this.$refs.addFriendsListContent.style.cursor = "move";
@@ -260,9 +258,6 @@ export default defineComponent({
       if (this.moveAlertData.isDown == false) {
         return;
       }
-
-      this.$refs.addFriendsListContent.style.marginTop =
-        -this.$refs.addFriendsListContent.offsetHeight / 2 + "px";
       // 获取移动时最新的鼠标位位置
       this.moveAlertData.moveX = e.clientX;
       this.moveAlertData.moveY = e.clientY;
@@ -274,46 +269,31 @@ export default defineComponent({
         this.moveAlertData.moveY -
         (this.moveAlertData.y - this.moveAlertData.t);
       // 对左边界进行边界处理
-      if (
-        window.innerWidth -
-          this.moveAlertData.movel -
-          this.$refs.addFriendsListContent.offsetWidth / 2 <
-        0
-      ) {
-        this.moveAlertData.movel =
-          window.innerWidth -
-          this.$refs.addFriendsListContent.offsetWidth +
-          this.$refs.addFriendsListContent.offsetWidth / 2;
+
+      if (this.moveAlertData.movel < 0) {
+        this.moveAlertData.movel = 0;
       }
       // 对右边界进行边界处理
       if (
-        this.moveAlertData.movel -
-          this.$refs.addFriendsListContent.offsetWidth / 2 <
-        0
+        this.moveAlertData.movel +
+          this.$refs.addFriendsListContent.offsetWidth >
+        window.innerWidth
       ) {
         this.moveAlertData.movel =
-          this.$refs.addFriendsListContent.offsetWidth / 2;
+          window.innerWidth - this.$refs.addFriendsListContent.offsetWidth;
       }
       // 对下边界进行边界处理
       if (
-        window.innerHeight -
-          this.moveAlertData.movet -
-          this.$refs.addFriendsListContent.offsetHeight / 2 <
-        0
+        this.moveAlertData.movet +
+          this.$refs.addFriendsListContent.offsetHeight >
+        window.innerHeight
       ) {
         this.moveAlertData.movet =
-          window.innerHeight -
-          this.$refs.addFriendsListContent.offsetHeight +
-          this.$refs.addFriendsListContent.offsetHeight / 2;
+          window.innerHeight - this.$refs.addFriendsListContent.offsetHeight;
       }
       // 对上边界进行边界处理
-      if (
-        this.moveAlertData.movet -
-          this.$refs.addFriendsListContent.offsetHeight / 2 <
-        0
-      ) {
-        this.moveAlertData.movet =
-          this.$refs.addFriendsListContent.offsetHeight / 2;
+      if (this.moveAlertData.movet < 0) {
+        this.moveAlertData.movet = 0;
       }
       // 渲染最新位置
       this.$refs.addFriendsListContent.style.left =

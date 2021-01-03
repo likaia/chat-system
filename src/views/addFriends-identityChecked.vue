@@ -1,57 +1,61 @@
 <template>
   <div class="addFriends-identityChecked-outer-mask">
     <div
-      class="identityChecked-content"
-      @mousedown="alertDown($event)"
-      @mousemove="alertMove($event)"
-      @mouseup="alertUp"
-      @blur="alertUp"
-      ref="identityCheckedContent"
+      style="width: 100vw;height: 100vh;display:flex;align-items:center;justify-content: center; position:unset;z-index:-999;"
     >
-      <div class="userInfo">{{ argUserName }}({{ argUserId }})</div>
-      <div class="checkedInfo">
-        <p>
-          验证人需要验证您的身份，请输入您的验证信息：
-        </p>
-        <textarea v-model="checkedArgIntput.verifyMessage"> </textarea>
-      </div>
-      <div class="groupInfo">
-        <div v-if="groupsData.length > 0" class="selectedGroupInfo">
-          <span>分组：</span>
-          <select name="" id="" v-model="selectedValue">
-            <option
-              :value="item.childrenId"
-              v-for="(item, index) in groupsData"
-              :key="index"
-              >{{ item.groupName }}</option
-            >
-          </select>
+      <div
+        class="identityChecked-content"
+        @mousedown="alertDown($event)"
+        @mousemove="alertMove($event)"
+        @mouseup="alertUp"
+        @blur="alertUp"
+        ref="identityCheckedContent"
+      >
+        <div class="userInfo">{{ argUserName }}({{ argUserId }})</div>
+        <div class="checkedInfo">
+          <p>
+            验证人需要验证您的身份，请输入您的验证信息：
+          </p>
+          <textarea v-model="checkedArgIntput.verifyMessage"> </textarea>
         </div>
-        <div class="remarksInfo">
-          <span>备注：</span>
-          <input v-model="checkedArgIntput.remarks" type="text" />
+        <div class="groupInfo">
+          <div v-if="groupsData.length > 0" class="selectedGroupInfo">
+            <span>分组：</span>
+            <select name="" id="" v-model="selectedValue">
+              <option
+                :value="item.childrenId"
+                v-for="(item, index) in groupsData"
+                :key="index"
+                >{{ item.groupName }}</option
+              >
+            </select>
+          </div>
+          <div class="remarksInfo">
+            <span>备注：</span>
+            <input v-model="checkedArgIntput.remarks" type="text" />
+          </div>
+        </div>
+        <div class="buttonInfo">
+          <input
+            class="cencelCheckedButton"
+            type="button"
+            value="取消"
+            @click="removeIdentityChecked"
+          />
+          <input
+            class="sendCheckedButton"
+            type="button"
+            value="发送"
+            @click="checkedSuccess()"
+            :disabled="sendInputState"
+            ref="sendRequest"
+          />
         </div>
       </div>
-      <div class="buttonInfo">
-        <input
-          class="cencelCheckedButton"
-          type="button"
-          value="取消"
-          @click="removeIdentityChecked"
-        />
-        <input
-          class="sendCheckedButton"
-          type="button"
-          value="发送"
-          @click="checkedSuccess()"
-          :disabled="sendInputState"
-          ref="sendRequest"
-        />
-      </div>
-    </div>
-    <div v-if="promptAlert.state" class="sendRequestMessage">
-      <div>
-        <p>{{ promptAlert.massage }}</p>
+      <div v-if="promptAlert.state" class="sendRequestMessage">
+        <div>
+          <p>{{ promptAlert.massage }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -139,12 +143,8 @@ export default defineComponent({
       // 获取初始时当前框距离对应边界的大小位置和当前鼠标左键点下时事件的位置
       this.moveAlertData.x = e.clientX;
       this.moveAlertData.y = e.clientY;
-      this.moveAlertData.t =
-        this.$refs.identityCheckedContent.offsetTop +
-        this.$refs.identityCheckedContent.offsetHeight / 2;
-      this.moveAlertData.l =
-        this.$refs.identityCheckedContent.offsetLeft +
-        this.$refs.identityCheckedContent.offsetWidth / 2;
+      this.moveAlertData.t = this.$refs.identityCheckedContent.offsetTop;
+      this.moveAlertData.l = this.$refs.identityCheckedContent.offsetLeft;
       this.moveAlertData.isDown = true;
       // 将鼠标图标换成可拖动
       this.$refs.identityCheckedContent.style.cursor = "move";
@@ -155,9 +155,6 @@ export default defineComponent({
       if (this.moveAlertData.isDown == false) {
         return;
       }
-
-      this.$refs.identityCheckedContent.style.marginTop =
-        -this.$refs.identityCheckedContent.offsetHeight / 2 + "px";
       // 获取移动时最新的鼠标位位置
       this.moveAlertData.moveX = e.clientX;
       this.moveAlertData.moveY = e.clientY;
@@ -169,46 +166,31 @@ export default defineComponent({
         this.moveAlertData.moveY -
         (this.moveAlertData.y - this.moveAlertData.t);
       // 对左边界进行边界处理
-      if (
-        window.innerWidth -
-          this.moveAlertData.movel -
-          this.$refs.identityCheckedContent.offsetWidth / 2 <
-        0
-      ) {
-        this.moveAlertData.movel =
-          window.innerWidth -
-          this.$refs.identityCheckedContent.clientWidth +
-          this.$refs.identityCheckedContent.clientWidth / 2;
+
+      if (this.moveAlertData.movel < 0) {
+        this.moveAlertData.movel = 0;
       }
       // 对右边界进行边界处理
       if (
-        this.moveAlertData.movel -
-          this.$refs.identityCheckedContent.offsetWidth / 2 <
-        0
+        this.moveAlertData.movel +
+          this.$refs.identityCheckedContent.offsetWidth >
+        window.innerWidth
       ) {
         this.moveAlertData.movel =
-          this.$refs.identityCheckedContent.offsetWidth / 2;
+          window.innerWidth - this.$refs.identityCheckedContent.offsetWidth;
       }
       // 对下边界进行边界处理
       if (
-        window.innerHeight -
-          this.moveAlertData.movet -
-          this.$refs.identityCheckedContent.offsetHeight / 2 <
-        0
+        this.moveAlertData.movet +
+          this.$refs.identityCheckedContent.offsetHeight >
+        window.innerHeight
       ) {
         this.moveAlertData.movet =
-          window.innerHeight -
-          this.$refs.identityCheckedContent.offsetHeight +
-          this.$refs.identityCheckedContent.offsetHeight / 2;
+          window.innerHeight - this.$refs.identityCheckedContent.offsetHeight;
       }
       // 对上边界进行边界处理
-      if (
-        this.moveAlertData.movet -
-          this.$refs.identityCheckedContent.offsetHeight / 2 <
-        0
-      ) {
-        this.moveAlertData.movet =
-          this.$refs.identityCheckedContent.offsetHeight / 2;
+      if (this.moveAlertData.movet < 0) {
+        this.moveAlertData.movet = 0;
       }
       // 渲染最新位置
       this.$refs.identityCheckedContent.style.left =

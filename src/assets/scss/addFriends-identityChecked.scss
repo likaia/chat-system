@@ -10,9 +10,8 @@
       width:500px;
       height:310px;
       background:white;
-      position:fixed;
-      top:50%;left:50%;
-      margin-left:-250px;margin-top:-155px;
+      position: absolute;
+      z-index: 999;
       padding: 15px 0; 
       border-radius: 3px;
 
@@ -92,6 +91,8 @@
     width: 100vw;
     height: 100vh;
     background: transparent;
+    z-index: 1000;
+
       
     div{
       width: 300px;
@@ -107,6 +108,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      z-index: 1000;
         
     }
   }

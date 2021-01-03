@@ -43,6 +43,104 @@ $listFontColor:#777777;
       }
     }
 
+    .friend-checked-panel {
+      width: 100%;
+      height: 70px;
+      list-style: none;
+      background: #fdfdfd;
+      cursor: default;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .clear-checked-icon{
+         img{
+           width: 18px;
+           height: 18px;
+           margin-left: 4px;
+         }
+      }
+
+      .validate-icon{
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        
+        div{
+          img{
+            width: 38px;
+            height: 38px;
+
+          }
+        }
+      }
+
+      .checked-userName{
+        width: 35%;
+        min-width: 75px;
+        height: 40px;
+
+        p:nth-child(1){
+         font-size: 15px;
+         overflow: hidden;
+         white-space: nowrap;
+         text-overflow: ellipsis;
+         font-weight: bold;
+        }
+
+        p:nth-child(2){
+          color: #7b7b7b;
+          font-size: 12px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          width: 50px;
+        }
+
+      }
+
+      .checked-Time{
+        min-width: 61px;
+        width: 28%;
+        height: 40px;
+        font-size: 13px;
+        color: #7b7b7b;
+        position: relative;
+        right: 3px;
+
+        p{
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
+        div{
+          width: 18px;
+          height: 18px;
+          border-radius: 10px;
+          position: absolute;
+          right: 0;
+          bottom: 0;
+          display: flex;
+          justify-content: center;
+          background: red;
+          color: white;
+        }
+
+        .count-ten{
+          width:25px;
+        }
+        .count-hundred{
+          width:32px;
+        }
+      }
+    }
+
     .group-panel{
       width: 100%;
       height: auto;
