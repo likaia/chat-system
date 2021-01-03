@@ -88,6 +88,7 @@
 
         /*未读消息条数显示样式*/
         .msg-count-panel{
+          animation: msgChange 1s;
           width: 20px;
           height: 20px;
           background: #F55449;
@@ -102,6 +103,7 @@
 
         // 99+消息显示样式
         .msg-count-more-panel{
+          animation: moreMsgChange 1s;
           width: 40px;
           border-radius: 20px;
         }
@@ -138,5 +140,31 @@
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+}
+
+// 显示未读消息时的过度动画
+@keyframes msgChange {
+  from {
+    width: 0;
+    height: 0;
+  }
+  to {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
+}
+
+
+// 未读消息超过9条时显示的过度动画
+@keyframes moreMsgChange {
+  from {
+    width: 20px;
+    border-radius: 50%;
+  }
+  to {
+    width: 40px;
+    border-radius: 20px;
   }
 }
