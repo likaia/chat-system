@@ -42,9 +42,9 @@
           <!--非今天的消息显示日期与时间-->
           <span
             v-if="
-              new Date(serverTime).getDate() -
-                new Date(item.createTime).getDate() >
-                1
+              Date.parse(serverTime.substring(0, 10)) -
+                Date.parse(item.createTime.substring(0, 10)) >=
+                86400000
             "
             >{{ item.createTime.substring(5, 16) }}</span
           >
@@ -63,9 +63,9 @@
           <!--非今天的消息显示日期与时间-->
           <span
             v-if="
-              new Date(serverTime).getDate() -
-                new Date(item.createTime).getDate() >
-                1
+              Date.parse(serverTime.substring(0, 10)) -
+                Date.parse(item.createTime.substring(0, 10)) >=
+                86400000
             "
             >{{ item.createTime.substring(5, 16) }}</span
           >
@@ -374,16 +374,7 @@ export default defineComponent({
     // 监听消息接收
     this.$options.sockets.onmessage = (res: { data: string }) => {
       const data = JSON.parse(res.data);
-      if (data.code === 200) {
-        // 更新在线人数
-        this.$store.commit("updateOnlineUsers", data.onlineUsers);
-      } else if (data.code === -1) {
-        // 消息发送失败
-        alert(data.msg);
-        return;
-      } else {
-        // 更新在线人数
-        this.$store.commit("updateOnlineUsers", data.onlineUsers);
+      if (data.code !== 200 && data.code !== -1) {
         // 获取服务端推送的消息
         const msgObj: msgListType = {
           msgText: data.msg,
@@ -394,42 +385,9 @@ export default defineComponent({
           messageStatus: data.messageStatus,
           userName: data.username
         };
-        // 播放消息提示音:判断当前消息是否为对方发送
-        if (msgObj.userId !== this.userID) {
-          this.audioCtx = new AudioContext();
-          // 非当前用户发送的消息
-          // 当前频率: 随机产生
-          const frequency = this.arrFrequency[
-            Math.floor(Math.random() * this.arrFrequency.length)
-          ];
-          // 创建音调控制对象
-          const oscillator = this.audioCtx.createOscillator();
-          // 创建音量控制对象
-          const gainNode = this.audioCtx.createGain();
-          // 音调音量关联
-          oscillator.connect(gainNode);
-          // 音量和设备关联
-          gainNode.connect(this.audioCtx.destination);
-          // 音调类型指定为正弦波
-          oscillator.type = "sine";
-          // 设置音调频率: 最终播放的声音
-          oscillator.frequency.value = frequency;
-          // 先把当前音量设为0
-          gainNode.gain.setValueAtTime(0, this.audioCtx.currentTime);
-          // 0.01秒时间内音量从刚刚的0变成1，线性变化
-          gainNode.gain.linearRampToValueAtTime(
-            1,
-            this.audioCtx.currentTime + 0.01
-          );
-          // 声音走起
-          oscillator.start(this.audioCtx.currentTime);
-          // 2秒时间内音量从刚刚的1变成0.001，指数变化
-          gainNode.gain.exponentialRampToValueAtTime(
-            0.001,
-            this.audioCtx.currentTime + 2
-          );
-          // 2秒后停止声音
-          oscillator.stop(this.audioCtx.currentTime + 2);
+        // 播放消息提示音:当前消息为对方发送
+        if (!_.isEqual(msgObj.userId, this.userID)) {
+          this.playSound();
         }
         // 接收方消息：列表id == 消息推送方id，且消息状态为单聊
         if (
@@ -534,6 +492,43 @@ export default defineComponent({
           reader.readAsDataURL(file);
         }
       });
+    },
+    // 播放消息提示音
+    playSound() {
+      this.audioCtx = new AudioContext();
+      // 非当前用户发送的消息
+      // 当前频率: 随机产生
+      const frequency = this.arrFrequency[
+        Math.floor(Math.random() * this.arrFrequency.length)
+      ];
+      // 创建音调控制对象
+      const oscillator = this.audioCtx.createOscillator();
+      // 创建音量控制对象
+      const gainNode = this.audioCtx.createGain();
+      // 音调音量关联
+      oscillator.connect(gainNode);
+      // 音量和设备关联
+      gainNode.connect(this.audioCtx.destination);
+      // 音调类型指定为正弦波
+      oscillator.type = "sine";
+      // 设置音调频率: 最终播放的声音
+      oscillator.frequency.value = frequency;
+      // 先把当前音量设为0
+      gainNode.gain.setValueAtTime(0, this.audioCtx.currentTime);
+      // 0.01秒时间内音量从刚刚的0变成1，线性变化
+      gainNode.gain.linearRampToValueAtTime(
+        1,
+        this.audioCtx.currentTime + 0.01
+      );
+      // 声音走起
+      oscillator.start(this.audioCtx.currentTime);
+      // 2秒时间内音量从刚刚的1变成0.001，指数变化
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.audioCtx.currentTime + 2
+      );
+      // 2秒后停止声音
+      oscillator.stop(this.audioCtx.currentTime + 2);
     },
     // base图片压缩
     compressPic: function(base64: string, scale: number, callback: Function) {
@@ -1150,6 +1145,7 @@ export default defineComponent({
       id: string;
       text: string;
       time: string;
+      isPush: boolean;
     }) => {
       return !_.isEmpty(val);
     }
