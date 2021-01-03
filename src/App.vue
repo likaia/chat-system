@@ -83,7 +83,35 @@ body {
   border-radius: 1em;
   background-color: rgba(50, 50, 50, 0.1);
 }
+@font-face {
+  font-family: "JetBrainsMono-Light";
+  src: url("./assets/font/JetBrainsMono-Light.woff2");
+}
+@font-face {
+  font-family: "JetBrainsMono-Italic";
+  src: url("./assets/font/JetBrainsMono-Italic.woff2");
+}
+@font-face {
+  font-family: "JetBrainsMono-Regular";
+  src: url("./assets/font/JetBrainsMono-Regular.woff2");
+}
+@font-face {
+  font-family: "JetBrainsMono-Bold";
+  src: url("./assets/font/JetBrainsMono-Bold.woff2");
+}
+@font-face {
+  font-family: "JetBrainsMono-BoldItalic";
+  src: url("./assets/font/JetBrainsMono-BoldItalic.woff2");
+}
 
+p,
+span,
+div,
+body {
+  font-family: "JetBrainsMono-Light", "JetBrainsMono-Regular",
+    "JetBrainsMono-Italic", "JetBrainsMono-Bold", "JetBrainsMono-BoldItalic",
+    sans-serif;
+}
 #app {
   width: 100%;
   height: 100%;

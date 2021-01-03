@@ -74,32 +74,32 @@
         width: 28%;
         height: 40px;
         display: flex;
-        justify-content: center;
+        flex-wrap: wrap;
+        justify-content: flex-end;
         align-items: flex-start;
         position: relative;
 
         & p{
+          width: 100%;
+          text-align: right;
           font-size: 13px;
           color: #7b7b7b;
         }
 
-        /*非99+消息显示样式*/
+        /*未读消息条数显示样式*/
         .msg-count-panel{
           width: 20px;
           height: 20px;
-          background: #bdbdbd;
-          position: absolute;
-          bottom: 0;
-          right: 5px;
+          background: #F55449;
           border-radius: 50%;
-          text-align: center;
-
-          & p{
-            color: white;
-            font-size: 14px;
-            font-weight: 700;
-          }
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 14px;
+          font-weight: 700;
         }
+
         // 99+消息显示样式
         .msg-count-more-panel{
           width: 40px;
