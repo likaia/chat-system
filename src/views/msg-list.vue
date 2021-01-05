@@ -25,7 +25,7 @@
         <div class="item-nickname-panel">
           <p class="title">{{ item.userName }}</p>
           <p class="subtitle">
-            {{ item?.lastMsgTxt ? item?.lastMsgTxt : "暂无消息" }}
+            {{ item.lastMsgTxt ? item.lastMsgTxt : "暂无消息" }}
           </p>
         </div>
         <div class="item-time-panel">
@@ -257,6 +257,7 @@ export default defineComponent({
             // 判断本地存储中的数据与接口已渲染的数据条数是否一致
             if (!_.isEqual(localMsgList.length, messageList.length)) {
               // 不一致则重置本地存储的数据
+              localMsgList = [];
               for (let i = 0; i < messageList.length; i++) {
                 const msgobj: totalMessage = messageList[i];
                 localMsgList.push({
