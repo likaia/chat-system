@@ -348,6 +348,7 @@ export default defineComponent({
       sessionMessageData: [],
       msgListPanelHeight: 0,
       isLoading: false,
+      isLastPage: false,
       msgTotals: 0,
       isFirstLoading: true
     };
@@ -717,6 +718,7 @@ export default defineComponent({
           this.isLoading = true;
           loadingtime = setTimeout(() => {
             // 加载数据
+            console.log("触顶开始加载数据");
             this.readSessionData(this.pageStart, this.pageEnd);
           }, 500);
         }
@@ -730,16 +732,18 @@ export default defineComponent({
           sessionStorage.getItem("messageTextList") as string
         );
       }
+      // session分页参数边界处理
       if (pageStart < 0) {
         pageStart = 0;
       }
       if (pageEnd < 0) {
         pageEnd = 0;
       }
+      // 待渲染的聊天记录
       const finalMsgList: Array<msgListType> = [];
-      for (let i = pageStart; i < pageEnd; i++) {
-        // 向数组头部追加数据
-        finalMsgList.unshift(this.sessionMessageData[i]);
+      // 从尾部读取数据
+      for (let i = pageEnd; i > pageStart; i--) {
+        finalMsgList.push(this.sessionMessageData[i]);
       }
       if (finalMsgList.length !== 0) {
         // 渲染消息列表，插入到数组头部
@@ -756,8 +760,35 @@ export default defineComponent({
           this.pageStart = this.pageEnd - this.pageSize;
         }
       } else {
-        // 所有消息加载完成，隐藏加载动画
-        this.isLoading = false;
+        // 所有redis数据加载完毕，开始分页加载数据库数据
+        if (this.isLastPage) {
+          // 判断是否为最后一页数据
+          this.isLoading = false;
+          console.log("所有数据已加载完毕");
+          return;
+        }
+        // 分页加载聊天记录
+        this.$api.messageListAPI
+          .getMessageTextList({
+            msgId: this.listId,
+            userId: this.userID,
+            pageNo: this.pageNo,
+            messageStatus: this.messageStatus,
+            pageSize: this.pageSize
+          })
+          .then((res: responseDataType) => {
+            if (_.isEqual(res.code, 0)) {
+              // 判断是否最后一页
+              if (res.data.isLastPage) {
+                this.isLastPage = true;
+              }
+              console.log("加载数据库第", this.pageNo, "页数据成功");
+              // 渲染消息列表，插入到数组头部
+              this.renderPage(res.data.messageTextList, {}, true);
+              // 页码自增
+              this.pageNo++;
+            }
+          });
       }
     },
     //  渲染页面
@@ -1101,10 +1132,20 @@ export default defineComponent({
     // 获取消息内容
     getMessageTextList: function(msgId: string) {
       this.$api.messageListAPI
-        .getMessageTextList({ msgId: msgId, userId: this.userID })
+        .getMessageTextList({
+          msgId: msgId,
+          userId: this.userID,
+          messageStatus: this.messageStatus
+        })
         .then((res: responseDataType) => {
           // 消息内容列表
           const messageTextList: Array<msgListType> = res.data.messageTextList;
+          // 如果已经从数据库取了一次数据，分页参数自增
+          if (res.data.isFirstDBLoad) {
+            this.pageNo++;
+          }
+          // 赋值当前数据是否为最后一页数据
+          this.isLastPage = res.data.isLastPage;
           if (res.code === 0) {
             if (messageTextList.length > 0) {
               // 将聊天记录放进sessionStorage中
@@ -1166,7 +1207,8 @@ export default defineComponent({
       this.sessionMessageData = [];
       this.pageStart = 0;
       this.pageEnd = 0;
-      this.pageNo = 0;
+      this.pageNo = 1;
+      this.isLastPage = false;
       this.msgTotals = 0;
       this.msgListPanelHeight = 0;
       this.isLoading = false;

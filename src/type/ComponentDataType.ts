@@ -20,6 +20,7 @@ export type responseDataType<T = any> = {
   code?: number;
   data: T;
   fileName?: string;
+  count?: number; // 数据总条数
 };
 
 // 用户个人信息类型
@@ -65,6 +66,7 @@ export type messageDisplayDataType<T> = {
   sessionMessageData: Array<msgListType>; // session中存储的聊天记录
   msgListPanelHeight: number; // 消息记录容器高度
   isLoading: boolean; // 是否正在加载消息
+  isLastPage: boolean; // 是否最后一页
   msgTotals: number; // 待渲染消息总条数
   isFirstLoading: boolean; // 组件是否第一次加载
 };
