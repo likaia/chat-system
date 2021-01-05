@@ -718,7 +718,6 @@ export default defineComponent({
           this.isLoading = true;
           loadingtime = setTimeout(() => {
             // 加载数据
-            console.log("触顶开始加载数据");
             this.readSessionData(this.pageStart, this.pageEnd);
           }, 500);
         }
@@ -764,7 +763,6 @@ export default defineComponent({
         if (this.isLastPage) {
           // 判断是否为最后一页数据
           this.isLoading = false;
-          console.log("所有数据已加载完毕");
           return;
         }
         // 分页加载聊天记录
@@ -782,7 +780,6 @@ export default defineComponent({
               if (res.data.isLastPage) {
                 this.isLastPage = true;
               }
-              console.log("加载数据库第", this.pageNo, "页数据成功");
               // 渲染消息列表，插入到数组头部
               this.renderPage(res.data.messageTextList, {}, true);
               // 页码自增
