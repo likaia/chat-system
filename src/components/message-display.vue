@@ -1164,8 +1164,12 @@ export default defineComponent({
               for (let i = this.pageStart; i < this.pageEnd; i++) {
                 finalMsgList.push(messageTextList[i]);
               }
-              // 更新结束位置：起始位置
-              this.pageEnd = this.pageStart;
+              // 更新结束位置：起始位置-1
+              // 触顶加载数据为倒序读取, 此处为正序读取
+              // i = this.pageStart, 最后一条数据已经渲染了
+              // 触顶渲染时 i = this.pageEnd，最后一条数据就会重复渲染
+              // 因此需要-1
+              this.pageEnd = this.pageStart - 1;
               // 更新起始位置：结束位置-数据大小
               this.pageStart = this.pageEnd - this.pageSize;
               // 渲染消息列表
