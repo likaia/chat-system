@@ -1,17 +1,17 @@
-#mainBody{
+#mainBody {
   width: 100%;
   height: 100%;
-  overflow-y: auto;
   display: flex;
 
-  .list-panel{
+  .list-panel {
     min-width: 214px;
     width: 15%;
     height: 100%;
     box-sizing: border-box;
     border-right: solid 2px #f6f7f9;
+    overflow-y: auto;
 
-    .row-panel{
+    .row-panel {
       width: 100%;
       height: 70px;
       list-style: none;
@@ -22,13 +22,13 @@
       justify-content: space-between;
       align-items: center;
 
-      .item-subscript-panel{
+      .item-subscript-panel {
         width: 13px;
         height: 100%;
         overflow: hidden;
         position: relative;
 
-        img{
+        img {
           width: 13px;
           height: 13px;
           position: absolute;
@@ -36,40 +36,43 @@
         }
       }
 
-      .item-avatar-panel{
+      .item-avatar-panel {
         width: 40px;
         height: 40px;
         border-radius: 50%;
         overflow: hidden;
 
-        img{
+        img {
           width: 100%;
           height: 100%;
         }
       }
 
-      .item-nickname-panel{
+      .item-nickname-panel {
         width: 35%;
         min-width: 75px;
         height: 40px;
 
-        p{
+        p {
           font-size: 15px;
-          overflow:hidden; /*溢出的部分隐藏*/
-          white-space: nowrap; /*文本不换行*/
-          text-overflow:ellipsis;
+          overflow: hidden;
+          /*溢出的部分隐藏*/
+          white-space: nowrap;
+          /*文本不换行*/
+          text-overflow: ellipsis;
 
-          &.title{
+          &.title {
             font-weight: 400;
           }
-          &.subtitle{
+
+          &.subtitle {
             color: #7b7b7b;
             font-size: 12px;
           }
         }
       }
 
-      .item-time-panel{
+      .item-time-panel {
         min-width: 61px;
         width: 28%;
         height: 40px;
@@ -79,7 +82,7 @@
         align-items: flex-start;
         position: relative;
 
-        & p{
+        & p {
           width: 100%;
           text-align: right;
           font-size: 13px;
@@ -87,7 +90,7 @@
         }
 
         /*未读消息条数显示样式*/
-        .msg-count-panel{
+        .msg-count-panel {
           animation: msgChange 1s;
           width: 20px;
           height: 20px;
@@ -102,21 +105,21 @@
         }
 
         // 99+消息显示样式
-        .msg-count-more-panel{
+        .msg-count-more-panel {
           animation: moreMsgChange 1s;
           width: 40px;
           border-radius: 20px;
         }
 
         // 免打扰显示样式
-        .doNotDisturb-panel{
+        .doNotDisturb-panel {
           width: 16px;
           height: 16px;
           position: absolute;
           bottom: 5px;
           right: 5px;
 
-          img{
+          img {
             width: 100%;
             height: 100%;
           }
@@ -127,12 +130,13 @@
     .active {
       background-color: #E4E4E4;
     }
-    .topping{
+
+    .topping {
       background: #f3f3f3;
     }
   }
 
-  .content-panel{
+  .content-panel {
     width: 85%;
     // 设置最小宽度避免出现横向滚动条
     min-width: calc(100% - 214px);
@@ -149,6 +153,7 @@
     width: 0;
     height: 0;
   }
+
   to {
     width: 20px;
     height: 20px;
@@ -163,6 +168,7 @@
     width: 20px;
     border-radius: 50%;
   }
+
   to {
     width: 40px;
     border-radius: 20px;
