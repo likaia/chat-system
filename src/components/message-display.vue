@@ -368,7 +368,7 @@ export default defineComponent({
     // 获取消息内容
     this.getMessageTextList(this.listId);
     // 执行剪切板监听与全局点击事件监听
-    this.pasteHandle();
+    document.body.addEventListener("paste", this.readPasteData);
     this.globalClick();
     // 监听消息容器滚动
     this.containerScroll();
@@ -417,82 +417,83 @@ export default defineComponent({
       }
     };
   },
+  unmounted() {
+    // 销毁时移除监听
+    document.removeEventListener("paste", this.readPasteData);
+  },
   methods: {
-    // 处理剪切板粘贴
-    pasteHandle: function() {
-      document.body.addEventListener("paste", event => {
-        // 处理文本数据，移除样式
-        event.preventDefault();
-        const text =
-          event.clipboardData && event.clipboardData.getData("text/plain");
-        if (text?.includes("gif")) {
-          alert("无法上传gif，请使用工具栏中的选择图片");
-          return;
-        }
-        // text存在且不是img则将其插入可编辑div中
-        if (!_.isEmpty(text) && !_.isNull(text) && !this.isImg(text)) {
-          document.execCommand("insertText", false, text);
-        }
-        // 读取图片
-        const items = event.clipboardData && event.clipboardData.items;
-        let file: Blob | null = null;
-        if (items && items.length) {
-          // 检索剪切板items
-          for (const item of Array.from(items)) {
-            if (item.type.indexOf("image") !== -1) {
-              file = item.getAsFile();
-              break;
-            }
+    readPasteData: function(event: ClipboardEvent) {
+      // 处理文本数据，移除样式
+      event.preventDefault();
+      const text =
+        event.clipboardData && event.clipboardData.getData("text/plain");
+      if (text?.includes("gif")) {
+        alert("无法上传gif，请使用工具栏中的选择图片");
+        return;
+      }
+      // text存在且不是img则将其插入可编辑div中
+      if (!_.isEmpty(text) && !_.isNull(text) && !this.isImg(text)) {
+        document.execCommand("insertText", false, text);
+      }
+      // 读取图片
+      const items = event.clipboardData && event.clipboardData.items;
+      let file: Blob | null = null;
+      if (items && items.length) {
+        // 检索剪切板items
+        for (const item of Array.from(items)) {
+          if (item.type.indexOf("image") !== -1) {
+            file = item.getAsFile();
+            break;
           }
         }
-        // 预览图片
-        const reader = new FileReader();
-        reader.onload = event => {
-          // 图片内容
-          const imgContent = event.target?.result;
-          // 创建img标签
-          const img = document.createElement("img");
-          // 获取当前base64图片信息，计算当前图片宽高以及压缩比例
-          const imgObj = new Image();
-          let imgWidth: number;
-          let imgHeight: number;
-          let scale = 1;
-          imgObj.src = imgContent as string;
-          imgObj.onload = () => {
-            // 计算img宽高
-            if (imgObj.width < 400) {
-              imgWidth = imgObj.width;
-              imgHeight = imgObj.height;
-            } else {
-              // 输入框图片显示缩小10倍
-              imgWidth = imgObj.width / 10;
-              imgHeight = imgObj.height / 10;
-              // 图片宽度大于1920，图片压缩1.5倍
-              if (imgObj.width > 1920) {
-                // 真实比例缩小1.5倍
-                scale = 1.5;
-              }
+      }
+      // 预览图片
+      const reader = new FileReader();
+      reader.onload = event => {
+        // 图片内容
+        const imgContent = event.target?.result;
+        // 创建img标签
+        const img = document.createElement("img");
+        // 获取当前base64图片信息，计算当前图片宽高以及压缩比例
+        const imgObj = new Image();
+        let imgWidth: number;
+        let imgHeight: number;
+        let scale = 1;
+        imgObj.src = imgContent as string;
+        imgObj.onload = () => {
+          // 计算img宽高
+          if (imgObj.width < 400) {
+            imgWidth = imgObj.width;
+            imgHeight = imgObj.height;
+          } else {
+            // 输入框图片显示缩小10倍
+            imgWidth = imgObj.width / 10;
+            imgHeight = imgObj.height / 10;
+            // 图片宽度大于1920，图片压缩1.5倍
+            if (imgObj.width > 1920) {
+              // 真实比例缩小1.5倍
+              scale = 1.5;
             }
-            // 设置可编辑div中图片宽高
-            img.width = imgWidth;
-            img.height = imgHeight;
-            // 压缩图片，渲染页面
-            this.compressPic(
-              imgContent as string,
-              scale,
-              (newBlob: Blob, newBase: string) => {
-                img.src = newBase; // 设置链接
-                // 图片渲染
-                this.$refs.msgInputContainer.append(img);
-              }
-            );
-          };
+          }
+          // 设置可编辑div中图片宽高
+          img.width = imgWidth;
+          img.height = imgHeight;
+          // 压缩图片，渲染页面
+          this.compressPic(
+            imgContent as string,
+            scale,
+            (newBlob: Blob, newBase: string) => {
+              img.src = newBase; // 设置链接
+              // 图片渲染
+              this.$refs.msgInputContainer.append(img);
+            }
+          );
         };
-        if (file) {
-          // 文件不为空时渲染
-          reader.readAsDataURL(file);
-        }
-      });
+      };
+      if (file) {
+        // 文件不为空时渲染
+        reader.readAsDataURL(file);
+      }
     },
     // 播放消息提示音
     playSound() {

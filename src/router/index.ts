@@ -1,9 +1,4 @@
-import {
-  createRouter,
-  createWebHashHistory,
-  onBeforeRouteLeave,
-  RouteRecordRaw
-} from "vue-router";
+import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import Login from "@/views/Login.vue";
 import MainContent from "@/components/main-content.vue";
 import store from "@/store/index.ts";
@@ -11,15 +6,10 @@ import store from "@/store/index.ts";
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: "/contents/message"
-  },
-  {
-    name: "contents",
-    path: "/contents",
     component: MainContent,
     children: [
       {
-        path: "message",
+        path: "/",
         name: "message",
         component: () => import("../views/msg-list.vue"),
         children: [
