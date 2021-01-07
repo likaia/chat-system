@@ -923,16 +923,21 @@ export default defineComponent({
           }
         });
       } else {
+        let senderName = "";
+        // 消息类型为群聊消息且发送者不为自己则添加发送者昵称
+        if (this.messageStatus == 1 && !_.isEqual(msgObj.userId, this.userID)) {
+          senderName = msgObj.userName as string;
+        }
         // 更新最后发送时间与消息内容
         if (msgObj.msgText.includes("img")) {
           this.$emit("update-last-message", {
-            text: "[图片消息]",
+            text: senderName + "[图片消息]",
             id: this.listId,
             time: msgObj.createTime
           });
         } else {
           this.$emit("update-last-message", {
-            text: msgObj.msgText,
+            text: senderName + msgObj.msgText,
             id: this.listId,
             time: msgObj.createTime
           });
