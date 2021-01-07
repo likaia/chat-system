@@ -419,7 +419,7 @@ export default defineComponent({
   },
   unmounted() {
     // 销毁时移除监听
-    document.removeEventListener("paste", this.readPasteData);
+    document.body.removeEventListener("paste", this.readPasteData);
   },
   methods: {
     readPasteData: function(event: ClipboardEvent) {
