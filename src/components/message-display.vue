@@ -420,6 +420,8 @@ export default defineComponent({
   unmounted() {
     // 销毁时移除监听
     document.body.removeEventListener("paste", this.readPasteData);
+    // 销毁时移除消息监听
+    this.$options.sockets.onmessage = null;
   },
   methods: {
     readPasteData: function(event: ClipboardEvent) {

@@ -352,6 +352,10 @@ export default defineComponent({
       });
     }
   },
+  unmounted() {
+    // 销毁时移除消息监听
+    this.$options.sockets.onmessage = null;
+  },
   data(): msgListDataType {
     return {
       msgSubscriptIco: require("../assets/img/msg-subscript.png"),
