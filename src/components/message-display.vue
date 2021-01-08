@@ -319,6 +319,7 @@ export default defineComponent({
       emojiList: require("@/assets/json/emoji.json"),
       toolbarList: require("@/assets/json/toolbar.json"),
       senderMessageList: [],
+      isBottomOut: true,
       audioCtx: 0,
       // 声音频率
       arrFrequency: [
@@ -386,6 +387,11 @@ export default defineComponent({
           messageStatus: data.messageStatus,
           userName: data.username
         };
+        // 判断当前滚动条位置是否在底部
+        this.isBottomOut =
+          this.$refs.messagesContainer.scrollTop +
+            this.$refs.messagesContainer.clientHeight ==
+          this.$refs.messagesContainer.scrollHeight;
         // 播放消息提示音:当前消息为对方发送
         if (!_.isEqual(msgObj.userId, this.userID)) {
           this.playSound();
@@ -946,7 +952,7 @@ export default defineComponent({
         this.senderMessageList.push(msgObj);
         // 修改滚动条位置
         await this.$nextTick(() => {
-          if (this.$refs.messagesContainer?.scrollHeight) {
+          if (this.$refs.messagesContainer?.scrollHeight && this.isBottomOut) {
             // 新消息渲染完成，修改滚动条位置
             this.$refs.messagesContainer.scrollTop = this.$refs.messagesContainer.scrollHeight;
             // 更新消息记录容器高度

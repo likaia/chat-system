@@ -58,6 +58,7 @@ export type messageDisplayDataType<T> = {
   toolbarList: {}; // 工具栏列表，从json文件中获取
   senderMessageList: Array<msgListType>; // 已发送消息列表
   audioCtx: number; // 当前要播放的音频频率
+  isBottomOut: boolean; // 滚动条是否触底
   arrFrequency: number[]; // 音频频率列表
   pageStart: number; // 分页起始位置
   pageEnd: number; // 分页结束位置
