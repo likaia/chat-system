@@ -937,13 +937,13 @@ export default defineComponent({
         // 更新最后发送时间与消息内容
         if (msgObj.msgText.includes("img")) {
           this.$emit("update-last-message", {
-            text: senderName + "[图片消息]",
+            text: senderName + ": " + "[图片消息]",
             id: this.listId,
             time: msgObj.createTime
           });
         } else {
           this.$emit("update-last-message", {
-            text: senderName + msgObj.msgText,
+            text: senderName + ": " + msgObj.msgText,
             id: this.listId,
             time: msgObj.createTime
           });
