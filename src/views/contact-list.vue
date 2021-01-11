@@ -227,8 +227,8 @@
 import _ from "lodash";
 import { defineComponent } from "vue";
 import dataPanel from "@/components/data-panel.vue";
-import addFriendsList from "./addFriends-list.vue";
-import friendsCheckedAlert from "./friendsChecked-alert.vue";
+import addFriendsList from "./addFriend/addFriends-list.vue";
+import friendsCheckedAlert from "./addFriend/friendsChecked-alert.vue";
 import {
   contactListDataType,
   friendsListType,

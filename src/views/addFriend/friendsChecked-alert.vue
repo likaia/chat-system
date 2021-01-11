@@ -11,10 +11,38 @@
         ref="identityCheckedContent"
       >
         <div class="top-panel">
-          <div class="left-title">
-            <p>好友验证信息</p>
+          <div class="top-panel-left">
+            <div
+              class="top-panel-left-icon"
+              @mouseover="showLeftIco(true)"
+              @mouseleave="showLeftIco(false)"
+              @click.stop="closeAlert"
+            >
+              <img
+                :style="{ display: leftIco }"
+                src="@/assets/img/close.png"
+                class="close-icon"
+                alt=""
+              />
+            </div>
+            <div
+              class="top-panel-left-icon"
+              @mouseover="showLeftIco()"
+              @mouseleave="showLeftIco()"
+            >
+              <img
+                :style="{ display: leftIco }"
+                class="min-icon"
+                src="@/assets/img/min.png"
+                alt=""
+              />
+            </div>
           </div>
-          <div class="right-title">
+          <div class="top-panel-center">
+            好友验证信息
+          </div>
+
+          <div class="top-panel-right">
             <p>
               已过滤的通知
             </p>
@@ -79,7 +107,7 @@
                         @click.stop="showSelectContent(index)"
                       >
                         <img
-                          src="../assets/img/list/MacQQ_icon_arrow_right_down@2x.png"
+                          src="@/assets/img/list/MacQQ_icon_arrow_right_down@2x.png"
                           alt=""
                         />
                       </div>
@@ -348,6 +376,14 @@ export default defineComponent({
       } else {
         this.$refs.Schedule.src = this.Schedule[0];
       }
+    },
+    // 判断关闭与最小化图标是否出现
+    showLeftIco: function(status: boolean) {
+      if (status) {
+        this.leftIco = "block";
+      } else {
+        this.leftIco = "none";
+      }
     }
   },
   props: {
@@ -356,6 +392,7 @@ export default defineComponent({
   },
   data() {
     return {
+      leftIco: "none",
       moveAlertData: {
         x: 0,
         y: 0,
@@ -385,8 +422,8 @@ export default defineComponent({
         state: false
       },
       Schedule: [
-        require("../assets/img/list/Schedule_delete@2x.png"),
-        require("../assets/img/list/Schedule_delete_hover@2x.png")
+        require("@/assets/img/list/Schedule_delete@2x.png"),
+        require("@/assets/img/list/Schedule_delete_hover@2x.png")
       ]
     };
   },
@@ -412,5 +449,5 @@ export default defineComponent({
 <style
   scoped
   lang="scss"
-  src="../assets/scss/friendsChecked-alert.scss"
+  src="@/assets/scss/addFriend/friendsChecked-alert.scss"
 ></style>

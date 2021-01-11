@@ -15,7 +15,13 @@
             <p>
               验证人需要验证您的身份，请输入您的验证信息：
             </p>
-            <textarea v-model="checkedArgIntput.verifyMessage"> </textarea>
+            <textarea
+              v-model="checkedArgIntput.verifyMessage"
+              @mousemove.stop=""
+              @mousedown.stop=""
+              @mouseout.stop=""
+            >
+            </textarea>
           </div>
         </template>
         <template v-if="receiveChecked == 'receiveChecked'">
@@ -40,7 +46,13 @@
           </div>
           <div class="remarksInfo">
             <span>备注：</span>
-            <input v-model="checkedArgIntput.remarks" type="text" />
+            <input
+              v-model="checkedArgIntput.remarks"
+              type="text"
+              @mousemove.stop=""
+              @mousedown.stop=""
+              @mouseout.stop=""
+            />
           </div>
         </div>
 
@@ -316,5 +328,5 @@ export default defineComponent({
 <style
   scoped
   lang="scss"
-  src="../assets/scss/addFriends-identityChecked.scss"
+  src="@/assets/scss/addFriend/addFriends-identityChecked.scss"
 ></style>

@@ -16,8 +16,8 @@
     z-index: -999;
 
     .identityChecked-content {
-      width: 500px;
-      height: 310px;
+      min-width: 500px;
+      min-height: 310px;
       background: white;
       position: absolute;
       z-index: 999;

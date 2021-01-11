@@ -16,8 +16,8 @@
     z-index: -999;
 
     .friendsChecked-alert-content{
-      width: 600px;
-      height: 800px;
+      min-width: 600px;
+      min-height: 800px;
       background: white;
       position: absolute;
       z-index: 999;
@@ -27,30 +27,64 @@
       .top-panel{
         width: 100%;
         height: 50px;
+        border-radius: 5px 5px 0 0;
+        background-color: #dedbda;
         display: flex;
         align-items: center;
         border-bottom: 1px solid #f4f4f4;
-
-        .left-title{
-          width: 50%;
+        
+        .top-panel-left{
+          flex: 4;
           font-size: 18px;
           font-weight: bold;
+          display: flex;
+          align-items: center;
 
-          p{
-            margin-left: 20px;  
+        .top-panel-left-icon {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+
+          .close-icon {
+            margin-left: 16%;
+            margin-top: 16%;
+            width: 15px;
+            height: 15px;
+          }
+
+          .min-icon {
+            margin-left: 16%;
+            margin-top: 16%;
+            width: 15px;
+            height: 15px;
           }
         }
 
-        .right-title{
+          div:nth-child(1) {
+            background: #fc4646;
+            margin-left: 20px;
+          }
+
+          div:nth-child(2) {
+            background: #fbb323;
+            margin-left: 10px;
+          }
+        }
+
+        .top-panel-center{
+          font-size: 18px;
+          text-align: center;
+          flex:4;
+        }
+
+        .top-panel-right{
           display: flex;
-          width: 50%;
+          flex: 4;
           justify-content: flex-end;
           align-items: center;
 
           p{
-            width: 40%;
             font-size: 16px;
-            font-weight: bold;
           }
           
           div{
