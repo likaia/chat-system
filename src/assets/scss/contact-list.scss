@@ -43,6 +43,14 @@ $listFontColor:#777777;
       }
     }
 
+    .friend-checked-panel:hover{
+       background-color: rgba($color: #000000, $alpha: 0.05);
+       
+       .clear-checked-icon{
+         display: block;
+       }
+    }
+
     .friend-checked-panel {
       width: 100%;
       height: 70px;
@@ -54,10 +62,12 @@ $listFontColor:#777777;
       -ms-user-select: none;
       user-select: none;
       display: flex;
-      justify-content: space-between;
+      justify-content: space-around;
       align-items: center;
 
       .clear-checked-icon{
+         display: none;
+
          img{
            width: 18px;
            height: 18px;
@@ -90,7 +100,6 @@ $listFontColor:#777777;
          overflow: hidden;
          white-space: nowrap;
          text-overflow: ellipsis;
-         font-weight: bold;
         }
 
         p:nth-child(2){

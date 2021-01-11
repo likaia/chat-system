@@ -1,8 +1,6 @@
 <template>
   <div class="addFriends-identityChecked-outer-mask">
-    <div
-      style="width: 100vw;height: 100vh;display:flex;align-items:center;justify-content: center; position:unset;z-index:-999;"
-    >
+    <div class="addFriends-identityChecked-inside-mask">
       <div
         class="identityChecked-content"
         @mousedown="alertDown($event)"
@@ -12,12 +10,22 @@
         ref="identityCheckedContent"
       >
         <div class="userInfo">{{ argUserName }}({{ argUserId }})</div>
-        <div class="checkedInfo">
-          <p>
-            验证人需要验证您的身份，请输入您的验证信息：
-          </p>
-          <textarea v-model="checkedArgIntput.verifyMessage"> </textarea>
-        </div>
+        <template v-if="receiveChecked == 'sendChecked'">
+          <div class="checkedInfo">
+            <p>
+              验证人需要验证您的身份，请输入您的验证信息：
+            </p>
+            <textarea v-model="checkedArgIntput.verifyMessage"> </textarea>
+          </div>
+        </template>
+        <template v-if="receiveChecked == 'receiveChecked'">
+          <div class="checkedInfo">
+            <p>
+              验证信息：
+            </p>
+            <textarea v-model="receiveArea.message" disabled> </textarea>
+          </div>
+        </template>
         <div class="groupInfo">
           <div v-if="groupsData.length > 0" class="selectedGroupInfo">
             <span>分组：</span>
@@ -35,6 +43,7 @@
             <input v-model="checkedArgIntput.remarks" type="text" />
           </div>
         </div>
+
         <div class="buttonInfo">
           <input
             class="cencelCheckedButton"
@@ -42,14 +51,26 @@
             value="取消"
             @click="removeIdentityChecked"
           />
-          <input
-            class="sendCheckedButton"
-            type="button"
-            value="发送"
-            @click="checkedSuccess()"
-            :disabled="sendInputState"
-            ref="sendRequest"
-          />
+          <template v-if="receiveChecked == 'sendChecked'">
+            <input
+              class="sendCheckedButton"
+              type="button"
+              value="发送"
+              @click="sendCheckedSuccess()"
+              :disabled="sendInputState"
+              ref="sendRequest"
+            />
+          </template>
+          <template v-if="receiveChecked == 'receiveChecked'">
+            <input
+              class="sendCheckedButton"
+              type="button"
+              value="同意"
+              @click="receiveCheckedSuccess()"
+              :disabled="sendInputState"
+              ref="sendRequest"
+            />
+          </template>
         </div>
       </div>
       <div v-if="promptAlert.state" class="sendRequestMessage">
@@ -70,6 +91,9 @@ export default defineComponent({
   mounted() {
     // 初始化分组信息
     this.groupsData = [];
+    if (this.receiveChecked == "receiveChecked") {
+      this.receiveArea.message = this.argVerifyMessage;
+    }
     // 发送请求获取分组信息
     this.$api.websiteManageAPI
       .getFriendsList({ userId: this.$store.state.userID })
@@ -116,10 +140,7 @@ export default defineComponent({
         movet: 0,
         isDown: false
       },
-      checkedArg: {
-        userId: "",
-        groupId: ""
-      },
+      checkedArg: {},
       checkedArgIntput: {
         remarks: "",
         verifyMessage: ""
@@ -128,6 +149,9 @@ export default defineComponent({
       promptAlert: {
         massage: "",
         state: false
+      },
+      receiveArea: {
+        verifyMessage: ""
       }
     };
   },
@@ -207,8 +231,8 @@ export default defineComponent({
     removeIdentityChecked() {
       this.$emit("no-show-identity-checked", !this.show);
     },
-    // 验证身份请求
-    checkedSuccess() {
+    // 发送者验证身份请求
+    sendCheckedSuccess() {
       // 请求时禁止点击
       this.sendInputState = true;
       this.$refs.sendRequest.style.backgroundColor = "#EEE";
@@ -228,7 +252,7 @@ export default defineComponent({
         .addFriend(this.checkedArg)
         .then((res: responseDataType) => {
           // 首次请求为成功，有data，多次请求为失败，则为msg
-          if (res.data) {
+          if (res.code == 0) {
             this.promptAlert.massage = res.data;
             this.promptAlert.state = true;
           } else {
@@ -238,7 +262,43 @@ export default defineComponent({
           // 请求成功后改变所以添加好友弹窗状态，并关闭
           setTimeout(() => {
             this.promptAlert.state = false;
+            this.$router.go(0);
             this.$store.commit("updateAddFriendStatus", false);
+          }, 3000);
+        });
+    },
+    // 接收者验证身份请求
+    receiveCheckedSuccess() {
+      // 请求时禁止点击
+      this.sendInputState = true;
+      this.$refs.sendRequest.style.backgroundColor = "#EEE";
+      this.$refs.sendRequest.style.color = "#666";
+      // 必要参数好友id和分组id和状态
+      this.checkedArg.groupId = this.selectedValue;
+      this.checkedArg.subId = this.argSubId;
+      this.checkedArg.status = 0;
+      // 可选参数备注
+      if (this.checkedArgIntput.remarks) {
+        this.checkedArg.remarks = this.checkedArgIntput.remarks;
+      }
+      // 发送请求
+      this.$api.websiteManageAPI
+        .updateFriend(this.checkedArg)
+        .then((res: responseDataType) => {
+          // 首次请求为成功，有已同意，多次请求为失败，则为msg
+          if (res.code == 0) {
+            this.promptAlert.massage = "已同意";
+            this.promptAlert.state = true;
+          } else {
+            this.promptAlert.massage = res.msg;
+            this.promptAlert.state = true;
+          }
+
+          // 请求成功后改变关闭验证列表弹窗状态，刷新获取最新好友信息
+          setTimeout(() => {
+            this.promptAlert.state = false;
+            this.$router.go(0);
+            this.$store.commit("updateFriendCheckedStatus", false);
           }, 3000);
         });
     }
@@ -246,7 +306,10 @@ export default defineComponent({
   props: {
     argUserName: String,
     argUserId: String,
-    isChecked: Boolean
+    isChecked: Boolean,
+    receiveChecked: String,
+    argVerifyMessage: String,
+    argSubId: Number
   }
 });
 </script>

@@ -1,0 +1,261 @@
+.friendsChecked-alert-outer-mask{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.2);
+
+  .friendsChecked-alert-inside-mask{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: unset;
+    z-index: -999;
+
+    .friendsChecked-alert-content{
+      width: 600px;
+      height: 800px;
+      background: white;
+      position: absolute;
+      z-index: 999;
+      box-shadow: 0 0 25px black;
+      border-radius: 5px;
+
+      .top-panel{
+        width: 100%;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #f4f4f4;
+
+        .left-title{
+          width: 50%;
+          font-size: 18px;
+          font-weight: bold;
+
+          p{
+            margin-left: 20px;  
+          }
+        }
+
+        .right-title{
+          display: flex;
+          width: 50%;
+          justify-content: flex-end;
+          align-items: center;
+
+          p{
+            width: 40%;
+            font-size: 16px;
+            font-weight: bold;
+          }
+          
+          div{
+            img{
+              width: 36px;
+              height: 36px;
+            }
+          }
+        } 
+      }
+
+      .list-panel{
+        height: 749px;
+        width: 580px;
+        padding: 0 10px;
+        overflow: auto;
+
+        div{
+          .create-time{
+            display: flex;
+            justify-content: center;
+            height: 60px;
+            align-items: center;
+            color: #ababab;
+          }
+
+          .item-panel{
+            margin-bottom: 10px;
+            display: flex;
+            height: 105px;
+            width: 96%;
+            padding: 2%;
+            border: 1px solid #d4d8d9;
+            border-radius: 5px;
+            position: relative;
+
+            div{
+              display: flex;
+
+              .avatarSrc{
+                  img{
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 30px;
+                  }
+               }
+
+               .is-sender{
+                  display: block;
+
+                  p:nth-child(1){
+                    margin-bottom: 40px;
+
+                    span{
+                      margin: 0 10px;
+                      color: #3ea7da;
+  
+                    }
+                  }
+
+                  p:nth-child(2){
+                    span{
+                      margin: 0 10px;
+                      color: #989898;
+                    }
+                  }
+
+               }
+
+               .is-not-sender{
+                  display: block;
+
+                  p:nth-child(1) {
+                    margin-bottom: 40px;
+
+                    span{
+                      margin: 0 10px;
+                      color: #3ea7da;
+                    }
+                  }
+
+                  p:nth-child(2) {
+                    span{
+                      margin: 0 10px;
+                      color: #989898;
+                    }
+                  }
+               }
+
+               .status-argee{
+                 position: absolute;
+                 right: 20px;
+                 top: 50px;
+
+                 p{
+                  color: #d5d5d5;
+                 }
+               }
+
+               .status-refuse{
+                 position: absolute;
+                 right: 20px;
+                 top: 50px;
+
+                 p{
+                  color: #d5d5d5;
+                 }
+               }
+
+               .status-undetermined{
+                  display: block;
+                  position: absolute;
+                  right: 20px;
+                  top: 50px;
+
+                  div:nth-child(1){
+                    display: flex;
+
+                    .selected-value{
+                      width: 50px;
+                      height: 22px;
+                      background: #3cb5ec;
+                      color: white;
+                      line-height: 22px;
+                      border-radius: 3px 0 0 3px;
+                      text-align: center;
+                      font-size: 15px;
+  
+                    }
+                    
+                    .select-icon{
+                      width: 15px;
+                      height: 22px;
+                      background-color: #2aa1e1;
+                      border-radius: 0 3px 3px 0;
+
+                      img{
+                        transform: rotate(90deg) translate(1px, -2px);
+                        width: 10px;
+                      }
+                    }
+                    
+                    .undetermined-checked{
+                      color: #d5d5d5;
+                    }
+                  }
+
+                  .select-content{
+                    border: 1px solid #f3f3f3;
+                    border-radius: 0 0 3px 3px;
+                    box-shadow: 0 0 7px black;
+                    display: none;
+                    
+                    div:hover {
+                      background: rgba(0, 0, 0, 0.1);
+                      display: block;
+                      text-align: center;
+
+                    }
+
+                    .select-value-agree{
+                      height: 22px;
+                      justify-content: center;
+                    }
+
+                    .select-value-refuse{
+                      height: 24px;  
+                      justify-content: center;
+                    }
+                  }
+               } 
+            }
+          }
+        }    
+      }
+    }
+  }
+
+ 
+}
+.refuseRequestMessage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  z-index: 3000;
+
+  div {
+    width: 300px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -150px;
+    margin-top: -40px;
+    color: white;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+  }
+}
+
+

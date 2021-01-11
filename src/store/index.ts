@@ -31,7 +31,9 @@ export default createStore({
       list: []
     },
     // 关闭添加好友信息弹出框
-    closeFriendAllAlert: false
+    closeFriendAllAlert: false,
+    // 关闭好友验证弹出框
+    closeFriendCheckedAlert: false
   },
   mutations: {
     // 连接打开
@@ -104,6 +106,10 @@ export default createStore({
     // 更新添加好友弹出框是否存在
     updateAddFriendStatus(state, value: boolean) {
       state.closeFriendAllAlert = value;
+    },
+    // 更新好友验证弹出框是否存在
+    updateFriendCheckedStatus(state, value: boolean) {
+      state.closeFriendCheckedAlert = value;
     }
   },
   modules: {}

@@ -42,25 +42,30 @@
             <p>
               {{ friendsCheckedList.newest.date }}
             </p>
-            <div v-if="friendsCheckedList.friendsCheckedInfo.length < 10">
+            <div
+              v-if="
+                friendsCheckedList.newest.count < 10 &&
+                  friendsCheckedList.newest.count > 0
+              "
+            >
               <span>
-                {{ friendsCheckedList.friendsCheckedInfo.length }}
+                {{ friendsCheckedList.newest.count }}
               </span>
             </div>
             <div
               class="count-ten"
               v-if="
-                friendsCheckedList.friendsCheckedInfo.length >= 10 &&
-                  friendsCheckedList.friendsCheckedInfo.length < 99
+                friendsCheckedList.newest.count >= 10 &&
+                  friendsCheckedList.newest.count < 99
               "
             >
               <span>
-                {{ friendsCheckedList.friendsCheckedInfo.length }}
+                {{ friendsCheckedList.newest.count }}
               </span>
             </div>
             <div
               class="count-hundred"
-              v-if="friendsCheckedList.friendsCheckedInfo.length > 99"
+              v-if="friendsCheckedList.newest.count > 99"
             >
               <span>
                 99+
@@ -209,8 +214,9 @@
     <teleport to="body">
       <addFriendsList v-if="getSendData"></addFriendsList>
       <friendsCheckedAlert
-        v-if="showCheckedAlert"
+        v-if="getCheckedData"
         :showCheckedAlert="showCheckedAlert"
+        :friendCheckedDataList="friendsCheckedList"
         @close-checked-alert="closeCheckedAlert(noShow)"
       ></friendsCheckedAlert>
     </teleport>
@@ -261,7 +267,8 @@ export default defineComponent({
         newest: {
           time: "",
           userName: "",
-          date: ""
+          date: "",
+          count: 0
         }
       },
       showFriendCheckedContent: true,
@@ -326,14 +333,28 @@ export default defineComponent({
     addFriendsInfoSearch: function() {
       this.$store.commit("updateAddFriendStatus", true);
     },
+    // 获取好友验证人员信息
     getToBeVerifiedList() {
-      // 获取好友验证人员信息
+      this.friendsCheckedList.newest.count = 0;
       this.$api.websiteManageAPI
         .getToBeVerifiedList()
         .then((res: responseDataType) => {
+          // 请求数组不为0
           if (res.data.verifiedList.length > 0) {
             this.friendsCheckedList.serverTime = res.data.serverTime;
             this.friendsCheckedList.friendsCheckedInfo = res.data.verifiedList;
+            // 待验证的次数
+            for (
+              let index = 0;
+              index < this.friendsCheckedList.friendsCheckedInfo.length;
+              index++
+            ) {
+              if (
+                this.friendsCheckedList.friendsCheckedInfo[index].status == 1
+              ) {
+                this.friendsCheckedList.newest.count += 1;
+              }
+            }
             // 时间由新到旧
             if (this.friendsCheckedList.friendsCheckedInfo.length > 1) {
               this.friendsCheckedList.friendsCheckedInfo = this.forwardRankingDate(
@@ -341,124 +362,35 @@ export default defineComponent({
                 "createTime"
               );
             }
-            // 显示最新好友添加时间
-            if (
-              Math.floor(
-                Date.parse(this.friendsCheckedList.serverTime) /
-                  (1 * 24 * 3600 * 1000)
-              ) -
-                Math.floor(
-                  Date.parse(
-                    this.friendsCheckedList.friendsCheckedInfo[0].createTime
-                  ) /
-                    (1 * 24 * 3600 * 1000)
-                ) ==
-              0
-            ) {
-              if (
-                Number(
-                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
-                    this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
-                      ":"
-                    ) - 2,
-                    2
-                  )
-                ) < 12
+            // 显示最新好友添加时间及最新好友添加名称
+            if (this.friendsCheckedList.newest.count == 0) {
+              this.getAddTime(0);
+              this.friendsCheckedList.newest.userName = this.friendsCheckedList.friendsCheckedInfo[0].userName;
+            } else {
+              for (
+                let index = 0;
+                index < this.friendsCheckedList.friendsCheckedInfo.length;
+                index++
               ) {
-                this.friendsCheckedList.newest.date =
-                  "上午" +
-                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
-                    this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
-                      ":"
-                    ) - 2,
-                    5
-                  );
-              } else if (
-                Number(
-                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
-                    this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
-                      ":"
-                    ) - 2,
-                    2
-                  )
-                ) < 18
-              ) {
-                this.friendsCheckedList.newest.date =
-                  "下午" +
-                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
-                    this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
-                      ":"
-                    ) - 2,
-                    5
-                  );
-              } else {
-                this.friendsCheckedList.newest.date =
-                  "晚上" +
-                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
-                    this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
-                      ":"
-                    ) - 2,
-                    5
-                  );
+                const element = this.friendsCheckedList.friendsCheckedInfo[
+                  index
+                ];
+                if (element.status == 1) {
+                  this.getAddTime(index);
+                  this.friendsCheckedList.newest.userName = this.friendsCheckedList.friendsCheckedInfo[
+                    index
+                  ].userName;
+                  break;
+                }
               }
-            } else if (
-              Math.floor(
-                Date.parse(this.friendsCheckedList.serverTime) /
-                  (1 * 24 * 3600 * 1000)
-              ) -
-                Math.floor(
-                  Date.parse(
-                    this.friendsCheckedList.friendsCheckedInfo[0].createTime
-                  ) /
-                    (1 * 24 * 3600 * 1000)
-                ) ==
-              1
-            ) {
-              this.friendsCheckedList.newest.date =
-                "昨天" +
-                this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
-                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
-                    ":"
-                  ) - 2,
-                  5
-                );
-            } else if (
-              Math.floor(
-                Date.parse(this.friendsCheckedList.serverTime) /
-                  (1 * 24 * 3600 * 1000)
-              ) -
-                Math.floor(
-                  Date.parse(
-                    this.friendsCheckedList.friendsCheckedInfo[0].createTime
-                  ) /
-                    (1 * 24 * 3600 * 1000)
-                ) >
-              1
-            ) {
-              this.friendsCheckedList.newest.date =
-                this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
-                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
-                    "-"
-                  ) + 1,
-                  5
-                ) +
-                " " +
-                this.friendsCheckedList.friendsCheckedInfo[0].createTime.substr(
-                  this.friendsCheckedList.friendsCheckedInfo[0].createTime.indexOf(
-                    ":"
-                  ) - 2,
-                  5
-                );
             }
-            // 显示最新好友添加名称
-            this.friendsCheckedList.newest.userName = this.friendsCheckedList.friendsCheckedInfo[0].userName;
           } else {
             return;
           }
         });
     },
+    // 获取好友列表人员
     getFriendsList() {
-      // 获取好友列表人员
       this.$api.websiteManageAPI
         .getFriendsList({ userId: this.$store.state.userID })
         .then((res: responseDataType) => {
@@ -534,15 +466,127 @@ export default defineComponent({
     clearFriendCheckedPanel() {
       this.showFriendCheckedContent = false;
     },
+    // 好友验证信息框的时间显示
+    getAddTime(index: number) {
+      if (
+        Math.floor(
+          Date.parse(this.friendsCheckedList.serverTime) /
+            (1 * 24 * 3600 * 1000)
+        ) -
+          Math.floor(
+            Date.parse(
+              this.friendsCheckedList.friendsCheckedInfo[index].createTime
+            ) /
+              (1 * 24 * 3600 * 1000)
+          ) ==
+        0
+      ) {
+        if (
+          Number(
+            this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+              this.friendsCheckedList.friendsCheckedInfo[
+                index
+              ].createTime.indexOf(":") - 2,
+              2
+            )
+          ) < 12
+        ) {
+          this.friendsCheckedList.newest.date =
+            "上午" +
+            this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+              this.friendsCheckedList.friendsCheckedInfo[
+                index
+              ].createTime.indexOf(":") - 2,
+              5
+            );
+        } else if (
+          Number(
+            this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+              this.friendsCheckedList.friendsCheckedInfo[
+                index
+              ].createTime.indexOf(":") - 2,
+              2
+            )
+          ) < 18
+        ) {
+          this.friendsCheckedList.newest.date =
+            "下午" +
+            this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+              this.friendsCheckedList.friendsCheckedInfo[
+                index
+              ].createTime.indexOf(":") - 2,
+              5
+            );
+        } else {
+          this.friendsCheckedList.newest.date =
+            "晚上" +
+            this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+              this.friendsCheckedList.friendsCheckedInfo[
+                index
+              ].createTime.indexOf(":") - 2,
+              5
+            );
+        }
+      } else if (
+        Math.floor(
+          Date.parse(this.friendsCheckedList.serverTime) /
+            (1 * 24 * 3600 * 1000)
+        ) -
+          Math.floor(
+            Date.parse(
+              this.friendsCheckedList.friendsCheckedInfo[index].createTime
+            ) /
+              (1 * 24 * 3600 * 1000)
+          ) ==
+        1
+      ) {
+        this.friendsCheckedList.newest.date =
+          "昨天" +
+          this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+            this.friendsCheckedList.friendsCheckedInfo[
+              index
+            ].createTime.indexOf(":") - 2,
+            5
+          );
+      } else if (
+        Math.floor(
+          Date.parse(this.friendsCheckedList.serverTime) /
+            (1 * 24 * 3600 * 1000)
+        ) -
+          Math.floor(
+            Date.parse(
+              this.friendsCheckedList.friendsCheckedInfo[index].createTime
+            ) /
+              (1 * 24 * 3600 * 1000)
+          ) >
+        1
+      ) {
+        this.friendsCheckedList.newest.date =
+          this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+            this.friendsCheckedList.friendsCheckedInfo[
+              index
+            ].createTime.indexOf("-") + 1,
+            5
+          ) +
+          " " +
+          this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+            this.friendsCheckedList.friendsCheckedInfo[
+              index
+            ].createTime.indexOf(":") - 2,
+            5
+          );
+      }
+    },
     // 出现好友添加时选择框
     friendsCheckedAlert() {
-      this.showCheckedAlert = true;
+      this.$store.commit("updateFriendCheckedStatus", true);
     },
     // 关闭好友添加时选择框
     closeCheckedAlert(noShow: boolean) {
       this.showCheckedAlert = noShow;
     }
   },
+  // 请求好友列表与验证消息
   mounted() {
     this.getToBeVerifiedList();
     this.getFriendsList();
@@ -552,10 +596,13 @@ export default defineComponent({
     this.groupArrow = [];
     this.groupList = [];
   },
-  // 更新最新添加好友弹窗状态
+  // 更新最新添加好友弹窗和验证弹窗状态
   computed: {
     getSendData() {
       return this.$store.state.closeFriendAllAlert;
+    },
+    getCheckedData() {
+      return this.$store.state.closeFriendCheckedAlert;
     }
   }
 });

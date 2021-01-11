@@ -1,4 +1,3 @@
-
 .addFriends-list-outer-mask{
   position: fixed;
   top: 0;
@@ -6,171 +5,179 @@
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.2);
- 
-.addFriends-list-content {
-  width: 700px;
-  position: absolute;
-  background:white;
-  position: absolute;
-  z-index: 999;
-  border: #bebebe 1px solid;
-  border-radius: 5px;
-  box-shadow: 0 0 10px #000000;
 
-  .top-panel {
-    width: 100%;
-    height: 48px;
+  .addFriends-list-inside-mask{
+    width: 100vw;
+    height: 100vh;
     display: flex;
     align-items: center;
-    background: #dedbda;
-    border-radius: 5px 5px 0 0;
+    justify-content: center;
+    position: unset;
+    z-index: -999;
 
-    .top-panel-left {
-      width: 200px;
-      display: flex;
-      align-items: center;
+    .addFriends-list-content {
+      width: 700px;
+      position: absolute;
+      background: white;
+      position: absolute;
+      z-index: 999;
+      border: #bebebe 1px solid;
+      border-radius: 5px;
+      box-shadow: 0 0 10px #000000;
 
-      .top-panel-left-icon {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-
-        .close-icon{
-          margin-left: 16%;
-          margin-top:16%;
-          width: 15px;
-          height: 15px;
-        }
-
-        .min-icon{
-          margin-left: 16%;
-          margin-top: 16%;
-          width: 15px;
-          height: 15px;
-        }
-      }
-
-      div:nth-child(1) {
-        background: #fc4646;
-        margin-left: 20px;
-      }
-
-      div:nth-child(2) {
-        background: #fbb323;
-        margin-left: 10px;
-      }
-    }
-
-    .top-panel-right {
-      width: 300px;
-      text-align: center;
-    }
-  }
-
-  .main-panel {
-    width: 646px;
-    padding: 0 27px;
-    background: #fcfdfc;
-    height: 202px;
-    border-radius: 0 0 5px 5px;
-
-    .main-panel-search {
-      width: 646px;
-      background: #fcfdfc;
-      display: flex;
-      padding-top: 50px;
-
-      .main-panel-search-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 50% 0 0 50%;
-        background: #f0f0f0;
+     .top-panel {
+        width: 100%;
+        height: 48px;
         display: flex;
         align-items: center;
-        justify-content: center;
-      }
+        background: #dedbda;
+        border-radius: 5px 5px 0 0;
+      
+        .top-panel-left {
+            width: 200px;
+            display: flex;
+            align-items: center;
+        
+            .top-panel-left-icon {
+              width: 20px;
+              height: 20px;
+              border-radius: 50%;
 
-     .main-panel-search-input{
-       width: 100%;
-       position: relative;
+            .close-icon {
+              margin-left: 16%;
+              margin-top: 16%;
+              width: 15px;
+              height: 15px;
+              }
+              
+              .min-icon {
+              margin-left: 16%;
+              margin-top: 16%;
+              width: 15px;
+              height: 15px;
+              }
+            }
 
-       img{
-         position: absolute;
-         right: 13px;
-         top: 10px;
-       }
-     }
+            div:nth-child(1) {
+              background: #fc4646;
+              margin-left: 20px;
+            }
 
-      input {
-        font-size: 22px;
-        width: 100%;
-        background: #f0f0f0;
-        border: none;
-        height: 50px;
-        outline: none;
-        border-radius: 0 25px 25px 0;
-      }
-    }
-
-     .main-panel-content{
-     
-        .main-panel-content-name{
-          color: #7e7e7e;
-          font-size: 20px;
-          letter-spacing: 3px;
-          font-weight: 500;
-          padding: 10px 0;
-          font-weight: bold;
+            div:nth-child(2) {
+              background: #fbb323;
+              margin-left: 10px;
+            }
         }
 
-        .main-panel-content-friends-info{
-          
-          .main-panel-content-friendsList{
+        .top-panel-right {
+          width: 300px;
+          text-align: center;
+        }
+      }
+
+     .main-panel {
+        width: 646px;
+        padding: 0 27px;
+        background: #fcfdfc;
+        height: 202px;
+        border-radius: 0 0 5px 5px;
+
+        .main-panel-search {
+          width: 646px;
+          background: #fcfdfc;
+          display: flex;
+          padding-top: 50px;
+
+          .main-panel-search-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50% 0 0 50%;
+            background: #f0f0f0;
             display: flex;
-            padding: 5px;
+            align-items: center;
+            justify-content: center;
+          }
 
-            .friendsList-img-avatarSrc{
-              border-radius: 50%;
-              width: 40px;
-              height: 40px;
-              padding-right: 10px;
- 
-              img{
-                border-radius: 50%;
-                width: 100%;
-                height: 100%;
-              }
-            }
+          .main-panel-search-input {
+            width: 100%;
+            position: relative;
 
-            .friendsList-userName{
-              width: 559px;
-              font-size: 17px;
+            img {
+              position: absolute;
+              right: 13px;
+              top: 10px;
             }
-            .friendsList-isFriend{
-              img{
-                width: 25px;
-                height: 25px;
-              }
-            }
+          }
 
-            .friendsList-isNotFriend{
-              white-space: nowrap;
-              color: #a9a9a9;
-            }
+          input {
+            font-size: 22px;
+            width: 100%;
+            background: #f0f0f0;
+            border: none;
+            height: 50px;
+            outline: none;
+            border-radius: 0 25px 25px 0;
+          }
+        }
 
-            .friendsList-isNotFriendsInfo{
+        .main-panel-content {
+          .main-panel-content-name {
+            color: #7e7e7e;
+            font-size: 20px;
+            letter-spacing: 3px;
+            font-weight: 500;
+            padding: 10px 0;
+            font-weight: bold;
+          }
+
+          .main-panel-content-friends-info {
+            .main-panel-content-friendsList {
               display: flex;
-              width: 100%;
               padding: 5px;
-              align-items: center;
-              justify-content: center;
-              font-size: 18px;
-              color: #a9a9a9;
+
+              .friendsList-img-avatarSrc {
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                padding-right: 10px;
+
+                img {
+                  border-radius: 50%;
+                  width: 100%;
+                  height: 100%;
+                }
+              }
+
+              .friendsList-userName {
+                width: 559px;
+                font-size: 17px;
+              }
+              .friendsList-isFriend {
+                img {
+                  width: 25px;
+                  height: 25px;
+                }
+              }
+
+              .friendsList-isNotFriend {
+                white-space: nowrap;
+                color: #a9a9a9;
+              }
+
+              .friendsList-isNotFriendsInfo {
+                display: flex;
+                width: 100%;
+                padding: 5px;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                color: #a9a9a9;
+              }
             }
           }
         }
-      }
+     }
+    }
   }
 }
 
-}

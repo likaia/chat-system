@@ -1,8 +1,6 @@
 <template>
   <div class="addFriends-list-outer-mask">
-    <div
-      style="width: 100vw;height: 100vh;display:flex;align-items:center;justify-content: center; position:unset;z-index:-999;"
-    >
+    <div class="addFriends-list-inside-mask" style="">
       <div
         class="addFriends-list-content"
         ref="addFriendsListContent"
@@ -55,7 +53,6 @@
             <div class="main-panel-search-input">
               <input
                 type="text"
-                style=""
                 v-model="searchFriendInfo"
                 placeholder="用户id/用户名"
                 @keyup.enter="searchFriendInfoResult"
@@ -140,6 +137,7 @@
     :arg-userName="argUserName"
     :arg-userId="argUserId"
     :is-checked="isChecked"
+    receiveChecked="sendChecked"
     @no-show-identity-checked="noShowIdentityChecked(noShow)"
   />
 </template>
