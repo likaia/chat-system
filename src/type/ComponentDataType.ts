@@ -105,6 +105,18 @@ export type contactListDataType<V> = {
     text: Array<string>; // 文本数组
     handler: Record<string, (...params: any) => void>; // 事件处理函数
   }; // 右键菜单
+  showFriendCheckedContent: boolean;
+  friendsCheckedList: {
+    serverTime:string;
+    friendsCheckedInfo: Array<V>;
+    newest: {
+      time: string
+      userName: string,
+      date: string,
+      count:number
+    };
+  };// 好友验证数据
+  showCheckedAlert: boolean;// 选择是否添加好友
 };
 
 // 联系人列表类型定义

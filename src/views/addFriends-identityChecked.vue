@@ -1,57 +1,82 @@
 <template>
   <div class="addFriends-identityChecked-outer-mask">
-    <div
-      class="identityChecked-content"
-      @mousedown="alertDown($event)"
-      @mousemove="alertMove($event)"
-      @mouseup="alertUp"
-      @blur="alertUp"
-      ref="identityCheckedContent"
-    >
-      <div class="userInfo">{{ argUserName }}({{ argUserId }})</div>
-      <div class="checkedInfo">
-        <p>
-          验证人需要验证您的身份，请输入您的验证信息：
-        </p>
-        <textarea v-model="checkedArgIntput.verifyMessage"> </textarea>
-      </div>
-      <div class="groupInfo">
-        <div v-if="groupsData.length > 0" class="selectedGroupInfo">
-          <span>分组：</span>
-          <select name="" id="" v-model="selectedValue">
-            <option
-              :value="item.childrenId"
-              v-for="(item, index) in groupsData"
-              :key="index"
-              >{{ item.groupName }}</option
-            >
-          </select>
+    <div class="addFriends-identityChecked-inside-mask">
+      <div
+        class="identityChecked-content"
+        @mousedown="alertDown($event)"
+        @mousemove="alertMove($event)"
+        @mouseup="alertUp"
+        @blur="alertUp"
+        ref="identityCheckedContent"
+      >
+        <div class="userInfo">{{ argUserName }}({{ argUserId }})</div>
+        <template v-if="receiveChecked == 'sendChecked'">
+          <div class="checkedInfo">
+            <p>
+              验证人需要验证您的身份，请输入您的验证信息：
+            </p>
+            <textarea v-model="checkedArgIntput.verifyMessage"> </textarea>
+          </div>
+        </template>
+        <template v-if="receiveChecked == 'receiveChecked'">
+          <div class="checkedInfo">
+            <p>
+              验证信息：
+            </p>
+            <textarea v-model="receiveArea.message" disabled> </textarea>
+          </div>
+        </template>
+        <div class="groupInfo">
+          <div v-if="groupsData.length > 0" class="selectedGroupInfo">
+            <span>分组：</span>
+            <select name="" id="" v-model="selectedValue">
+              <option
+                :value="item.childrenId"
+                v-for="(item, index) in groupsData"
+                :key="index"
+                >{{ item.groupName }}</option
+              >
+            </select>
+          </div>
+          <div class="remarksInfo">
+            <span>备注：</span>
+            <input v-model="checkedArgIntput.remarks" type="text" />
+          </div>
         </div>
-        <div class="remarksInfo">
-          <span>备注：</span>
-          <input v-model="checkedArgIntput.remarks" type="text" />
+
+        <div class="buttonInfo">
+          <input
+            class="cencelCheckedButton"
+            type="button"
+            value="取消"
+            @click="removeIdentityChecked"
+          />
+          <template v-if="receiveChecked == 'sendChecked'">
+            <input
+              class="sendCheckedButton"
+              type="button"
+              value="发送"
+              @click="sendCheckedSuccess()"
+              :disabled="sendInputState"
+              ref="sendRequest"
+            />
+          </template>
+          <template v-if="receiveChecked == 'receiveChecked'">
+            <input
+              class="sendCheckedButton"
+              type="button"
+              value="同意"
+              @click="receiveCheckedSuccess()"
+              :disabled="sendInputState"
+              ref="sendRequest"
+            />
+          </template>
         </div>
       </div>
-      <div class="buttonInfo">
-        <input
-          class="cencelCheckedButton"
-          type="button"
-          value="取消"
-          @click="removeIdentityChecked"
-        />
-        <input
-          class="sendCheckedButton"
-          type="button"
-          value="发送"
-          @click="checkedSuccess()"
-          :disabled="sendInputState"
-          ref="sendRequest"
-        />
-      </div>
-    </div>
-    <div v-if="promptAlert.state" class="sendRequestMessage">
-      <div>
-        <p>{{ promptAlert.massage }}</p>
+      <div v-if="promptAlert.state" class="sendRequestMessage">
+        <div>
+          <p>{{ promptAlert.massage }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -66,6 +91,9 @@ export default defineComponent({
   mounted() {
     // 初始化分组信息
     this.groupsData = [];
+    if (this.receiveChecked == "receiveChecked") {
+      this.receiveArea.message = this.argVerifyMessage;
+    }
     // 发送请求获取分组信息
     this.$api.websiteManageAPI
       .getFriendsList({ userId: this.$store.state.userID })
@@ -112,10 +140,7 @@ export default defineComponent({
         movet: 0,
         isDown: false
       },
-      checkedArg: {
-        userId: "",
-        groupId: ""
-      },
+      checkedArg: {},
       checkedArgIntput: {
         remarks: "",
         verifyMessage: ""
@@ -124,6 +149,9 @@ export default defineComponent({
       promptAlert: {
         massage: "",
         state: false
+      },
+      receiveArea: {
+        verifyMessage: ""
       }
     };
   },
@@ -139,12 +167,8 @@ export default defineComponent({
       // 获取初始时当前框距离对应边界的大小位置和当前鼠标左键点下时事件的位置
       this.moveAlertData.x = e.clientX;
       this.moveAlertData.y = e.clientY;
-      this.moveAlertData.t =
-        this.$refs.identityCheckedContent.offsetTop +
-        this.$refs.identityCheckedContent.offsetHeight / 2;
-      this.moveAlertData.l =
-        this.$refs.identityCheckedContent.offsetLeft +
-        this.$refs.identityCheckedContent.offsetWidth / 2;
+      this.moveAlertData.t = this.$refs.identityCheckedContent.offsetTop;
+      this.moveAlertData.l = this.$refs.identityCheckedContent.offsetLeft;
       this.moveAlertData.isDown = true;
       // 将鼠标图标换成可拖动
       this.$refs.identityCheckedContent.style.cursor = "move";
@@ -155,9 +179,6 @@ export default defineComponent({
       if (this.moveAlertData.isDown == false) {
         return;
       }
-
-      this.$refs.identityCheckedContent.style.marginTop =
-        -this.$refs.identityCheckedContent.offsetHeight / 2 + "px";
       // 获取移动时最新的鼠标位位置
       this.moveAlertData.moveX = e.clientX;
       this.moveAlertData.moveY = e.clientY;
@@ -169,46 +190,31 @@ export default defineComponent({
         this.moveAlertData.moveY -
         (this.moveAlertData.y - this.moveAlertData.t);
       // 对左边界进行边界处理
-      if (
-        window.innerWidth -
-          this.moveAlertData.movel -
-          this.$refs.identityCheckedContent.offsetWidth / 2 <
-        0
-      ) {
-        this.moveAlertData.movel =
-          window.innerWidth -
-          this.$refs.identityCheckedContent.clientWidth +
-          this.$refs.identityCheckedContent.clientWidth / 2;
+
+      if (this.moveAlertData.movel < 0) {
+        this.moveAlertData.movel = 0;
       }
       // 对右边界进行边界处理
       if (
-        this.moveAlertData.movel -
-          this.$refs.identityCheckedContent.offsetWidth / 2 <
-        0
+        this.moveAlertData.movel +
+          this.$refs.identityCheckedContent.offsetWidth >
+        window.innerWidth
       ) {
         this.moveAlertData.movel =
-          this.$refs.identityCheckedContent.offsetWidth / 2;
+          window.innerWidth - this.$refs.identityCheckedContent.offsetWidth;
       }
       // 对下边界进行边界处理
       if (
-        window.innerHeight -
-          this.moveAlertData.movet -
-          this.$refs.identityCheckedContent.offsetHeight / 2 <
-        0
+        this.moveAlertData.movet +
+          this.$refs.identityCheckedContent.offsetHeight >
+        window.innerHeight
       ) {
         this.moveAlertData.movet =
-          window.innerHeight -
-          this.$refs.identityCheckedContent.offsetHeight +
-          this.$refs.identityCheckedContent.offsetHeight / 2;
+          window.innerHeight - this.$refs.identityCheckedContent.offsetHeight;
       }
       // 对上边界进行边界处理
-      if (
-        this.moveAlertData.movet -
-          this.$refs.identityCheckedContent.offsetHeight / 2 <
-        0
-      ) {
-        this.moveAlertData.movet =
-          this.$refs.identityCheckedContent.offsetHeight / 2;
+      if (this.moveAlertData.movet < 0) {
+        this.moveAlertData.movet = 0;
       }
       // 渲染最新位置
       this.$refs.identityCheckedContent.style.left =
@@ -225,8 +231,8 @@ export default defineComponent({
     removeIdentityChecked() {
       this.$emit("no-show-identity-checked", !this.show);
     },
-    // 验证身份请求
-    checkedSuccess() {
+    // 发送者验证身份请求
+    sendCheckedSuccess() {
       // 请求时禁止点击
       this.sendInputState = true;
       this.$refs.sendRequest.style.backgroundColor = "#EEE";
@@ -246,7 +252,7 @@ export default defineComponent({
         .addFriend(this.checkedArg)
         .then((res: responseDataType) => {
           // 首次请求为成功，有data，多次请求为失败，则为msg
-          if (res.data) {
+          if (res.code == 0) {
             this.promptAlert.massage = res.data;
             this.promptAlert.state = true;
           } else {
@@ -256,7 +262,43 @@ export default defineComponent({
           // 请求成功后改变所以添加好友弹窗状态，并关闭
           setTimeout(() => {
             this.promptAlert.state = false;
+            this.$router.go(0);
             this.$store.commit("updateAddFriendStatus", false);
+          }, 3000);
+        });
+    },
+    // 接收者验证身份请求
+    receiveCheckedSuccess() {
+      // 请求时禁止点击
+      this.sendInputState = true;
+      this.$refs.sendRequest.style.backgroundColor = "#EEE";
+      this.$refs.sendRequest.style.color = "#666";
+      // 必要参数好友id和分组id和状态
+      this.checkedArg.groupId = this.selectedValue;
+      this.checkedArg.subId = this.argSubId;
+      this.checkedArg.status = 0;
+      // 可选参数备注
+      if (this.checkedArgIntput.remarks) {
+        this.checkedArg.remarks = this.checkedArgIntput.remarks;
+      }
+      // 发送请求
+      this.$api.websiteManageAPI
+        .updateFriend(this.checkedArg)
+        .then((res: responseDataType) => {
+          // 首次请求为成功，有已同意，多次请求为失败，则为msg
+          if (res.code == 0) {
+            this.promptAlert.massage = "已同意";
+            this.promptAlert.state = true;
+          } else {
+            this.promptAlert.massage = res.msg;
+            this.promptAlert.state = true;
+          }
+
+          // 请求成功后改变关闭验证列表弹窗状态，刷新获取最新好友信息
+          setTimeout(() => {
+            this.promptAlert.state = false;
+            this.$router.go(0);
+            this.$store.commit("updateFriendCheckedStatus", false);
           }, 3000);
         });
     }
@@ -264,7 +306,10 @@ export default defineComponent({
   props: {
     argUserName: String,
     argUserId: String,
-    isChecked: Boolean
+    isChecked: Boolean,
+    receiveChecked: String,
+    argVerifyMessage: String,
+    argSubId: Number
   }
 });
 </script>

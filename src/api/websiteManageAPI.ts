@@ -55,6 +55,10 @@ const websiteManageAPI = {
     return services.get(`${base.lk}/user/getToBeVerifiedList`, {
       params: params
     });
+  },
+  // 更新好友信息
+  updateFriend<T>(params: paramsType<T>) {
+    return services.post(`${base.lk}/user/updateFriend`, params);
   }
 };
 

@@ -9,93 +9,71 @@
           <p>加好友</p>
         </div>
       </div>
-      <div
-        style="width: 100%;
-    height: 70px;
-    list-style: none;
-    background: #fdfdfd;
-    cursor: default;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;"
-      >
-        <div>
-          <img
-            src="@/assets/img/list/AIO_Tab_Close_Normal@2x.png"
-            alt=""
-            style="width:18px;height:18px;margin-left: 4px;"
-          />
-        </div>
+      <!--好友验证-->
+      <template v-if="showFriendCheckedContent">
         <div
-          style="width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    overflow: hidden;"
+          v-if="friendsCheckedList.friendsCheckedInfo.length > 0"
+          class="friend-checked-panel"
+          ref="friendCheckedPanel"
+          @click="friendsCheckedAlert"
         >
-          <div>
+          <div class="clear-checked-icon">
             <img
-              src="@/assets/img/list/aio_buddy_validate_icon@2x.png"
-              style="width:38px;height:38px;"
+              src="@/assets/img/list/AIO_Tab_Close_Normal@2x.png"
               alt=""
+              @click.stop="clearFriendCheckedPanel"
             />
           </div>
-        </div>
-        <div
-          style="width: 35%;
-    min-width: 75px;
-    height: 40px;"
-        >
-          <p
-            style="font-size: 15px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis; font-weight:bold; "
-          >
-            好友验证信息
-          </p>
-          <p
-            style="color: #7b7b7b;
-    font-size: 12px;
-      overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    width: 50px;
-    "
-          >
-            我是测试一号2
-          </p>
-        </div>
-        <div
-          style="min-width: 61px;
-    width: 28%;
-    height: 40px;
-    font-size: 13px;
-    color: #7b7b7b;
-    position: relative;
-    right: 3px;
-    "
-        >
-          <p
-            style=" overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;"
-          >
-            上午10:42
-          </p>
-          <div
-            style="width:18px;height:18px;border-radius:10px;position:absolute;right:0;bottom: 0;display: flex;
-    justify-content: center;background:red;color:white;"
-          >
-            <span>
-              9
-            </span>
+          <div class="validate-icon">
+            <div>
+              <img
+                src="@/assets/img/list/aio_buddy_validate_icon@2x.png"
+                alt=""
+              />
+            </div>
+          </div>
+          <div class="checked-userName">
+            <p>
+              好友验证信息
+            </p>
+            <p>我是 {{ friendsCheckedList.newest.userName }}</p>
+          </div>
+          <div class="checked-Time">
+            <p>
+              {{ friendsCheckedList.newest.date }}
+            </p>
+            <div
+              v-if="
+                friendsCheckedList.newest.count < 10 &&
+                  friendsCheckedList.newest.count > 0
+              "
+            >
+              <span>
+                {{ friendsCheckedList.newest.count }}
+              </span>
+            </div>
+            <div
+              class="count-ten"
+              v-if="
+                friendsCheckedList.newest.count >= 10 &&
+                  friendsCheckedList.newest.count < 99
+              "
+            >
+              <span>
+                {{ friendsCheckedList.newest.count }}
+              </span>
+            </div>
+            <div
+              class="count-hundred"
+              v-if="friendsCheckedList.newest.count > 99"
+            >
+              <span>
+                99+
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
       <!--设备组-->
       <div class="group-panel">
         <div class="title-panel">
@@ -235,6 +213,12 @@
     <!--添加好友弹框-->
     <teleport to="body">
       <addFriendsList v-if="getSendData"></addFriendsList>
+      <friendsCheckedAlert
+        v-if="getCheckedData"
+        :showCheckedAlert="showCheckedAlert"
+        :friendCheckedDataList="friendsCheckedList"
+        @close-checked-alert="closeCheckedAlert(noShow)"
+      ></friendsCheckedAlert>
     </teleport>
   </div>
 </template>
@@ -244,6 +228,7 @@ import _ from "lodash";
 import { defineComponent } from "vue";
 import dataPanel from "@/components/data-panel.vue";
 import addFriendsList from "./addFriends-list.vue";
+import friendsCheckedAlert from "./friendsChecked-alert.vue";
 import {
   contactListDataType,
   friendsListType,
@@ -275,12 +260,25 @@ export default defineComponent({
             console.log("分组重命名事件");
           }
         }
-      }
+      },
+      friendsCheckedList: {
+        serverTime: "",
+        friendsCheckedInfo: [],
+        newest: {
+          time: "",
+          userName: "",
+          date: "",
+          count: 0
+        }
+      },
+      showFriendCheckedContent: true,
+      showCheckedAlert: false
     };
   },
   components: {
     dataPanel,
-    addFriendsList
+    addFriendsList,
+    friendsCheckedAlert
   },
   methods: {
     // 获取列表好友信息
@@ -334,82 +332,277 @@ export default defineComponent({
     // 添加好友弹框
     addFriendsInfoSearch: function() {
       this.$store.commit("updateAddFriendStatus", true);
+    },
+    // 获取好友验证人员信息
+    getToBeVerifiedList() {
+      this.friendsCheckedList.newest.count = 0;
+      this.$api.websiteManageAPI
+        .getToBeVerifiedList()
+        .then((res: responseDataType) => {
+          // 请求数组不为0
+          if (res.data.verifiedList.length > 0) {
+            this.friendsCheckedList.serverTime = res.data.serverTime;
+            this.friendsCheckedList.friendsCheckedInfo = res.data.verifiedList;
+            // 待验证的次数
+            for (
+              let index = 0;
+              index < this.friendsCheckedList.friendsCheckedInfo.length;
+              index++
+            ) {
+              if (
+                this.friendsCheckedList.friendsCheckedInfo[index].status == 1
+              ) {
+                this.friendsCheckedList.newest.count += 1;
+              }
+            }
+            // 时间由新到旧
+            if (this.friendsCheckedList.friendsCheckedInfo.length > 1) {
+              this.friendsCheckedList.friendsCheckedInfo = this.forwardRankingDate(
+                this.friendsCheckedList.friendsCheckedInfo,
+                "createTime"
+              );
+            }
+            // 显示最新好友添加时间及最新好友添加名称
+            if (this.friendsCheckedList.newest.count == 0) {
+              this.getAddTime(0);
+              this.friendsCheckedList.newest.userName = this.friendsCheckedList.friendsCheckedInfo[0].userName;
+            } else {
+              for (
+                let index = 0;
+                index < this.friendsCheckedList.friendsCheckedInfo.length;
+                index++
+              ) {
+                const element = this.friendsCheckedList.friendsCheckedInfo[
+                  index
+                ];
+                if (element.status == 1) {
+                  this.getAddTime(index);
+                  this.friendsCheckedList.newest.userName = this.friendsCheckedList.friendsCheckedInfo[
+                    index
+                  ].userName;
+                  break;
+                }
+              }
+            }
+          } else {
+            return;
+          }
+        });
+    },
+    // 获取好友列表人员
+    getFriendsList() {
+      this.$api.websiteManageAPI
+        .getFriendsList({ userId: this.$store.state.userID })
+        .then((res: responseDataType) => {
+          // 遍历获取分组名称
+          res.data.forEach((item: friendsDataType) => {
+            this.groupList.push(
+              JSON.stringify({
+                childrenId: item.childrenId,
+                groupName: item.groupName
+              })
+            );
+          });
+          // 去重相同分组
+          this.groupList = [...new Set(this.groupList)];
+          // 获取好友列表人员在线信息
+          for (let index = 0; index < this.groupList.length; index++) {
+            // 将字符串转为对象
+            this.groupList[index] = JSON.parse(this.groupList[index]);
+            // 处理好友列表数据
+            this.friendsList.push({
+              groupName: this.groupList[index].groupName,
+              totalPeople: 0,
+              onlineUsers: 0,
+              friendsData: [],
+              childrenId: this.groupList[index].childrenId
+            });
+            // 处理好友陈列数据
+            res.data.forEach((item: friendsDataType) => {
+              if (this.groupList[index].childrenId == item.childrenId) {
+                this.friendsList[index].friendsData.push({
+                  userName: item.userName,
+                  avatarSrc: item.avatarSrc,
+                  signature: item.signature,
+                  onlineStatus: item.onlineStatus,
+                  userId: item.userId,
+                  groupName: item.groupName,
+                  remarks: item.remarks,
+                  childrenId: item.childrenId
+                });
+                // 获取对应的每个好友分组总人数
+                if (item.userId) {
+                  this.friendsList[index].totalPeople++;
+                }
+              }
+            });
+          }
+          // 获取对应的每个好友分组在线人员
+          for (let index = 0; index < this.friendsList.length; index++) {
+            this.friendsList[index].friendsData.forEach(
+              (item: friendsDataType) => {
+                if (item.onlineStatus) {
+                  this.friendsList[index].onlineUsers++;
+                }
+              }
+            );
+          }
+        });
+    },
+    // 封装的日期排序方法
+    forwardRankingDate(data: any, p: string) {
+      for (let i = 0; i < data.length - 1; i++) {
+        for (let j = 0; j < data.length - 1 - i; j++) {
+          if (Date.parse(data[j][p]) < Date.parse(data[j + 1][p])) {
+            const temp = data[j];
+            data[j] = data[j + 1];
+            data[j + 1] = temp;
+          }
+        }
+      }
+      return data;
+    },
+    // 清除好友验证框
+    clearFriendCheckedPanel() {
+      this.showFriendCheckedContent = false;
+    },
+    // 好友验证信息框的时间显示
+    getAddTime(index: number) {
+      if (
+        Math.floor(
+          Date.parse(this.friendsCheckedList.serverTime) /
+            (1 * 24 * 3600 * 1000)
+        ) -
+          Math.floor(
+            Date.parse(
+              this.friendsCheckedList.friendsCheckedInfo[index].createTime
+            ) /
+              (1 * 24 * 3600 * 1000)
+          ) ==
+        0
+      ) {
+        if (
+          Number(
+            this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+              this.friendsCheckedList.friendsCheckedInfo[
+                index
+              ].createTime.indexOf(":") - 2,
+              2
+            )
+          ) < 12
+        ) {
+          this.friendsCheckedList.newest.date =
+            "上午" +
+            this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+              this.friendsCheckedList.friendsCheckedInfo[
+                index
+              ].createTime.indexOf(":") - 2,
+              5
+            );
+        } else if (
+          Number(
+            this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+              this.friendsCheckedList.friendsCheckedInfo[
+                index
+              ].createTime.indexOf(":") - 2,
+              2
+            )
+          ) < 18
+        ) {
+          this.friendsCheckedList.newest.date =
+            "下午" +
+            this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+              this.friendsCheckedList.friendsCheckedInfo[
+                index
+              ].createTime.indexOf(":") - 2,
+              5
+            );
+        } else {
+          this.friendsCheckedList.newest.date =
+            "晚上" +
+            this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+              this.friendsCheckedList.friendsCheckedInfo[
+                index
+              ].createTime.indexOf(":") - 2,
+              5
+            );
+        }
+      } else if (
+        Math.floor(
+          Date.parse(this.friendsCheckedList.serverTime) /
+            (1 * 24 * 3600 * 1000)
+        ) -
+          Math.floor(
+            Date.parse(
+              this.friendsCheckedList.friendsCheckedInfo[index].createTime
+            ) /
+              (1 * 24 * 3600 * 1000)
+          ) ==
+        1
+      ) {
+        this.friendsCheckedList.newest.date =
+          "昨天" +
+          this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+            this.friendsCheckedList.friendsCheckedInfo[
+              index
+            ].createTime.indexOf(":") - 2,
+            5
+          );
+      } else if (
+        Math.floor(
+          Date.parse(this.friendsCheckedList.serverTime) /
+            (1 * 24 * 3600 * 1000)
+        ) -
+          Math.floor(
+            Date.parse(
+              this.friendsCheckedList.friendsCheckedInfo[index].createTime
+            ) /
+              (1 * 24 * 3600 * 1000)
+          ) >
+        1
+      ) {
+        this.friendsCheckedList.newest.date =
+          this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+            this.friendsCheckedList.friendsCheckedInfo[
+              index
+            ].createTime.indexOf("-") + 1,
+            5
+          ) +
+          " " +
+          this.friendsCheckedList.friendsCheckedInfo[index].createTime.substr(
+            this.friendsCheckedList.friendsCheckedInfo[
+              index
+            ].createTime.indexOf(":") - 2,
+            5
+          );
+      }
+    },
+    // 出现好友添加时选择框
+    friendsCheckedAlert() {
+      this.$store.commit("updateFriendCheckedStatus", true);
+    },
+    // 关闭好友添加时选择框
+    closeCheckedAlert(noShow: boolean) {
+      this.showCheckedAlert = noShow;
     }
   },
+  // 请求好友列表与验证消息
   mounted() {
-    this.$api.websiteManageAPI
-      .getToBeVerifiedList()
-      .then((res: responseDataType) => {
-        console.log(res.data);
-      });
-    // 获取好友列表人员
-    this.$api.websiteManageAPI
-      .getFriendsList({ userId: this.$store.state.userID })
-      .then((res: responseDataType) => {
-        // 遍历获取分组名称
-        res.data.forEach((item: friendsDataType) => {
-          this.groupList.push(
-            JSON.stringify({
-              childrenId: item.childrenId,
-              groupName: item.groupName
-            })
-          );
-        });
-        // 去重相同分组
-        this.groupList = [...new Set(this.groupList)];
-        // 获取好友列表人员在线信息
-        for (let index = 0; index < this.groupList.length; index++) {
-          // 将字符串转为对象
-          this.groupList[index] = JSON.parse(this.groupList[index]);
-          // 处理好友列表数据
-          this.friendsList.push({
-            groupName: this.groupList[index].groupName,
-            totalPeople: 0,
-            onlineUsers: 0,
-            friendsData: [],
-            childrenId: this.groupList[index].childrenId
-          });
-          // 处理好友陈列数据
-          res.data.forEach((item: friendsDataType) => {
-            if (this.groupList[index].childrenId == item.childrenId) {
-              this.friendsList[index].friendsData.push({
-                userName: item.userName,
-                avatarSrc: item.avatarSrc,
-                signature: item.signature,
-                onlineStatus: item.onlineStatus,
-                userId: item.userId,
-                groupName: item.groupName,
-                remarks: item.remarks,
-                childrenId: item.childrenId
-              });
-              // 获取对应的每个好友分组总人数
-              if (item.userId) {
-                this.friendsList[index].totalPeople++;
-              }
-            }
-          });
-        }
-        // 获取对应的每个好友分组在线人员
-        for (let index = 0; index < this.friendsList.length; index++) {
-          this.friendsList[index].friendsData.forEach(
-            (item: friendsDataType) => {
-              if (item.onlineStatus) {
-                this.friendsList[index].onlineUsers++;
-              }
-            }
-          );
-        }
-      });
+    this.getToBeVerifiedList();
+    this.getFriendsList();
   },
   // 页面更新前晴空分组列表dom
   beforeUpdate() {
     this.groupArrow = [];
     this.groupList = [];
   },
-  // 更新最新添加好友弹窗状态
+  // 更新最新添加好友弹窗和验证弹窗状态
   computed: {
     getSendData() {
       return this.$store.state.closeFriendAllAlert;
+    },
+    getCheckedData() {
+      return this.$store.state.closeFriendCheckedAlert;
     }
   }
 });

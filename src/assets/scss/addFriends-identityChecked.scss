@@ -6,28 +6,36 @@
   height: 100vh;
   background: rgba(0, 0, 0, 0.2);
 
-  .identityChecked-content{
-      width:500px;
-      height:310px;
-      background:white;
-      position:fixed;
-      top:50%;left:50%;
-      margin-left:-250px;margin-top:-155px;
-      padding: 15px 0; 
+  .addFriends-identityChecked-inside-mask{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: unset;
+    z-index: -999;
+
+    .identityChecked-content {
+      width: 500px;
+      height: 310px;
+      background: white;
+      position: absolute;
+      z-index: 999;
+      padding: 15px 0;
       border-radius: 3px;
 
-      .userInfo{
+      .userInfo {
         padding: 10px 40px;
       }
-   
-      .checkedInfo{
+
+      .checkedInfo {
         padding: 10px 40px;
 
-        p{
+        p {
           padding-bottom: 5px;
         }
 
-        textarea{
+        textarea {
           resize: none;
           height: 100px;
           width: 98%;
@@ -37,24 +45,23 @@
         }
       }
 
-      .groupInfo{
+      .groupInfo {
         padding: 0 40px;
 
-        .selectedGroupInfo{
+        .selectedGroupInfo {
           margin-bottom: 10px;
 
-          select{
+          select {
             background-color: #f4f4f4;
             border: none;
             height: 23px;
-
           }
         }
 
-        .remarksInfo{
+        .remarksInfo {
           margin-bottom: 15px;
 
-          input{
+          input {
             width: 100px;
             height: 23px;
             padding-left: 4px;
@@ -64,10 +71,10 @@
         }
       }
 
-      .buttonInfo{
+      .buttonInfo {
         text-align: center;
 
-        .cencelCheckedButton{
+        .cencelCheckedButton {
           background-color: white;
           margin-right: 20px;
           width: 90px;
@@ -75,7 +82,7 @@
           border: #f3f3f3 1px solid;
         }
 
-        .sendCheckedButton{
+        .sendCheckedButton {
           color: #666;
           background-color: #eee;
           border: none;
@@ -83,32 +90,35 @@
           height: 30px;
         }
       }
-  }
-
-  .sendRequestMessage{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: transparent;
-      
-    div{
-      width: 300px;
-      height: 80px;
-      background: rgba(0, 0, 0, 0.5);
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      margin-left: -150px;
-      margin-top: -40px;
-      color: white;
-      border-radius: 3px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-        
     }
+
+    .sendRequestMessage {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: transparent;
+      z-index: 1000;
+
+      div {
+        width: 300px;
+        height: 80px;
+        background: rgba(0, 0, 0, 0.5);
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        margin-left: -150px;
+        margin-top: -40px;
+        color: white;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+    }
+
   }
 }
     
