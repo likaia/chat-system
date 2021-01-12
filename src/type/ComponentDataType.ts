@@ -107,13 +107,13 @@ export type contactListDataType<V> = {
   }; // 右键菜单
   showFriendCheckedContent: boolean;
   friendsCheckedList: {
-    serverTime:string;
+    serverTime: string;
     friendsCheckedInfo: Array<V>;
     newest: {
-      time: string
-      userName: string,
-      date: string,
-      count:number
+      time: string;
+      userName: string;
+      date: string;
+      count: number;
     };
   };// 好友验证数据
   showCheckedAlert: boolean;// 选择是否添加好友

@@ -19,12 +19,11 @@
             >
               <img
                 :style="{ display: leftIco }"
-                src="../assets/img/close.png"
+                src="@/assets/img/close.png"
                 class="close-icon"
                 alt=""
               />
             </div>
-
             <div
               class="top-panel-left-icon"
               @mouseover="showLeftIco()"
@@ -33,7 +32,7 @@
               <img
                 :style="{ display: leftIco }"
                 class="min-icon"
-                src="../assets/img/min.png"
+                src="@/assets/img/min.png"
                 alt=""
               />
             </div>
@@ -46,7 +45,7 @@
           <div class="main-panel-search">
             <div class="main-panel-search-icon">
               <img
-                src="../assets/img/list/aio_group_search_normal@2x.png"
+                src="@/assets/img/list/aio_group_search_normal@2x.png"
                 alt=""
               />
             </div>
@@ -57,8 +56,9 @@
                 placeholder="用户id/用户名"
                 @keyup.enter="searchFriendInfoResult"
                 @focus.stop="clearMouseEvent"
-                @dblclick.stop=""
                 @mousemove.stop=""
+                @mousedown.stop=""
+                @mouseout.stop=""
                 ref="serachInput"
               />
               <img
@@ -385,4 +385,8 @@ export default defineComponent({
   }
 });
 </script>
-<style scoped lang="scss" src="../assets/scss/addFriends-list.scss"></style>
+<style
+  scoped
+  lang="scss"
+  src="@/assets/scss/addFriend/addFriends-list.scss"
+></style>
