@@ -83,6 +83,18 @@ body {
   border-radius: 1em;
   background-color: rgba(50, 50, 50, 0.1);
 }
+
+/*透明滚动条*/
+.transparent-scroll-bar::-webkit-scrollbar {
+  color: transparent;
+}
+.transparent-scroll-bar::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+.transparent-scroll-bar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 @font-face {
   font-family: "JetBrainsMono-Light";
   src: url("./assets/font/JetBrainsMono-Light.woff2");
