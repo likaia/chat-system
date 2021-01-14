@@ -1,104 +1,106 @@
 <template>
-  <div class="addFriends-identityChecked-outer-mask">
-    <div class="addFriends-identityChecked-inside-mask">
-      <div
-        class="identityChecked-content"
-        @mousedown="alertDown($event)"
-        @mousemove="alertMove($event)"
-        @mouseup="alertUp"
-        @blur="alertUp"
-        ref="identityCheckedContent"
-      >
-        <div class="userInfo">{{ argUserName }}({{ argUserId }})</div>
-        <template v-if="receiveChecked == 'sendChecked'">
-          <div class="checkedInfo">
-            <p>
-              验证人需要验证您的身份，请输入您的验证信息：
-            </p>
-            <textarea
-              v-model="checkedArgIntput.verifyMessage"
-              @mousemove.stop=""
-              @mousedown.stop=""
-              @mouseout.stop=""
+  <moveSettings ref="move">
+    <div
+      class="identityChecked-content"
+      @mousedown="alertDown($event)"
+      @mousemove="alertMove($event)"
+      @mouseup="alertUp"
+      @blur="alertUp"
+      ref="identityCheckedContent"
+    >
+      <div class="userInfo">{{ argUserName }}({{ argUserId }})</div>
+      <template v-if="receiveChecked == 'sendChecked'">
+        <div class="checkedInfo">
+          <p>
+            验证人需要验证您的身份，请输入您的验证信息：
+          </p>
+          <textarea
+            v-model="checkedArgIntput.verifyMessage"
+            @mousemove.stop=""
+            @mousedown.stop=""
+            @mouseout.stop=""
+          >
+          </textarea>
+        </div>
+      </template>
+      <template v-if="receiveChecked == 'receiveChecked'">
+        <div class="checkedInfo">
+          <p>
+            验证信息：
+          </p>
+          <textarea v-model="receiveArea.message" disabled> </textarea>
+        </div>
+      </template>
+      <div class="groupInfo">
+        <div v-if="groupsData.length > 0" class="selectedGroupInfo">
+          <span>分组：</span>
+          <select name="" id="" v-model="selectedValue">
+            <option
+              :value="item.childrenId"
+              v-for="(item, index) in groupsData"
+              :key="index"
+              >{{ item.groupName }}</option
             >
-            </textarea>
-          </div>
+          </select>
+        </div>
+        <div class="remarksInfo">
+          <span>备注：</span>
+          <input
+            v-model="checkedArgIntput.remarks"
+            type="text"
+            @mousemove.stop=""
+            @mousedown.stop=""
+            @mouseout.stop=""
+          />
+        </div>
+      </div>
+
+      <div class="buttonInfo">
+        <input
+          class="cencelCheckedButton"
+          type="button"
+          value="取消"
+          @click="removeIdentityChecked"
+        />
+        <template v-if="receiveChecked == 'sendChecked'">
+          <input
+            class="sendCheckedButton"
+            type="button"
+            value="发送"
+            @click="sendCheckedSuccess()"
+            :disabled="sendInputState"
+            ref="sendRequest"
+          />
         </template>
         <template v-if="receiveChecked == 'receiveChecked'">
-          <div class="checkedInfo">
-            <p>
-              验证信息：
-            </p>
-            <textarea v-model="receiveArea.message" disabled> </textarea>
-          </div>
-        </template>
-        <div class="groupInfo">
-          <div v-if="groupsData.length > 0" class="selectedGroupInfo">
-            <span>分组：</span>
-            <select name="" id="" v-model="selectedValue">
-              <option
-                :value="item.childrenId"
-                v-for="(item, index) in groupsData"
-                :key="index"
-                >{{ item.groupName }}</option
-              >
-            </select>
-          </div>
-          <div class="remarksInfo">
-            <span>备注：</span>
-            <input
-              v-model="checkedArgIntput.remarks"
-              type="text"
-              @mousemove.stop=""
-              @mousedown.stop=""
-              @mouseout.stop=""
-            />
-          </div>
-        </div>
-
-        <div class="buttonInfo">
           <input
-            class="cencelCheckedButton"
+            class="sendCheckedButton"
             type="button"
-            value="取消"
-            @click="removeIdentityChecked"
+            value="同意"
+            @click="receiveCheckedSuccess()"
+            :disabled="sendInputState"
+            ref="sendRequest"
           />
-          <template v-if="receiveChecked == 'sendChecked'">
-            <input
-              class="sendCheckedButton"
-              type="button"
-              value="发送"
-              @click="sendCheckedSuccess()"
-              :disabled="sendInputState"
-              ref="sendRequest"
-            />
-          </template>
-          <template v-if="receiveChecked == 'receiveChecked'">
-            <input
-              class="sendCheckedButton"
-              type="button"
-              value="同意"
-              @click="receiveCheckedSuccess()"
-              :disabled="sendInputState"
-              ref="sendRequest"
-            />
-          </template>
-        </div>
-      </div>
-      <div v-if="promptAlert.state" class="sendRequestMessage">
-        <div>
-          <p>{{ promptAlert.massage }}</p>
-        </div>
+        </template>
       </div>
     </div>
-  </div>
+    <div v-if="promptAlert.state" class="sendRequestMessage">
+      <div>
+        <p>{{ promptAlert.massage }}</p>
+      </div>
+    </div>
+  </moveSettings>
 </template>
 <script lang="ts">
 import { responseDataType } from "@/type/ComponentDataType";
+import moveSettings from "@/components/common/moveAlert/moveSettings.vue";
 import _ from "lodash";
 import { defineComponent } from "vue";
 export default defineComponent({
   name: "addFriends-identityChecked",
+  components: {
+    moveSettings
+  },
   // 获取分组信息并渲染页面
   mounted() {
     // 初始化分组信息
@@ -141,17 +143,6 @@ export default defineComponent({
     return {
       groupsData: [],
       selectedValue: 0,
-      moveAlertData: {
-        x: 0,
-        y: 0,
-        l: 0,
-        t: 0,
-        moveX: 0,
-        moveY: 0,
-        movel: 0,
-        movet: 0,
-        isDown: false
-      },
       checkedArg: {},
       checkedArgIntput: {
         remarks: "",
@@ -176,68 +167,15 @@ export default defineComponent({
   methods: {
     // 按下触发可拖曳事件
     alertDown: function(e: any) {
-      // 获取初始时当前框距离对应边界的大小位置和当前鼠标左键点下时事件的位置
-      this.moveAlertData.x = e.clientX;
-      this.moveAlertData.y = e.clientY;
-      this.moveAlertData.t = this.$refs.identityCheckedContent.offsetTop;
-      this.moveAlertData.l = this.$refs.identityCheckedContent.offsetLeft;
-      this.moveAlertData.isDown = true;
-      // 将鼠标图标换成可拖动
-      this.$refs.identityCheckedContent.style.cursor = "move";
+      this.$refs.move.alertDown(e, this.$refs.identityCheckedContent);
     },
     // 按下并持续触发可拖曳事件
     alertMove: function(e: any) {
-      // 防止未按下事件触发时，可获取并持续触发可拖曳事件
-      if (this.moveAlertData.isDown == false) {
-        return;
-      }
-      // 获取移动时最新的鼠标位位置
-      this.moveAlertData.moveX = e.clientX;
-      this.moveAlertData.moveY = e.clientY;
-      // 移动时最新位置 = 移动时最新的鼠标位位置 - （初始时的鼠标大小位置 - 初始时鼠标左键点下时事件的位置）
-      this.moveAlertData.movel =
-        this.moveAlertData.moveX -
-        (this.moveAlertData.x - this.moveAlertData.l);
-      this.moveAlertData.movet =
-        this.moveAlertData.moveY -
-        (this.moveAlertData.y - this.moveAlertData.t);
-      // 对左边界进行边界处理
-
-      if (this.moveAlertData.movel < 0) {
-        this.moveAlertData.movel = 0;
-      }
-      // 对右边界进行边界处理
-      if (
-        this.moveAlertData.movel +
-          this.$refs.identityCheckedContent.offsetWidth >
-        window.innerWidth
-      ) {
-        this.moveAlertData.movel =
-          window.innerWidth - this.$refs.identityCheckedContent.offsetWidth;
-      }
-      // 对下边界进行边界处理
-      if (
-        this.moveAlertData.movet +
-          this.$refs.identityCheckedContent.offsetHeight >
-        window.innerHeight
-      ) {
-        this.moveAlertData.movet =
-          window.innerHeight - this.$refs.identityCheckedContent.offsetHeight;
-      }
-      // 对上边界进行边界处理
-      if (this.moveAlertData.movet < 0) {
-        this.moveAlertData.movet = 0;
-      }
-      // 渲染最新位置
-      this.$refs.identityCheckedContent.style.left =
-        this.moveAlertData.movel + "px";
-      this.$refs.identityCheckedContent.style.top =
-        this.moveAlertData.movet + "px";
+      this.$refs.move.alertMove(e, this.$refs.identityCheckedContent);
     },
     // 可拖曳事件完成事件
     alertUp: function() {
-      this.moveAlertData.isDown = false;
-      this.$refs.identityCheckedContent.style.cursor = "default";
+      this.$refs.move.alertUp(this.$refs.identityCheckedContent);
     },
     // 关闭身份验证弹窗
     removeIdentityChecked() {

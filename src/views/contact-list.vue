@@ -590,6 +590,14 @@ export default defineComponent({
   mounted() {
     this.getToBeVerifiedList();
     this.getFriendsList();
+    this.$options.sockets.onmessage = (res: any) => {
+      const obj = JSON.parse(res.data);
+      console.log(res);
+
+      if (obj.code == 1) {
+        this.$router.go(0);
+      }
+    };
   },
   // 页面更新前晴空分组列表dom
   beforeUpdate() {
