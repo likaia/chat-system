@@ -1,25 +1,28 @@
-#mainContent{
+#mainContent {
   width: 100%;
   height: 100%;
 
-  .top-panel{
+  .top-panel {
     width: 100%;
     height: 30px;
     display: flex;
     align-items: center;
+    padding: 4px;
+    box-sizing: border-box;
 
-    .title-panel{
+    .title-panel {
       width: 70%;
       height: 25px;
       display: flex;
       align-items: center;
+      padding: 6px 0 0 6px;
 
-      .equipmentType{
-        width:18px;
+      .equipmentType {
+        width: 18px;
         height: 18px;
         margin-left: 5px;
 
-        img{
+        img {
           width: 100%;
           height: 100%;
         }
@@ -27,21 +30,23 @@
     }
 
     /*操作栏样式:单聊*/
-    .operate-panel{
+    .operate-panel {
       width: 29%;
       height: 25px;
 
-      .ico-panel{
+      .ico-panel {
         width: 100%;
         height: 100%;
         display: flex;
         justify-content: flex-end;
         align-items: center;
-        .item-panel{
+
+        .item-panel {
           width: 20px;
           height: 20px;
+          padding-right: 10px;
 
-          img{
+          img {
             width: 100%;
             height: 100%;
           }
@@ -50,15 +55,15 @@
     }
 
     /*操作栏样式:群聊*/
-    .operate-group-panel{
-
-    }
+    .operate-group-panel {}
   }
 
-  .messages-panel{
+  .messages-panel {
     width: 100%;
     min-height: 260px;
     overflow-y: auto;
+    padding: 10px;
+    box-sizing: border-box;
 
     .loading-msg-panel {
       width: 100%;
@@ -67,52 +72,55 @@
       align-items: center;
       justify-content: center;
 
-      img{
+      img {
         height: 100%;
         animation: loading-msg 1s linear;
         // 动画无限循环
-        animation-iteration-count:infinite;
+        animation-iteration-count: infinite;
       }
     }
 
     // 加载消息动画
-    @keyframes loading-msg{
-      0%{
+    @keyframes loading-msg {
+      0% {
         transform: rotate(0deg);
       }
-      50%{
+
+      50% {
         transform: rotate(180deg);
       }
-      100%{
+
+      100% {
         transform: rotate(360deg);
       }
     }
 
-    .row-panel{
+    .row-panel {
       width: 100%;
       min-height: 50px;
+
       /*对方消息样式*/
-      .otherSide-panel{
+      .otherSide-panel {
         width: 96%;
         min-height: 50px;
         display: flex;
         margin-bottom: 15px;
         position: relative;
 
-        .avatar-panel{
+        .avatar-panel {
           width: 30px;
           min-width: 30px;
           height: 30px;
           border-radius: 50%;
           overflow: hidden;
 
-          img{
+          img {
             width: 100%;
             height: 100%;
           }
         }
 
-        .user-name-panel{
+        .user-name-panel {
           width: 240px;
           height: auto;
           position: absolute;
@@ -122,7 +130,7 @@
           justify-content: flex-start;
           align-items: center;
 
-          p{
+          p {
             color: #9da9c6;
             white-space: nowrap;
             overflow: hidden;
@@ -130,7 +138,7 @@
           }
         }
 
-        .msg-body{
+        .msg-body {
           max-width: 95%;
           min-height: 40px;
           background: #f4f3f3;
@@ -142,26 +150,26 @@
           position: relative;
 
           /*消息尾巴*/
-          .tail-panel{
+          .tail-panel {
             width: 20px;
             height: 100%;
             position: absolute;
             left: -14px;
 
-            svg{
+            svg {
               margin-top: 8px;
               color: #f3f3f3;
             }
           }
 
-          p{
+          p {
             font-size: 15px;
             /*自动换行*/
             word-wrap: break-word;
             overflow: hidden;
             cursor: pointer;
 
-            img{
+            img {
               width: 100%;
               height: 100%;
             }
@@ -169,20 +177,20 @@
         }
       }
 
-      .sender-time-panel{
+      .sender-time-panel {
         width: 100%;
         height: 30px;
         display: flex;
         justify-content: center;
         align-items: center;
 
-        span{
+        span {
           color: #CDCCCD;
         }
       }
 
       /*发送者消息样式*/
-      .sender-panel{
+      .sender-panel {
         width: 96%;
         min-height: 50px;
         float: right;
@@ -192,20 +200,20 @@
         margin-bottom: 15px;
         position: relative;
 
-        .avatar-panel{
+        .avatar-panel {
           width: 30px;
           min-width: 30px;
           height: 30px;
           border-radius: 50%;
           overflow: hidden;
 
-          img{
+          img {
             width: 100%;
             height: 100%;
           }
         }
 
-        .user-name-panel{
+        .user-name-panel {
           width: 240px;
           height: auto;
           position: absolute;
@@ -217,7 +225,7 @@
           justify-content: flex-end;
           align-items: center;
 
-          p{
+          p {
             color: #9da9c6;
             white-space: nowrap;
             overflow: hidden;
@@ -225,7 +233,7 @@
           }
         }
 
-        .msg-body{
+        .msg-body {
           max-width: 95%;
           min-height: 40px;
           background: #d8e8dc;
@@ -239,26 +247,26 @@
           position: relative;
 
           /*消息尾巴*/
-          .tail-panel{
+          .tail-panel {
             width: 20px;
             height: 100%;
             position: absolute;
             right: -18px;
 
-            svg{
+            svg {
               margin-top: 8px;
               color: #f3f3f3;
             }
           }
 
-          p{
+          p {
             font-size: 15px;
             line-height: 23px;
             // 强制换行
             word-break: break-all;
             cursor: pointer;
 
-            img{
+            img {
               width: 100%;
               height: 100%;
               display: block;
@@ -269,18 +277,19 @@
     }
   }
 
-  .user-input-panel{
+  .user-input-panel {
     width: 100%;
     height: 160px;
     position: relative;
 
-    .toolbar-panel{
+    .toolbar-panel {
       width: 100%;
       height: 40px;
       display: flex;
       align-items: center;
+      padding-left: 10px;
 
-      .item-panel{
+      .item-panel {
         width: 24px;
         height: 24px;
         margin-right: 20px;
@@ -288,7 +297,7 @@
         justify-content: center;
         align-items: center;
 
-        .file-panel{
+        .file-panel {
           width: 24px;
           height: 24px;
           position: relative;
@@ -303,13 +312,13 @@
           }
         }
 
-        img{
+        img {
           width: 100%;
           height: 100%;
         }
       }
 
-      .send-panel{
+      .send-panel {
         width: 70px;
         height: 30px;
         background-image: linear-gradient(-90deg, #29bdd9 0%, #276ace 100%);
@@ -321,7 +330,7 @@
       }
     }
 
-    .input-panel{
+    .input-panel {
       width: 100%;
       min-height: 30px;
       max-height: 120px;
@@ -330,6 +339,8 @@
       display: flex;
       align-items: center;
       flex-flow: row wrap;
+      padding: 10px;
+      box-sizing: border-box;
       // 强制换行
       word-break: break-all;
     }
@@ -345,33 +356,34 @@
       box-sizing: border-box;
       position: absolute;
       top: -268px;
-      left: -194px;
+      left: -183px;
       display: flex;
       justify-content: center;
 
-      .row-panel{
+      .row-panel {
         width: 100%;
         height: 30px;
         display: flex;
         align-items: center;
         flex-flow: row wrap;
 
-        .item-panel{
+        .item-panel {
           width: 25px;
           height: 25px;
           margin-right: 6px;
           margin-bottom: 7px;
           position: relative;
+
           // 取消12的倍数的元素的右外边距
-          &:nth-child(12n){
+          &:nth-child(12n) {
             margin-right: 0;
           }
 
-          img{
+          img {
             width: 100%;
             height: 100%;
 
-            &:hover{
+            &:hover {
               width: 26px;
               height: 26px;
             }
@@ -379,7 +391,7 @@
         }
       }
 
-      .ico-panel{
+      .ico-panel {
         width: 0;
         height: 0;
         border-right: 6px solid transparent;
@@ -388,7 +400,7 @@
         position: absolute;
         bottom: -6px;
 
-        img{
+        img {
           width: 100%;
           height: 100%;
         }

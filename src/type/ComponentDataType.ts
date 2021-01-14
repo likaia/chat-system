@@ -1,3 +1,6 @@
+import { Ref, ComponentInternalInstance } from "vue";
+import { Store } from "vuex";
+
 // 登录组件Data对象属性定义
 export type loginDataType<T> = {
   loginUndo: T; // 禁止登录时的图标
@@ -20,6 +23,7 @@ export type responseDataType<T = any> = {
   code?: number;
   data: T;
   fileName?: string;
+  count?: number; // 数据总条数
 };
 
 // 用户个人信息类型
@@ -45,28 +49,50 @@ export type mainContentDateType<T> = {
 };
 
 // 消息展示组件Data对象属性定义
-export type messageDisplayDataType<T> = {
-  images: string[]; // 聊天图片展示
-  createDisSrc: T; // 创建群聊图标
-  resourceObj: {
-    [key: string]: T;
-  }; // 图标资源对象
-  messageContent: string; // 消息内容
-  emoticonShowStatus: string; // 表情面板显隐状态
-  emojiList: {}; // 表情列表，从json文件中获取
+export type messageDisplayDataType = {
+  createDisSrc: Ref<string>; // 创建群聊图标
+  resourceObj: Record<string, string>; // 图标资源对象
+  messageContent: Ref<string>; // 消息内容
+  emoticonShowStatus: Ref<string>; // 表情面板显隐状态
+  emojiList: Array<emojiObj>; // 表情列表，从json文件中获取
   toolbarList: {}; // 工具栏列表，从json文件中获取
   senderMessageList: Array<msgListType>; // 已发送消息列表
-  audioCtx: number; // 当前要播放的音频频率
+  audioCtx: Ref<number>; // 当前要播放的音频频率
+  isBottomOut: Ref<boolean>; // 滚动条是否触底
   arrFrequency: number[]; // 音频频率列表
-  pageStart: number; // 分页起始位置
-  pageEnd: number; // 分页结束位置
-  pageNo: number; // 业码
-  pageSize: number; // 数据量
+  pageStart: Ref<number>; // 分页起始位置
+  pageEnd: Ref<number>; // 分页结束位置
+  pageNo: Ref<number>; // 业码
+  pageSize: Ref<number>; // 数据量
   sessionMessageData: Array<msgListType>; // session中存储的聊天记录
-  msgListPanelHeight: number; // 消息记录容器高度
-  isLoading: boolean; // 是否正在加载消息
-  msgTotals: number; // 待渲染消息总条数
-  isFirstLoading: boolean; // 组件是否第一次加载
+  msgListPanelHeight: Ref<number>; // 消息记录容器高度
+  isLoading: Ref<boolean>; // 是否正在加载消息
+  isLastPage: Ref<boolean>; // 是否最后一页
+  msgTotals: Ref<number>; // 待渲染消息总条数
+  isFirstLoading: Ref<boolean>; // 组件是否第一次加载
+  messagesContainer: Ref<HTMLDivElement | null>;
+  msgInputContainer: Ref<HTMLDivElement | null>;
+  selectImg: Ref<HTMLImageElement | null>;
+  listId: Ref<string>; // 消息id
+  messageStatus: Ref<number>; // 消息类型
+  buddyId: Ref<string>; // 好友id
+  buddyName: Ref<string>; // 好友昵称
+  serverTime: Ref<string>; // 服务器时间
+  setData: (
+    listIdParam: Ref<string>,
+    messageStatusParam: Ref<number>,
+    buddyIdParam: Ref<string>,
+    buddyNameParam: Ref<string>,
+    serverTimeParam: Ref<string>,
+    emitParam: (event: string, ...args: any[]) => void
+  ) => void;
+  emit: (event: string, ...args: any[]) => void;
+  $store: Store<any>;
+  currentInstance: ComponentInternalInstance | null;
+  setProperty: (
+    storeParam: Store<any>,
+    instanceParam: ComponentInternalInstance | null
+  ) => void;
 };
 
 // 消息列表对象属性类型定义
@@ -112,8 +138,8 @@ export type contactListDataType<V> = {
       date: string;
       count: number;
     };
-  };// 好友验证数据
-  showCheckedAlert: boolean;// 选择是否添加好友
+  }; // 好友验证数据
+  showCheckedAlert: boolean; // 选择是否添加好友
 };
 
 // 联系人列表类型定义
@@ -163,6 +189,7 @@ export type msgListDataType = {
   listId: string;
   messageType: number | null;
   buddyId: string;
+  serverTime: string | null;
   buddyName: string;
   msgList: Array<totalMessage>;
 };
@@ -184,4 +211,67 @@ export type totalMessage = {
   userId?: string; // 消息id
   type?: number; // 消息类型: 0: 单聊 1: 群聊
   buddyId?: string; // 好友id
+  totalUnread?: number; // 未读消息条数
+};
+
+// 本地消息列表数据类型定义
+export type localMsgObj = {
+  id?: string; // 列表id
+  lastMsgTxt?: string; // 最后一条消息内容
+  lastTime?: string; // 最后一条消息发送时间
+  totalUnread?: number; // 未读消息条数
+};
+
+export type LastMessageObj = {
+  id: string; // 列表ID
+  text: string; // 最后一条消息内容
+  time: string; // 最后一条消息发送时间
+  isPush?: boolean; // 是否为服务端推送的消息
+};
+
+// 表情配置文件对象属性
+export type emojiObj = {
+  name: string;
+  src: string;
+  info: string;
+  hover: string;
+};
+
+// 发送消息函数返回类型
+export type readPasteType = { msgInputContainer: Ref<HTMLDivElement | null> };
+
+// 滚动监听函数返回类型定义
+export type containerScrollType = {
+  messagesContainer: Ref<HTMLDivElement | null>;
+  senderMessageList: Array<msgListType>; // 已发送消息列表
+  isBottomOut: Ref<boolean>; // 滚动条是否触底
+  pageStart: Ref<number>; // 分页起始位置
+  pageEnd: Ref<number>; // 分页结束位置
+  pageNo: Ref<number>; // 页码
+  pageSize: Ref<number>; // 数据量
+  emojiList: Array<emojiObj>;
+  sessionMessageData: Array<msgListType>; // session中存储的聊天记录
+  msgListPanelHeight: Ref<number>; // 消息记录容器高度
+  isLoading: Ref<boolean>; // 是否正在加载消息
+  isLastPage: Ref<boolean>; // 是否最后一页
+  msgTotals: Ref<number>; // 待渲染消息总条数
+  isFirstLoading: Ref<boolean>; // 组件是否第一次加载
+};
+
+// 工具栏图标对象
+export type toolbarObj = {
+  name: string;
+  src: string;
+  info: string;
+  hover: string;
+  down: string;
+};
+
+// 消息展示组件props类型定义
+export type messageDisplayPropsType = {
+  listId: string; // 消息id
+  messageStatus: number; // 消息类型
+  buddyId: string; // 好友id
+  buddyName: string; // 好友昵称
+  serverTime: string; // 服务器时间
 };

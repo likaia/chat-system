@@ -1,10 +1,14 @@
 <!--消息选项卡-->
 <template>
   <div id="mainBody">
-    <ul class="list-panel" ref="listPanel" v-if="messageList.length > 0">
+    <ul
+      class="list-panel transparent-scroll-bar"
+      ref="listController"
+      v-if="msgList.length > 0"
+    >
       <li
         class="row-panel"
-        v-for="(item, index) in messageList"
+        v-for="(item, index) in msgList"
         :key="item.id"
         @click="
           showChatInterface(
@@ -29,18 +33,43 @@
           </p>
         </div>
         <div class="item-time-panel">
-          <p>{{ item.lastTime }}</p>
-          <!--          <div class="msg-count-panel msg-count-more-panel">-->
-          <!--            <p></p>-->
-          <!--          </div>-->
+          <!--非今天的消息显示日期-->
+          <p
+            v-if="
+              Date.parse(serverTime.substring(0, 10)) -
+                Date.parse(item?.lastTime?.substring(0, 10)) >=
+                86400000
+            "
+          >
+            {{ item?.lastTime?.substring(5, 10) }}
+          </p>
+          <!--今天的消息显示具体时间-->
+          <p v-else>{{ item?.lastTime?.substring(10, 16) }}</p>
+          <!--小于10条时的数字展示-->
+          <div
+            class="msg-count-panel"
+            v-if="item.totalUnread > 0 && item.totalUnread < 10"
+          >
+            {{ item.totalUnread }}
+          </div>
+          <div
+            class="msg-count-panel msg-count-more-panel"
+            v-else-if="item.totalUnread >= 10 && item.totalUnread <= 99"
+          >
+            {{ item.totalUnread }}
+          </div>
+          <div
+            class="msg-count-panel msg-count-more-panel"
+            v-else-if="item.totalUnread >= 100"
+          >
+            99+
+          </div>
         </div>
       </li>
     </ul>
     <div class="content-panel" ref="contentPanel">
       <img
         src="@/assets/img/list/contact_non_selected@2x.png"
-        width="280"
-        height="280"
         alt="空组件"
         v-if="widgetIsNull"
       />
@@ -48,6 +77,7 @@
         v-else
         :message-status="messageType"
         :list-id="listId"
+        :server-time="serverTime"
         :buddy-id="buddyId"
         :buddy-name="buddyName"
         @update-last-message="updateLastMessage($event)"
@@ -61,7 +91,10 @@ import { defineComponent } from "vue";
 import _ from "lodash";
 import messageDisplay from "@/components/message-display.vue";
 import {
+  LastMessageObj,
+  localMsgObj,
   msgListDataType,
+  msgListType,
   responseDataType,
   totalMessage
 } from "@/type/ComponentDataType";
@@ -75,8 +108,103 @@ export default defineComponent({
   methods: {
     getThisWindowWidth: () => window.innerWidth,
     // 获取子组件传过来的值
-    updateLastMessage: function(data: string) {
-      this.lastMessageContent = data;
+    updateLastMessage: function(data: LastMessageObj) {
+      // 获取localStorage中的消息内容与时间
+      let localMsgList: Array<localMsgObj> = [];
+      if (!_.isNull(JSON.parse(localStorage.getItem("msgList") as string))) {
+        localMsgList = JSON.parse(localStorage.getItem("msgList") as string);
+      }
+      // 本地存储没有数据则重新赋值
+      if (_.isNull(JSON.parse(localStorage.getItem("msgList") as string))) {
+        // 向本地存储里设置值
+        const msgObj: localMsgObj = {};
+        msgObj.id = data.id;
+        msgObj.lastMsgTxt = data.text;
+        msgObj.lastTime = data.time;
+        localStorage.setItem("msgList", JSON.stringify([msgObj]));
+      }
+      // 收到新窗口的消息，渲染未读消息
+      if (!_.isUndefined(data.isPush)) {
+        this.updateLastMsg(data, localMsgList);
+        // 判断是否为未读消息
+        if (!_.isEqual(this.listId, data.id)) {
+          // 更新消息列表中未读消息总数
+          this.updateMsgListTotalUnread(localMsgList, data);
+        }
+      } else {
+        this.updateLastMsg(data, localMsgList);
+      }
+    },
+    // 更新消息列表的未读消息数量
+    updateMsgListTotalUnread: function(
+      localMsgList: Array<localMsgObj>,
+      data: { id: string },
+      status?: boolean
+    ) {
+      // 修改消息列表的未读消息数量
+      for (let i = 0; i < this.msgList.length; i++) {
+        const msgObj: totalMessage = this.msgList[i];
+        if (_.isEqual(this.msgList[i].buddyId, data.id)) {
+          // 消息数量为null或者状态为清除未读消息时将其初始化为0
+          if (msgObj.totalUnread == null || status == true) {
+            msgObj.totalUnread = 0;
+          } else {
+            msgObj.totalUnread++;
+          }
+        }
+      }
+      // 修改本地存储中的未读消息数量
+      for (let j = 0; j < localMsgList.length; j++) {
+        const localMasgObj = localMsgList[j];
+        if (
+          _.isEqual(localMasgObj.id, data.id) &&
+          localMasgObj.totalUnread != null
+        ) {
+          // 为true则清除未读消息
+          if (status === true) {
+            localMasgObj.totalUnread = 0;
+          } else {
+            localMasgObj.totalUnread++;
+          }
+        }
+      }
+      if (localMsgList.length > 0) {
+        // 将修改后的数据放回本地存储
+        localStorage.setItem("msgList", JSON.stringify(localMsgList));
+      }
+    },
+    // 更新列表的最后一条消息内容
+    updateLastMsg: function(
+      data: LastMessageObj,
+      localMsgList: Array<localMsgObj>
+    ) {
+      // 更新消息列表中的消息内容与时间
+      for (let i = 0; i < this.msgList.length; i++) {
+        const msgObj: totalMessage = this.msgList[i];
+        // 找到消息列表中buddyId与子组件id相等的值
+        if (_.isEqual(msgObj.buddyId, data.id)) {
+          // 修改消息对象中最后一条消息内容与时间
+          msgObj.lastMsgTxt = data.text;
+          msgObj.lastTime = data.time;
+        }
+      }
+      // 更新本地存储中的消息内容与时间
+      for (let i = 0; i < localMsgList.length; i++) {
+        const msgObj: localMsgObj = localMsgList[i];
+        // 如果未读消息条数为null则初始化为0
+        if (msgObj.totalUnread == null) {
+          msgObj.totalUnread = 0;
+        }
+        if (_.isEqual(msgObj.id, data.id)) {
+          // 修改本地存储中消息对象的最后一条消息内容与时间
+          msgObj.lastMsgTxt = data.text;
+          msgObj.lastTime = data.time;
+        }
+      }
+      if (localMsgList.length > 0) {
+        // 将修改后的数据放回本地存储
+        localStorage.setItem("msgList", JSON.stringify(localMsgList));
+      }
     },
     // 显示消息面板组件
     showChatInterface: function(
@@ -90,6 +218,12 @@ export default defineComponent({
         alert("无消息id");
         return false;
       }
+      // 清除未读消息
+      this.updateMsgListTotalUnread(
+        JSON.parse(localStorage.getItem("msgList") as string),
+        { id: listID },
+        true
+      );
       this.currentIndex = liIndex;
       this.listId = listID;
       this.messageType = type;
@@ -110,12 +244,141 @@ export default defineComponent({
         })
         .then((res: responseDataType) => {
           if (res.code === 0) {
-            this.msgList = res.data.messageList;
+            // 接口返回的数据
+            const messageList: Array<totalMessage> = res.data.messageList;
+            // 需要向本地存储的数据
+            let localMsgList: Array<localMsgObj> = [];
+            // 拿出本地存储中的数据
+            if (
+              !_.isNull(JSON.parse(localStorage.getItem("msgList") as string))
+            ) {
+              localMsgList = JSON.parse(
+                localStorage.getItem("msgList") as string
+              );
+            }
+            // 判断本地存储中的数据与接口已渲染的数据条数是否一致
+            if (!_.isEqual(localMsgList.length, messageList.length)) {
+              // 不一致则重置本地存储的数据
+              localMsgList = [];
+              for (let i = 0; i < messageList.length; i++) {
+                const msgobj: totalMessage = messageList[i];
+                localMsgList.push({
+                  id: msgobj.buddyId
+                });
+              }
+              // 将新的数据放入本地存储
+              localStorage.setItem("msgList", JSON.stringify(localMsgList));
+            }
+            // 修改消息列表的最后发送内容与时间
+            for (let i = 0; i < localMsgList.length; i++) {
+              const msgObj = localMsgList[i];
+              if (
+                _.isEqual(msgObj.id, messageList[i].buddyId) &&
+                Object.keys(msgObj).length > 1
+              ) {
+                // 更新messageList[i]的最后发送消息内容与时间
+                messageList[i].lastTime = msgObj.lastTime;
+                messageList[i].lastMsgTxt = msgObj.lastMsgTxt;
+                messageList[i].totalUnread = msgObj.totalUnread;
+              }
+            }
+            // 渲染页面
+            this.msgList = messageList;
+            this.$nextTick(() => {
+              // 滚动时显示滚动条，不滚动时隐藏滚动条
+              let scrollTimer = 0;
+              this.$refs.listController.onscroll = () => {
+                // 显示滚动条
+                this.$refs.listController.classList.remove(
+                  "transparent-scroll-bar"
+                );
+                clearTimeout(scrollTimer);
+                scrollTimer = setTimeout(() => {
+                  // 隐藏滚动条
+                  this.$refs.listController.classList.add(
+                    "transparent-scroll-bar"
+                  );
+                }, 500);
+              };
+            });
+            // 监听消息接收
+            this.$options.sockets.onmessage = (res: { data: string }) => {
+              const data = JSON.parse(res.data);
+              if (data.code === 200) {
+                // 更新在线人数
+                this.$store.commit("updateOnlineUsers", data.onlineUsers);
+              } else if (data.code === -1) {
+                // 消息发送失败
+                alert(data.msg);
+                return;
+              } else {
+                // 更新在线人数
+                this.$store.commit("updateOnlineUsers", data.onlineUsers);
+                // 获取服务端推送的消息
+                const msgObj: msgListType = {
+                  msgText: data.msg,
+                  avatarSrc: data.avatarSrc,
+                  createTime: data.createTime,
+                  userId: data.userID,
+                  buddyId: data.buddyId,
+                  messageStatus: data.messageStatus,
+                  userName: data.username
+                };
+                // 更新对应的群聊消息列表内容
+                if (msgObj.messageStatus === 1) {
+                  let senderName = "";
+                  // 消息类型为群聊消息且发送者不为自己则添加发送者昵称
+                  if (!_.isEqual(msgObj.userId, this.$store.state.userID)) {
+                    senderName = (msgObj.userName as string) + ":";
+                  }
+                  if (msgObj?.msgText?.includes("img")) {
+                    this.updateLastMessage({
+                      text: senderName + "[图片消息]",
+                      id: msgObj.buddyId,
+                      time: msgObj.createTime,
+                      isPush: true
+                    });
+                  } else {
+                    this.updateLastMessage({
+                      text: senderName + msgObj.msgText,
+                      id: msgObj.buddyId,
+                      time: msgObj.createTime,
+                      isPush: true
+                    });
+                  }
+                } else {
+                  // 更新对应的单聊消息列表内容
+                  if (msgObj?.msgText?.includes("img")) {
+                    this.updateLastMessage({
+                      text: "[图片消息]",
+                      id: msgObj.userId,
+                      time: msgObj.createTime,
+                      isPush: true
+                    });
+                  } else {
+                    this.updateLastMessage({
+                      text: msgObj.msgText,
+                      id: msgObj.userId,
+                      time: msgObj.createTime,
+                      isPush: true
+                    });
+                  }
+                }
+              }
+            };
           } else {
             alert(res.msg);
           }
         });
+      // 获取当前服务器时间
+      this.$api.serverAPI.getServerTime().then((res: responseDataType) => {
+        this.serverTime = res.data;
+      });
     }
+  },
+  unmounted() {
+    // 销毁时移除消息监听
+    this.$options.sockets.onmessage = null;
   },
   data(): msgListDataType {
     return {
@@ -127,30 +390,12 @@ export default defineComponent({
       listId: "",
       messageType: null,
       buddyId: "",
+      serverTime: null,
       buddyName: "",
       msgList: []
     };
   },
   computed: {
-    // 处理消息列表
-    messageList(): Array<totalMessage> {
-      const list: Array<totalMessage> = [];
-      const msgList: Array<totalMessage> = this.msgList;
-      for (let i = 0; i < msgList.length; i++) {
-        const msgObj = msgList[i];
-        // 对时间进行处理，截取小时和分钟
-        msgObj.lastTime = msgObj.lastTime?.substring(10, 16);
-        list.push(msgObj);
-      }
-      return list;
-    },
-    // 内容区域宽度
-    contentPanelWidth(): string {
-      if (this.messageList.length === 0) {
-        return "100%";
-      }
-      return "85%";
-    },
     rightMenuObj(): rightMenuType {
       // 右键菜单对象，菜单内容和处理事件
       const obj: rightMenuType = {
