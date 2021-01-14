@@ -55,11 +55,7 @@ export default function eventMonitoring(
   const msgListPanelHeight = data.msgListPanelHeight;
   const isLoading = data.isLoading;
   const isFirstLoading = data.isFirstLoading;
-  const listId = data.listId;
   const messageStatus = data.messageStatus;
-  const buddyId = data.buddyId;
-  const buddyName = data.buddyName;
-  const serverTime = data.serverTime;
   const messagesContainer = data.messagesContainer as Ref<HTMLDivElement>;
   onMounted(() => {
     currentInstance?.appContext.config.globalProperties.$socket.sendObj({
@@ -141,11 +137,6 @@ export default function eventMonitoring(
 
   // 监听listID改变
   watch(prop.listId, (newMsgId: string) => {
-    listId.value = newMsgId;
-    messageStatus.value = prop.messageStatus.value;
-    buddyId.value = prop.buddyId.value;
-    buddyName.value = prop.buddyName.value;
-    serverTime.value = prop.serverTime.value;
     // 消息id发生改变,清空消息列表数据
     senderMessageList.length = 0;
     // 初始化分页数据
