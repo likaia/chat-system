@@ -1,7 +1,11 @@
 <!--消息选项卡-->
 <template>
   <div id="mainBody">
-    <ul class="list-panel" ref="listPanel" v-if="msgList.length > 0">
+    <ul
+      class="list-panel transparent-scroll-bar"
+      ref="listController"
+      v-if="msgList.length > 0"
+    >
       <li
         class="row-panel"
         v-for="(item, index) in msgList"
@@ -66,8 +70,6 @@
     <div class="content-panel" ref="contentPanel">
       <img
         src="@/assets/img/list/contact_non_selected@2x.png"
-        width="280"
-        height="280"
         alt="空组件"
         v-if="widgetIsNull"
       />
@@ -282,6 +284,23 @@ export default defineComponent({
             }
             // 渲染页面
             this.msgList = messageList;
+            this.$nextTick(() => {
+              // 滚动时显示滚动条，不滚动时隐藏滚动条
+              let scrollTimer = 0;
+              this.$refs.listController.onscroll = () => {
+                // 显示滚动条
+                this.$refs.listController.classList.remove(
+                  "transparent-scroll-bar"
+                );
+                clearTimeout(scrollTimer);
+                scrollTimer = setTimeout(() => {
+                  // 隐藏滚动条
+                  this.$refs.listController.classList.add(
+                    "transparent-scroll-bar"
+                  );
+                }, 500);
+              };
+            });
             // 监听消息接收
             this.$options.sockets.onmessage = (res: { data: string }) => {
               const data = JSON.parse(res.data);
@@ -307,16 +326,21 @@ export default defineComponent({
                 };
                 // 更新对应的群聊消息列表内容
                 if (msgObj.messageStatus === 1) {
+                  let senderName = "";
+                  // 消息类型为群聊消息且发送者不为自己则添加发送者昵称
+                  if (!_.isEqual(msgObj.userId, this.$store.state.userID)) {
+                    senderName = (msgObj.userName as string) + ":";
+                  }
                   if (msgObj?.msgText?.includes("img")) {
                     this.updateLastMessage({
-                      text: "[图片消息]",
+                      text: senderName + "[图片消息]",
                       id: msgObj.buddyId,
                       time: msgObj.createTime,
                       isPush: true
                     });
                   } else {
                     this.updateLastMessage({
-                      text: msgObj.msgText,
+                      text: senderName + msgObj.msgText,
                       id: msgObj.buddyId,
                       time: msgObj.createTime,
                       isPush: true

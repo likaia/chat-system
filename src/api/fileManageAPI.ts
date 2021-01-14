@@ -4,7 +4,7 @@
 import services from "../config/axios";
 import base from "./base"; // 导入接口域名列表
 
-export default {
+const fileManageAPI = {
   // 文件上传接口
   upload(file: File | FormData) {
     return services.post(`${base.lkBaseURL}/uploads/singleFileUpload`, file, {
@@ -12,3 +12,5 @@ export default {
     });
   }
 };
+
+export default fileManageAPI;
