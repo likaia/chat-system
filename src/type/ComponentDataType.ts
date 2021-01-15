@@ -93,6 +93,7 @@ export type messageDisplayDataType = {
     storeParam: Store<any>,
     instanceParam: ComponentInternalInstance | null
   ) => void;
+  clearData: () => void;
 };
 
 // 消息列表对象属性类型定义
