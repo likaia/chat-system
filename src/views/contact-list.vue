@@ -219,6 +219,7 @@
         :friendCheckedDataList="friendsCheckedList"
         @close-checked-alert="closeCheckedAlert(noShow)"
       ></friendsCheckedAlert>
+      <manageGroups v-if="getManageGroupsData"></manageGroups>
     </teleport>
   </div>
 </template>
@@ -229,6 +230,7 @@ import { defineComponent } from "vue";
 import dataPanel from "@/components/data-panel.vue";
 import addFriendsList from "./addFriend/addFriends-list.vue";
 import friendsCheckedAlert from "./addFriend/friendsChecked-alert.vue";
+import manageGroups from "./manageGroups/manageGroups.vue";
 import {
   contactListDataType,
   friendsListType,
@@ -265,7 +267,8 @@ export default defineComponent({
   components: {
     dataPanel,
     addFriendsList,
-    friendsCheckedAlert
+    friendsCheckedAlert,
+    manageGroups
   },
   methods: {
     // 获取列表好友信息
@@ -601,6 +604,9 @@ export default defineComponent({
     getCheckedData() {
       return this.$store.state.closeFriendCheckedAlert;
     },
+    getManageGroupsData() {
+      return this.$store.state.closeManageGroupsAlert;
+    },
     rightMenuObj(): rightMenuType {
       // 右键菜单对象，菜单内容和处理事件
       const obj: rightMenuType = {
@@ -608,12 +614,15 @@ export default defineComponent({
         text: ["添加分组", { status: true, content: "删除分组" }, "分组重命名"],
         handler: {
           addGroup() {
-            console.log("添加分组事件");
+            obj.this.$store.commit("updateManageGroupsStatus", true);
+            console.log("添加分组事件", obj.this);
           },
           delGroup() {
+            obj.this.$store.commit("updateManageGroupsStatus", true);
             console.log("删除分组事件");
           },
           renameGroup() {
+            obj.this.$store.commit("updateManageGroupsStatus", true);
             console.log("分组重命名事件");
           }
         }

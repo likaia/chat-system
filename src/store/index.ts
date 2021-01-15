@@ -33,7 +33,9 @@ export default createStore({
     // 关闭添加好友信息弹出框
     closeFriendAllAlert: false,
     // 关闭好友验证弹出框
-    closeFriendCheckedAlert: false
+    closeFriendCheckedAlert: false,
+    // 关闭分组管理弹框
+    closeManageGroupsAlert: false
   },
   mutations: {
     // 连接打开
@@ -110,6 +112,10 @@ export default createStore({
     // 更新好友验证弹出框是否存在
     updateFriendCheckedStatus(state, value: boolean) {
       state.closeFriendCheckedAlert = value;
+    },
+    // 更新分组重命名是否出现
+    updateManageGroupsStatus(state, value: boolean) {
+      state.closeManageGroupsAlert = value;
     }
   },
   modules: {}
