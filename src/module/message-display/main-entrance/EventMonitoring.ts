@@ -1,6 +1,5 @@
 import {
   computed,
-  Ref,
   ComputedRef,
   onMounted,
   onUnmounted,
@@ -44,19 +43,7 @@ export default function eventMonitoring(
   );
   // 设置data中的实例属性
   data.setProperty($store, currentInstance);
-  // 获取data中的数据
-  const senderMessageList = data.senderMessageList;
-  const sessionMessageData = data.sessionMessageData;
-  const pageStart = data.pageStart;
-  const pageEnd = data.pageEnd;
-  const pageNo = data.pageNo;
-  const isLastPage = data.isLastPage;
-  const msgTotals = data.msgTotals;
-  const msgListPanelHeight = data.msgListPanelHeight;
-  const isLoading = data.isLoading;
-  const isFirstLoading = data.isFirstLoading;
-  const messageStatus = data.messageStatus;
-  const messagesContainer = data.messagesContainer as Ref<HTMLDivElement>;
+
   onMounted(() => {
     currentInstance?.appContext.config.globalProperties.$socket.sendObj({
       code: 200,
@@ -68,8 +55,13 @@ export default function eventMonitoring(
     getMessageTextList(prop.listId.value);
     // 监听消息容器滚动
     containerScroll();
+
+    if (data.messagesContainer.value == null) {
+      return;
+    }
     // 设置列容器高度
-    messagesContainer.value.style.height = window.innerHeight - 450 + "px";
+    data.messagesContainer.value.style.height = window.innerHeight - 450 + "px";
+
     // 执行剪切板监听与全局点击事件监听
     document.body.addEventListener("paste", readPasteData);
     document.body.addEventListener("click", globalClick);
@@ -133,27 +125,34 @@ export default function eventMonitoring(
     // 销毁时移除监听
     document.body.removeEventListener("paste", readPasteData);
     document.body.removeEventListener("click", globalClick);
+    // 清空initData中的数据
+    data.clearData();
   });
 
   // 监听listID改变
   watch(prop.listId, (newMsgId: string) => {
-    // 消息id发生改变,清空消息列表数据
-    senderMessageList.length = 0;
+    // 清空消息列表数据
+    data.senderMessageList.length = 0;
     // 初始化分页数据
-    sessionMessageData.length = 0;
-    pageStart.value = 0;
-    pageEnd.value = 0;
-    pageNo.value = 1;
-    isLastPage.value = false;
-    msgTotals.value = 0;
-    msgListPanelHeight.value = 0;
-    isLoading.value = false;
-    isFirstLoading.value = true;
+    data.sessionMessageData.length = 0;
+    data.pageStart.value = 0;
+    data.pageEnd.value = 0;
+    data.pageNo.value = 1;
+    data.isLastPage.value = false;
+    data.msgTotals.value = 0;
+    data.msgListPanelHeight.value = 0;
+    data.isLoading.value = false;
+    data.isFirstLoading.value = true;
+    data.listId.value = prop.listId.value;
+    data.messageStatus.value = prop.messageStatus.value;
+    data.buddyId.value = prop.buddyId.value;
+    data.buddyName.value = prop.buddyName.value;
+    data.serverTime.value = prop.serverTime.value;
     // 移除本地存储中的消息列表
     sessionStorage.removeItem("messageTextList");
     // 重新获取消息内容
     getMessageTextList(newMsgId);
-    if (_.isEqual(messageStatus.value, 1)) {
+    if (_.isEqual(data.messageStatus.value, 1)) {
       currentInstance?.appContext.config.globalProperties.$socket.sendObj({
         code: 200,
         token: $store.state.token,
