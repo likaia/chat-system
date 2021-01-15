@@ -235,6 +235,7 @@ import {
   friendsDataType,
   responseDataType
 } from "@/type/ComponentDataType";
+import { rightMenuType } from "vue-right-click-menu-next/dist/lib/type/pluginsType";
 // import data from "@/api/index.ts"
 export default defineComponent({
   name: "contact-list",
@@ -247,20 +248,6 @@ export default defineComponent({
       widgetIsNull: true,
       groupName: "",
       remarks: "",
-      rightMenuObj: {
-        text: ["添加分组", "删除分组", "分组重命名"],
-        handler: {
-          addGroup() {
-            console.log("添加分组事件");
-          },
-          delGroup() {
-            console.log("删除分组事件");
-          },
-          renameGroup() {
-            console.log("分组重命名事件");
-          }
-        }
-      },
       friendsCheckedList: {
         serverTime: "",
         friendsCheckedInfo: [],
@@ -590,6 +577,8 @@ export default defineComponent({
   mounted() {
     this.getToBeVerifiedList();
     this.getFriendsList();
+    console.log(this.friendsList, this.rightMenuObj.text[1].status);
+
     this.$options.sockets.onmessage = (res: any) => {
       const obj = JSON.parse(res.data);
       console.log(res);
@@ -611,6 +600,25 @@ export default defineComponent({
     },
     getCheckedData() {
       return this.$store.state.closeFriendCheckedAlert;
+    },
+    rightMenuObj(): rightMenuType {
+      // 右键菜单对象，菜单内容和处理事件
+      const obj: rightMenuType = {
+        this: this,
+        text: ["添加分组", { status: true, content: "删除分组" }, "分组重命名"],
+        handler: {
+          addGroup() {
+            console.log("添加分组事件");
+          },
+          delGroup() {
+            console.log("删除分组事件");
+          },
+          renameGroup() {
+            console.log("分组重命名事件");
+          }
+        }
+      };
+      return obj;
     }
   }
 });
