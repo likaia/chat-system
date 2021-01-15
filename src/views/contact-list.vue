@@ -141,7 +141,9 @@
           <div
             class="main-content"
             @click="groupingStatus(index)"
-            v-right-click="rightMenuObj"
+            v-right-click:[{groupId:item.groupId,groupName:item.groupName}]="
+              rightMenuObj
+            "
           >
             <div class="icon-panel">
               <img
@@ -613,15 +615,15 @@ export default defineComponent({
         this: this,
         text: ["添加分组", { status: true, content: "删除分组" }, "分组重命名"],
         handler: {
-          addGroup() {
+          addGroup(parameter: string) {
             obj.this.$store.commit("updateManageGroupsStatus", true);
             console.log("添加分组事件", obj.this);
           },
-          delGroup() {
+          delGroup(parameter: string) {
             obj.this.$store.commit("updateManageGroupsStatus", true);
             console.log("删除分组事件");
           },
-          renameGroup() {
+          renameGroup(parameter: string) {
             obj.this.$store.commit("updateManageGroupsStatus", true);
             console.log("分组重命名事件");
           }

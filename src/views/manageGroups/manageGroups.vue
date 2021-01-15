@@ -1,5 +1,5 @@
 <template>
-  <moveSettings></moveSettings>
+  <moveSettings><div></div></moveSettings>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";

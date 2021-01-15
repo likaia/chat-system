@@ -115,7 +115,7 @@ export default createStore({
     },
     // 更新分组重命名是否出现
     updateManageGroupsStatus(state, value: boolean) {
-      state.closeManageGroupsAlert = value;
+      state.closeManageGroupsAlert =  value;
     }
   },
   modules: {}
