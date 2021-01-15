@@ -20,7 +20,7 @@
           )
         "
         :class="{ active: currentIndex === index }"
-        v-right-click="rightMenuObj"
+        v-right-click:[{id:index,userName:item.userName}]="rightMenuObj"
       >
         <div class="item-subscript-panel"></div>
         <div class="item-avatar-panel">
@@ -409,7 +409,8 @@ export default defineComponent({
           "会话置顶"
         ],
         handler: {
-          checkingData() {
+          checkingData(parameter: string) {
+            console.log(parameter);
             console.log(obj.this.$store.state.token);
             console.log("查看资料点击事件");
           },
