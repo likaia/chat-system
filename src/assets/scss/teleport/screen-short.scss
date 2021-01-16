@@ -1,0 +1,22 @@
+#screenshortContainer {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, .4);
+  position: fixed;
+  top: 0;
+  left: 0;
+  cursor: crosshair;
+  z-index: 999;
+
+  // 框选区域
+  .frame-selection-panel {
+    width: 610px;
+    height: 330px;
+    border: solid 2px #3CABFF;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(255, 255, 255, .5);
+    cursor: default;
+  }
+}

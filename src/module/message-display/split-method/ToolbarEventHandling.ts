@@ -18,6 +18,8 @@ export default function toolbarEventHandling(toolItemName: string) {
       break;
     // 截屏点击事件
     case "screenCapture":
+      // 显示截图组件
+      data.screenshortStatus.value = true;
       emoticonShowStatus.value = "none";
       break;
     // 电话点击事件

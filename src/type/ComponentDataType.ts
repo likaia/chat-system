@@ -78,6 +78,7 @@ export type messageDisplayDataType = {
   buddyId: Ref<string>; // 好友id
   buddyName: Ref<string>; // 好友昵称
   serverTime: Ref<string>; // 服务器时间
+  screenshortStatus: Ref<boolean>; // 截图组件展示状态
   setData: (
     listIdParam: Ref<string>,
     messageStatusParam: Ref<number>,
