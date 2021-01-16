@@ -33,6 +33,7 @@
     "axios": "^0.21.1",
     "better-scroll": "^2.0.5",
     "core-js": "^3.6.5",
+    "html2canvas": "^1.0.0-rc.7",
     "vue": "^3.0.0-0",
     "vue-class-component": "^8.0.0-0",
     "vue-native-websocket-vue3": "^3.1.0",
