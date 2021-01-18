@@ -1,8 +1,10 @@
 import { ComponentInternalInstance, ref } from "vue";
 import { Store } from "vuex";
 
-const screenshortLeftPosition = ref<number>(10); // 截图框选区域距离屏幕左侧的位置
-const screenshortTopPosition = ref<number>(20); // 截图框选区域距离屏幕左侧的位置
+const screenshortLeftPosition = ref<number>(0); // 截图框选区域距离屏幕左侧的位置
+const screenshortTopPosition = ref<number>(0); // 截图框选区域距离屏幕左侧的位置
+const screenshortSelectAreaWidth = ref<number>(0); // 截图框选区域宽度
+const screenshortSelectAreaHeight = ref<number>(0); // 截图框选区域高度
 const mouseDownStatus = ref<boolean>(false); // 鼠标是否按下
 const mouseX = ref<number>(0); // 鼠标的X轴位置
 const mouseY = ref<number>(0); // 鼠标的Y轴位置
@@ -10,6 +12,8 @@ const mouseL = ref<number>(0); // 鼠标距离左边的偏移量
 const mouseT = ref<number>(0); // 鼠标距离顶部的偏移量
 // 获取截图选择框dom
 const frameSelectionController = ref<HTMLDivElement | null>(null);
+// 获取截图区域dom
+const screenShortController = ref<HTMLDivElement | null>(null);
 let emit: ((event: string, ...args: any[]) => void) | undefined; // 事件处理
 // store与当前实例
 let $store: Store<any> | undefined;
@@ -84,9 +88,32 @@ export default class InitData {
     mouseT.value = valueT;
   }
 
-  // 获取dom
+  /**
+   * 设置截图框选区域宽高
+   * @param width
+   * @param height
+   */
+  public setScreenshortSelectAreaInfo(width: number, height: number) {
+    screenshortSelectAreaWidth.value = width;
+    screenshortSelectAreaHeight.value = height;
+  }
+
+  // 获取截图选框区域宽高
+  public getScreenshortSelectWidth() {
+    return screenshortSelectAreaWidth;
+  }
+  public getScreenshortSelectHeight() {
+    return screenshortSelectAreaHeight;
+  }
+
+  // 获取截图框选区域dom
   public getFrameSelectionController() {
     return frameSelectionController;
+  }
+
+  // 获取截图区域dom
+  public getScreenShortController() {
+    return screenShortController;
   }
 
   // 设置鼠标是否按下状态

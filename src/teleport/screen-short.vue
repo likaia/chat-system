@@ -1,12 +1,14 @@
 <template>
   <teleport to="body">
-    <div id="screenshortContainer">
+    <div id="screenshortContainer" ref="screenShortController">
       <div
         class="frame-selection-panel"
         ref="frameSelectionController"
         :style="{
           top: topPosition + 'px',
-          left: leftPosition + 'px'
+          left: leftPosition + 'px',
+          width: selectAreaWidth + 'px',
+          height: selectAreaHeight + 'px'
         }"
       ></div>
     </div>
@@ -25,12 +27,18 @@ export default {
     const data = new initData();
     const leftPosition = data.getScreenshortLeftPosition();
     const topPosition = data.getScreenshortTopPosition();
+    const selectAreaWidth = data.getScreenshortSelectWidth();
+    const selectAreaHeight = data.getScreenshortSelectHeight();
     const frameSelectionController = data.getFrameSelectionController();
+    const screenShortController = data.getScreenShortController();
     new eventMonitoring(props, context as SetupContext<any>);
     return {
       leftPosition,
       topPosition,
-      frameSelectionController
+      frameSelectionController,
+      screenShortController,
+      selectAreaWidth,
+      selectAreaHeight
     };
   }
 };

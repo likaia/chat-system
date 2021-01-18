@@ -2,17 +2,17 @@
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, .4);
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   cursor: crosshair;
-  z-index: 999;
 
   // 框选区域
   .frame-selection-panel {
-    width: 610px;
-    height: 330px;
+    width: 0;
+    height: 0;
     border: solid 2px #3CABFF;
+    display: none;
     position: absolute;
     top: 0;
     left: 0;
