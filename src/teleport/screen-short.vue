@@ -1,17 +1,11 @@
 <template>
   <teleport to="body">
-    <div id="screenshortContainer" ref="screenShortController">
-      <div
-        class="frame-selection-panel"
-        ref="frameSelectionController"
-        :style="{
-          top: topPosition + 'px',
-          left: leftPosition + 'px',
-          width: selectAreaWidth + 'px',
-          height: selectAreaHeight + 'px'
-        }"
-      ></div>
-    </div>
+    <canvas
+      id="screenshortContainer"
+      :width="screenShortWidth"
+      :height="screenShortHeight"
+      ref="screenShortController"
+    ></canvas>
   </teleport>
 </template>
 
@@ -25,20 +19,14 @@ export default {
   props: {},
   setup(props: Record<string, any>, context: SetupContext<any>) {
     const data = new initData();
-    const leftPosition = data.getScreenshortLeftPosition();
-    const topPosition = data.getScreenshortTopPosition();
-    const selectAreaWidth = data.getScreenshortSelectWidth();
-    const selectAreaHeight = data.getScreenshortSelectHeight();
-    const frameSelectionController = data.getFrameSelectionController();
+    const screenShortWidth = data.getScreenShortWidth();
+    const screenShortHeight = data.getScreenShortHeight();
     const screenShortController = data.getScreenShortController();
     new eventMonitoring(props, context as SetupContext<any>);
     return {
-      leftPosition,
-      topPosition,
-      frameSelectionController,
-      screenShortController,
-      selectAreaWidth,
-      selectAreaHeight
+      screenShortWidth,
+      screenShortHeight,
+      screenShortController
     };
   }
 };
