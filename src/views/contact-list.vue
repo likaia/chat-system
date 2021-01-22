@@ -141,7 +141,7 @@
           <div
             class="main-content"
             @click="groupingStatus(index)"
-            v-right-click:[{groupId:item.groupId,groupName:item.groupName}]="
+            v-right-click:[{childrenId:item.childrenId,groupName:item.groupName}]="
               rightMenuObj
             "
           >
@@ -221,7 +221,10 @@
         :friendCheckedDataList="friendsCheckedList"
         @close-checked-alert="closeCheckedAlert(noShow)"
       ></friendsCheckedAlert>
-      <manageGroups v-if="getManageGroupsData"></manageGroups>
+      <manageGroups
+        v-if="getManageGroupsData"
+        :manageGroupsArgs="manageGroupsArgs"
+      ></manageGroups>
     </teleport>
   </div>
 </template>
@@ -240,7 +243,6 @@ import {
   responseDataType
 } from "@/type/ComponentDataType";
 import { rightMenuType } from "vue-right-click-menu-next/dist/lib/type/pluginsType";
-// import data from "@/api/index.ts"
 export default defineComponent({
   name: "contact-list",
   data(): contactListDataType<friendsListType<friendsDataType>> {
@@ -263,7 +265,8 @@ export default defineComponent({
         }
       },
       showFriendCheckedContent: true,
-      showCheckedAlert: false
+      showCheckedAlert: false,
+      manageGroupsArgs: {}
     };
   },
   components: {
@@ -582,8 +585,6 @@ export default defineComponent({
   mounted() {
     this.getToBeVerifiedList();
     this.getFriendsList();
-    console.log(this.friendsList, this.rightMenuObj.text[1].status);
-
     this.$options.sockets.onmessage = (res: any) => {
       const obj = JSON.parse(res.data);
       console.log(res);
@@ -613,19 +614,41 @@ export default defineComponent({
       // 右键菜单对象，菜单内容和处理事件
       const obj: rightMenuType = {
         this: this,
-        text: ["添加分组", { status: true, content: "删除分组" }, "分组重命名"],
+        text: [
+          "添加分组",
+          {
+            status: this.friendsList.length > 1 ? false : true,
+            content: "删除分组"
+          },
+          "分组重命名"
+        ],
         handler: {
-          addGroup(parameter: string) {
+          addGroup(parameter: any) {
+            obj.this.manageGroupsArgs = {};
             obj.this.$store.commit("updateManageGroupsStatus", true);
-            console.log("添加分组事件", obj.this);
+            if (parameter.childrenId > 0) {
+              obj.this.manageGroupsArgs = parameter;
+              obj.this.manageGroupsArgs.typeName = "addGroup";
+            }
+            console.log("添加分组事件", parameter);
           },
-          delGroup(parameter: string) {
+          delGroup(parameter: any) {
+            obj.this.manageGroupsArgs = {};
             obj.this.$store.commit("updateManageGroupsStatus", true);
-            console.log("删除分组事件");
+            if (parameter.childrenId > 0) {
+              obj.this.manageGroupsArgs = parameter;
+              obj.this.manageGroupsArgs.typeName = "delGroup";
+            }
+            console.log("删除分组事件", parameter);
           },
-          renameGroup(parameter: string) {
+          renameGroup(parameter: any) {
+            obj.this.manageGroupsArgs = {};
             obj.this.$store.commit("updateManageGroupsStatus", true);
-            console.log("分组重命名事件");
+            if (parameter.childrenId > 0) {
+              obj.this.manageGroupsArgs = parameter;
+              obj.this.manageGroupsArgs.typeName = "renameGroup";
+            }
+            console.log("分组重命名事件", parameter);
           }
         }
       };

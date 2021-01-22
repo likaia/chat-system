@@ -137,6 +137,7 @@ export type contactListDataType<V> = {
     };
   }; // 好友验证数据
   showCheckedAlert: boolean; // 选择是否添加好友
+  manageGroupsArgs: {}; // 传值给分组
 };
 
 // 联系人列表类型定义
