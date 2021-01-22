@@ -126,10 +126,6 @@ export type contactListDataType<V> = {
   widgetIsNull: boolean; // 组件是否为空
   groupName: string; // 分组名称
   remarks: string; // 备注
-  rightMenuObj: {
-    text: Array<string>; // 文本数组
-    handler: Record<string, (...params: any) => void>; // 事件处理函数
-  }; // 右键菜单
   showFriendCheckedContent: boolean;
   friendsCheckedList: {
     serverTime: string;
@@ -142,6 +138,7 @@ export type contactListDataType<V> = {
     };
   }; // 好友验证数据
   showCheckedAlert: boolean; // 选择是否添加好友
+  manageGroupsArgs: {}; // 传值给分组
 };
 
 // 联系人列表类型定义

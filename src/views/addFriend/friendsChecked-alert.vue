@@ -1,161 +1,156 @@
 <template>
-  <div class="friendsChecked-alert-outer-mask">
-    <div @click="closeAlert" class="friendsChecked-alert-inside-mask">
-      <div
-        class="friendsChecked-alert-content"
-        @mousedown="alertDown($event)"
-        @mousemove="alertMove($event)"
-        @mouseup="alertUp"
-        @blur="alertUp"
-        @click.stop=""
-        ref="identityCheckedContent"
-      >
-        <div class="top-panel">
-          <div class="top-panel-left">
-            <div
-              class="top-panel-left-icon"
-              @mouseover="showLeftIco(true)"
-              @mouseleave="showLeftIco(false)"
-              @click.stop="closeAlert"
-            >
-              <img
-                :style="{ display: leftIco }"
-                src="@/assets/img/close.png"
-                class="close-icon"
-                alt=""
-              />
-            </div>
-            <div
-              class="top-panel-left-icon"
-              @mouseover="showLeftIco()"
-              @mouseleave="showLeftIco()"
-            >
-              <img
-                :style="{ display: leftIco }"
-                class="min-icon"
-                src="@/assets/img/min.png"
-                alt=""
-              />
-            </div>
+  <moveSettings ref="move">
+    <div
+      class="friendsChecked-alert-content"
+      @mousedown="alertDown($event)"
+      @mousemove="alertMove($event)"
+      @mouseup="alertUp"
+      @blur="alertUp"
+      @click.stop=""
+      ref="identityCheckedContent"
+    >
+      <div class="top-panel">
+        <div class="top-panel-left">
+          <div
+            class="top-panel-left-icon"
+            @mouseover="showLeftIco(true)"
+            @mouseleave="showLeftIco(false)"
+            @click.stop="closeAlert"
+          >
+            <img
+              :style="{ display: leftIco }"
+              src="@/assets/img/close.png"
+              class="close-icon"
+              alt=""
+            />
           </div>
-          <div class="top-panel-center">
-            好友验证信息
-          </div>
-
-          <div class="top-panel-right">
-            <p>
-              已过滤的通知
-            </p>
-            <div>
-              <img
-                @mouseover="ScheduleStutus(true)"
-                @mouseout="ScheduleStutus(false)"
-                ref="Schedule"
-                :src="Schedule[0]"
-                alt=""
-              />
-            </div>
+          <div
+            class="top-panel-left-icon"
+            @mouseover="showLeftIco()"
+            @mouseleave="showLeftIco()"
+          >
+            <img
+              :style="{ display: leftIco }"
+              class="min-icon"
+              src="@/assets/img/min.png"
+              alt=""
+            />
           </div>
         </div>
-        <div class="list-panel">
-          <div
-            v-for="(item, index) in friendCheckedDataList.friendsCheckedInfo"
-            :key="item.userId"
-          >
-            <div class="create-time">
-              {{ item.createTime }}
-            </div>
-            <div class="item-panel">
-              <div>
-                <div class="avatarSrc">
-                  <img :src="item.avatarSrc" alt="" />
+        <div class="top-panel-center">
+          好友验证信息
+        </div>
+        <div class="top-panel-right">
+          <p>
+            已过滤的通知
+          </p>
+          <div>
+            <img
+              @mouseover="ScheduleStutus(true)"
+              @mouseout="ScheduleStutus(false)"
+              ref="Schedule"
+              :src="Schedule[0]"
+              alt=""
+            />
+          </div>
+        </div>
+      </div>
+      <div class="list-panel">
+        <div
+          v-for="(item, index) in friendCheckedDataList.friendsCheckedInfo"
+          :key="item.userId"
+        >
+          <div class="create-time">
+            {{ item.createTime }}
+          </div>
+          <div class="item-panel">
+            <div>
+              <div class="avatarSrc">
+                <img :src="item.avatarSrc" alt="" />
+              </div>
+              <template v-if="!item.isSender">
+                <div class="is-not-sender">
+                  <p>
+                    <span>{{ item.userName }}</span
+                    >请求加为好友
+                  </p>
+                  <p><span>附言：</span>{{ item.verifyMessage }}</p>
                 </div>
-                <template v-if="!item.isSender">
-                  <div class="is-not-sender">
-                    <p>
-                      <span>{{ item.userName }}</span
-                      >请求加为好友
+              </template>
+              <template v-if="item.isSender">
+                <div class="is-sender">
+                  <p>
+                    <span>{{ item.userName }}</span>
+                  </p>
+                  <p><span>附言：</span>等待验证信息</p>
+                </div>
+              </template>
+              <template v-if="item.status == 0">
+                <div class="status-argee">
+                  <p :ref="setAgreeAdd">已同意</p>
+                </div>
+              </template>
+              <template v-if="item.status == 1">
+                <div class="status-undetermined" v-if="!item.isSender">
+                  <div>
+                    <p
+                      class="selected-value"
+                      :ref="setSelectedValue"
+                      @click="showIdentityChecked(index)"
+                    >
+                      同意
                     </p>
-                    <p><span>附言：</span>{{ item.verifyMessage }}</p>
+                    <div
+                      class="select-icon"
+                      @click.stop="showSelectContent(index)"
+                    >
+                      <img
+                        src="@/assets/img/list/MacQQ_icon_arrow_right_down@2x.png"
+                        alt=""
+                      />
+                    </div>
                   </div>
-                </template>
-                <template v-if="item.isSender">
-                  <div class="is-sender">
-                    <p>
-                      <span>{{ item.userName }}</span>
-                    </p>
-                    <p><span>附言：</span>等待验证信息</p>
-                  </div>
-                </template>
-                <template v-if="item.status == 0">
-                  <div class="status-argee">
-                    <p :ref="setAgreeAdd">已同意</p>
-                  </div>
-                </template>
-                <template v-if="item.status == 1">
-                  <div class="status-undetermined" v-if="!item.isSender">
-                    <div>
-                      <p
-                        class="selected-value"
-                        :ref="setSelectedValue"
-                        @click="showIdentityChecked(index)"
-                      >
-                        同意
-                      </p>
-                      <div
-                        class="select-icon"
-                        @click.stop="showSelectContent(index)"
-                      >
-                        <img
-                          src="@/assets/img/list/MacQQ_icon_arrow_right_down@2x.png"
-                          alt=""
-                        />
-                      </div>
+                  <div
+                    class="select-content"
+                    :ref="setSelectedContent"
+                    @mouseleave="leaveStyle(index)"
+                  >
+                    <div
+                      class="select-value-agree"
+                      @click="updateSelectedValue('同意', index)"
+                      :ref="setArgee"
+                    >
+                      同意
                     </div>
                     <div
-                      class="select-content"
-                      :ref="setSelectedContent"
-                      @mouseleave="leaveStyle(index)"
+                      class="select-value-refuse"
+                      @click="updateSelectedValue('拒绝', index)"
+                      :ref="setRefuse"
                     >
-                      <div
-                        class="select-value-agree"
-                        @click="updateSelectedValue('同意', index)"
-                        :ref="setArgee"
-                      >
-                        同意
-                      </div>
-                      <div
-                        class="select-value-refuse"
-                        @click="updateSelectedValue('拒绝', index)"
-                        :ref="setRefuse"
-                      >
-                        拒绝
-                      </div>
+                      拒绝
                     </div>
                   </div>
-                  <div class="status-undetermined" v-if="item.isSender">
-                    <div>
-                      <p
-                        class="undetermined-checked"
-                        :ref="setRefuseAddChecked"
-                      >
-                        等待验证
-                      </p>
-                    </div>
+                </div>
+                <div class="status-undetermined" v-if="item.isSender">
+                  <div>
+                    <p class="undetermined-checked" :ref="setRefuseAddChecked">
+                      等待验证
+                    </p>
                   </div>
-                </template>
-                <template v-if="item.status == 2">
-                  <div class="status-refuse">
-                    <p :ref="setRefuseAdd">已拒绝</p>
-                  </div>
-                </template>
-              </div>
+                </div>
+              </template>
+              <template v-if="item.status == 2">
+                <div class="status-refuse">
+                  <p :ref="setRefuseAdd">已拒绝</p>
+                </div>
+              </template>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </moveSettings>
+
   <div v-if="promptAlert.state" class="refuseRequestMessage">
     <div>
       <p>{{ promptAlert.massage }}</p>
@@ -177,10 +172,12 @@ import { responseDataType } from "@/type/ComponentDataType";
 import _ from "lodash";
 import { defineComponent } from "vue";
 import addFriendIdentityChecked from "./addFriends-identityChecked.vue";
+import moveSettings from "@/components/common/moveAlert/moveSettings.vue";
 export default defineComponent({
   name: "friendsChecked-alert",
   components: {
-    addFriendIdentityChecked
+    addFriendIdentityChecked,
+    moveSettings
   },
   methods: {
     // 关闭弹窗框
@@ -230,68 +227,15 @@ export default defineComponent({
     },
     // 按下触发可拖曳事件
     alertDown: function(e: any) {
-      // 获取初始时当前框距离对应边界的大小位置和当前鼠标左键点下时事件的位置
-      this.moveAlertData.x = e.clientX;
-      this.moveAlertData.y = e.clientY;
-      this.moveAlertData.t = this.$refs.identityCheckedContent.offsetTop;
-      this.moveAlertData.l = this.$refs.identityCheckedContent.offsetLeft;
-      this.moveAlertData.isDown = true;
-      // 将鼠标图标换成可拖动
-      this.$refs.identityCheckedContent.style.cursor = "move";
+      this.$refs.move.alertDown(e, this.$refs.identityCheckedContent);
     },
     // 按下并持续触发可拖曳事件
     alertMove: function(e: any) {
-      // 防止未按下事件触发时，可获取并持续触发可拖曳事件
-      if (this.moveAlertData.isDown == false) {
-        return;
-      }
-      // 获取移动时最新的鼠标位位置
-      this.moveAlertData.moveX = e.clientX;
-      this.moveAlertData.moveY = e.clientY;
-      // 移动时最新位置 = 移动时最新的鼠标位位置 - （初始时的鼠标大小位置 - 初始时鼠标左键点下时事件的位置）
-      this.moveAlertData.movel =
-        this.moveAlertData.moveX -
-        (this.moveAlertData.x - this.moveAlertData.l);
-      this.moveAlertData.movet =
-        this.moveAlertData.moveY -
-        (this.moveAlertData.y - this.moveAlertData.t);
-      // 对左边界进行边界处理
-
-      if (this.moveAlertData.movel < 0) {
-        this.moveAlertData.movel = 0;
-      }
-      // 对右边界进行边界处理
-      if (
-        this.moveAlertData.movel +
-          this.$refs.identityCheckedContent.offsetWidth >
-        window.innerWidth
-      ) {
-        this.moveAlertData.movel =
-          window.innerWidth - this.$refs.identityCheckedContent.offsetWidth;
-      }
-      // 对下边界进行边界处理
-      if (
-        this.moveAlertData.movet +
-          this.$refs.identityCheckedContent.offsetHeight >
-        window.innerHeight
-      ) {
-        this.moveAlertData.movet =
-          window.innerHeight - this.$refs.identityCheckedContent.offsetHeight;
-      }
-      // 对上边界进行边界处理
-      if (this.moveAlertData.movet < 0) {
-        this.moveAlertData.movet = 0;
-      }
-      // 渲染最新位置
-      this.$refs.identityCheckedContent.style.left =
-        this.moveAlertData.movel + "px";
-      this.$refs.identityCheckedContent.style.top =
-        this.moveAlertData.movet + "px";
+      this.$refs.move.alertMove(e, this.$refs.identityCheckedContent);
     },
     // 可拖曳事件完成事件
     alertUp: function() {
-      this.moveAlertData.isDown = false;
-      this.$refs.identityCheckedContent.style.cursor = "default";
+      this.$refs.move.alertUp(this.$refs.identityCheckedContent);
     },
     // 时间显示格式
     getTimeFormat() {
@@ -393,17 +337,6 @@ export default defineComponent({
   data() {
     return {
       leftIco: "none",
-      moveAlertData: {
-        x: 0,
-        y: 0,
-        l: 0,
-        t: 0,
-        moveX: 0,
-        moveY: 0,
-        movel: 0,
-        movet: 0,
-        isDown: false
-      },
       selectData: {
         selectedValue: [],
         argeeDom: [],

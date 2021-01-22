@@ -1,0 +1,137 @@
+.manageGroups-content{
+  min-width: 500px;
+  min-height: 250px;
+  background: white;
+  position: absolute;
+  z-index: 999;
+  border-radius: 5px;
+
+  .top-panel {
+    width: 100%;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    background: #dedbda;
+    border-radius: 5px 5px 0 0;
+
+    .top-panel-left {
+        display: flex;
+        align-items: center;
+        flex: 1;
+
+        .top-panel-left-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+
+        .close-icon {
+            margin-left: 16%;
+            margin-top: 16%;
+            width: 15px;
+            height: 15px;
+        }
+
+        .min-icon {
+            margin-left: 16%;
+            margin-top: 16%;
+            width: 15px;
+            height: 15px;
+        }
+        }
+
+        div:nth-child(1) {
+        background: #fc4646;
+        margin-left: 20px;
+        }
+
+        div:nth-child(2) {
+        background: #fbb323;
+        margin-left: 10px;
+        }
+    }
+
+    .top-panel-center {
+        flex: 1;
+        text-align: center;
+    }
+
+    .top-panel-right{
+        flex: 1;
+    }
+  }
+
+  .middle-panel{
+    width:80%;
+    padding: 10%;
+
+    p{
+      width:100%;
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+
+    input{
+      width:98%;
+      height:20px;
+      padding-left: 2%;
+    }
+  }
+
+  .del-middle-panel{
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+  }
+
+  .bottom-panel{
+    display: flex;
+    justify-content: center;
+
+    input{
+      width:100px;
+      margin: 0 10px;
+      height: 30px;
+      border-radius: 50px;
+      outline: none;
+    }
+
+    input:nth-child(1) {
+      background-color: white;
+      border: #f3f3f3 solid 2px;
+    }
+
+    input:nth-child(2){
+      background-color: #10baf3;
+      color: white;
+      border: #10baf3 solid 2px;
+    }
+  }
+}
+.sendRequestMessage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  z-index: 1000;
+
+  div {
+    width: 300px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -150px;
+    margin-top: -40px;
+    color: white;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+}

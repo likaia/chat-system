@@ -141,7 +141,9 @@
           <div
             class="main-content"
             @click="groupingStatus(index)"
-            v-right-click="rightMenuObj"
+            v-right-click:[{childrenId:item.childrenId,groupName:item.groupName}]="
+              rightMenuObj
+            "
           >
             <div class="icon-panel">
               <img
@@ -219,6 +221,10 @@
         :friendCheckedDataList="friendsCheckedList"
         @close-checked-alert="closeCheckedAlert(noShow)"
       ></friendsCheckedAlert>
+      <manageGroups
+        v-if="getManageGroupsData"
+        :manageGroupsArgs="manageGroupsArgs"
+      ></manageGroups>
     </teleport>
   </div>
 </template>
@@ -229,13 +235,14 @@ import { defineComponent } from "vue";
 import dataPanel from "@/components/data-panel.vue";
 import addFriendsList from "./addFriend/addFriends-list.vue";
 import friendsCheckedAlert from "./addFriend/friendsChecked-alert.vue";
+import manageGroups from "./manageGroups/manageGroups.vue";
 import {
   contactListDataType,
   friendsListType,
   friendsDataType,
   responseDataType
 } from "@/type/ComponentDataType";
-// import data from "@/api/index.ts"
+import { rightMenuType } from "vue-right-click-menu-next/dist/lib/type/pluginsType";
 export default defineComponent({
   name: "contact-list",
   data(): contactListDataType<friendsListType<friendsDataType>> {
@@ -247,20 +254,6 @@ export default defineComponent({
       widgetIsNull: true,
       groupName: "",
       remarks: "",
-      rightMenuObj: {
-        text: ["添加分组", "删除分组", "分组重命名"],
-        handler: {
-          addGroup() {
-            console.log("添加分组事件");
-          },
-          delGroup() {
-            console.log("删除分组事件");
-          },
-          renameGroup() {
-            console.log("分组重命名事件");
-          }
-        }
-      },
       friendsCheckedList: {
         serverTime: "",
         friendsCheckedInfo: [],
@@ -272,13 +265,15 @@ export default defineComponent({
         }
       },
       showFriendCheckedContent: true,
-      showCheckedAlert: false
+      showCheckedAlert: false,
+      manageGroupsArgs: {}
     };
   },
   components: {
     dataPanel,
     addFriendsList,
-    friendsCheckedAlert
+    friendsCheckedAlert,
+    manageGroups
   },
   methods: {
     // 获取列表好友信息
@@ -590,6 +585,14 @@ export default defineComponent({
   mounted() {
     this.getToBeVerifiedList();
     this.getFriendsList();
+    this.$options.sockets.onmessage = (res: any) => {
+      const obj = JSON.parse(res.data);
+      console.log(res);
+
+      if (obj.code == 1) {
+        this.$router.go(0);
+      }
+    };
   },
   // 页面更新前晴空分组列表dom
   beforeUpdate() {
@@ -603,6 +606,53 @@ export default defineComponent({
     },
     getCheckedData() {
       return this.$store.state.closeFriendCheckedAlert;
+    },
+    getManageGroupsData() {
+      return this.$store.state.closeManageGroupsAlert;
+    },
+    rightMenuObj(): rightMenuType {
+      // 右键菜单对象，菜单内容和处理事件
+      const obj: rightMenuType = {
+        this: this,
+        text: [
+          "添加分组",
+          {
+            status: this.friendsList.length > 1 ? false : true,
+            content: "删除分组"
+          },
+          "分组重命名"
+        ],
+        handler: {
+          addGroup(parameter: any) {
+            obj.this.manageGroupsArgs = {};
+            obj.this.$store.commit("updateManageGroupsStatus", true);
+            if (parameter.childrenId > 0) {
+              obj.this.manageGroupsArgs = parameter;
+              obj.this.manageGroupsArgs.typeName = "addGroup";
+            }
+            console.log("添加分组事件", parameter);
+          },
+          delGroup(parameter: any) {
+            obj.this.manageGroupsArgs = {};
+            obj.this.$store.commit("updateManageGroupsStatus", true);
+            if (parameter.childrenId > 0) {
+              obj.this.manageGroupsArgs = parameter;
+              obj.this.manageGroupsArgs.typeName = "delGroup";
+            }
+            console.log("删除分组事件", parameter);
+          },
+          renameGroup(parameter: any) {
+            obj.this.manageGroupsArgs = {};
+            obj.this.$store.commit("updateManageGroupsStatus", true);
+            if (parameter.childrenId > 0) {
+              obj.this.manageGroupsArgs = parameter;
+              obj.this.manageGroupsArgs.typeName = "renameGroup";
+            }
+            console.log("分组重命名事件", parameter);
+          }
+        }
+      };
+      return obj;
     }
   }
 });

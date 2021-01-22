@@ -240,7 +240,11 @@ $listFontColor:#777777;
             cursor: default;
 
             p{
+              width:90%;
               font-size: 15px;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
             }
           }
 

@@ -59,6 +59,18 @@ const websiteManageAPI = {
   // 更新好友信息
   updateFriend<T>(params: paramsType<T>) {
     return services.post(`${base.lk}/user/updateFriend`, params);
+  },
+  // 添加分组
+  getAddGroup<T>(params: paramsType<T>) {
+    return services.post(`${base.lk}/user/addGroup`, params);
+  },
+  // 分组重命名
+  updateRenameGroupName<T>(params: paramsType<T>) {
+    return services.post(`${base.lk}/user/renameGroupName`, params);
+  },
+  // 删除分组
+  updateDeleteGroup<T>(params: paramsType<T>) {
+    return services.post(`${base.lk}/user/deleteGroup`, params);
   }
 };
 
