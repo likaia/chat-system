@@ -1,11 +1,23 @@
 <template>
   <teleport to="body">
+    <!--截图区域-->
     <canvas
       id="screenshortContainer"
       :width="screenShortWidth"
       :height="screenShortHeight"
       ref="screenShortController"
     ></canvas>
+    <!--工具栏-->
+    <div id="toolPanel">
+      <div class="item-panel square"></div>
+      <div class="item-panel round"></div>
+      <div class="item-panel right-top"></div>
+      <div class="item-panel brush"></div>
+      <div class="item-panel text"></div>
+      <div class="item-panel save"></div>
+      <div class="item-panel close"></div>
+      <div class="item-panel confirm"></div>
+    </div>
   </teleport>
 </template>
 

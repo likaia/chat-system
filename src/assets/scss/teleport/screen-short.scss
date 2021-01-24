@@ -4,3 +4,119 @@
   left: 0;
   cursor: crosshair;
 }
+
+#toolPanel {
+  height: 24px;
+  background: #ffffff;
+  z-index: 9999;
+  position: absolute;
+  top: 520px;
+  left: 530px;
+  padding: 10px;
+
+  .item-panel {
+    width: 24px;
+    height: 24px;
+    margin-right: 15px;
+    float: left;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  .square {
+    background-image: url("~@/assets/img/screen-short/square.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("~@/assets/img/screen-short/square-hover.png");
+    }
+
+    &:active {
+      background-image: url("~@/assets/img/screen-short/square-click.png");
+    }
+  }
+  .round {
+    background-image: url("~@/assets/img/screen-short/round.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("~@/assets/img/screen-short/round-hover.png");
+    }
+
+    &:active {
+      background-image: url("~@/assets/img/screen-short/round-click.png");
+    }
+  }
+
+  .right-top {
+    background-image: url("~@/assets/img/screen-short/right-top.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("~@/assets/img/screen-short/right-top-hover.png");
+    }
+
+    &:active {
+      background-image: url("~@/assets/img/screen-short/right-top-click.png");
+    }
+  }
+
+  .brush {
+    background-image: url("~@/assets/img/screen-short/brush.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("~@/assets/img/screen-short/brush-hover.png");
+    }
+
+    &:active {
+      background-image: url("~@/assets/img/screen-short/brush-click.png");
+    }
+  }
+
+  .text {
+    background-image: url("~@/assets/img/screen-short/text.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("~@/assets/img/screen-short/text-hover.png");
+    }
+
+    &:active {
+      background-image: url("~@/assets/img/screen-short/text-click.png");
+    }
+  }
+
+  .save {
+    background-image: url("~@/assets/img/screen-short/save.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("~@/assets/img/screen-short/save-hover.png");
+    }
+
+    &:active {
+      background-image: url("~@/assets/img/screen-short/save-click.png");
+    }
+  }
+
+  .close {
+    background-image: url("~@/assets/img/screen-short/close.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("~@/assets/img/screen-short/close-hover.png");
+    }
+  }
+
+  .confirm {
+    background-image: url("~@/assets/img/screen-short/confirm.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("~@/assets/img/screen-short/confirm-hover.png");
+    }
+  }
+}
