@@ -8,7 +8,12 @@
       ref="screenShortController"
     ></canvas>
     <!--工具栏-->
-    <div id="toolPanel">
+    <div
+      id="toolPanel"
+      v-show="toolStatus"
+      :style="{ left: toolLeft + 'px', top: toolTop + 'px' }"
+      ref="toolController"
+    >
       <div class="item-panel square"></div>
       <div class="item-panel round"></div>
       <div class="item-panel right-top"></div>
@@ -34,11 +39,19 @@ export default {
     const screenShortWidth = data.getScreenShortWidth();
     const screenShortHeight = data.getScreenShortHeight();
     const screenShortController = data.getScreenShortController();
+    const toolController = data.getToolController();
+    const toolStatus = data.getToolStatus();
+    const toolLeft = data.getToolLeft();
+    const toolTop = data.getToolTop();
     new eventMonitoring(props, context as SetupContext<any>);
     return {
       screenShortWidth,
       screenShortHeight,
-      screenShortController
+      screenShortController,
+      toolController,
+      toolStatus,
+      toolLeft,
+      toolTop
     };
   }
 };

@@ -5,9 +5,15 @@ import { Store } from "vuex";
 const screenShortWidth = ref<number>(0);
 const screenShortHeight = ref<number>(0);
 
+// 截图工具栏展示状态与位置
+const toolStatus = ref<boolean>(false);
+const toolLeft = ref<number>(0);
+const toolTop = ref<number>(0);
+
 // 获取截图容器dom
 let screenShortController = ref<HTMLCanvasElement | null>(null);
-
+// 获取截图工具栏容器dom
+let toolController = ref<HTMLDivElement | null>(null);
 // 事件处理
 let emit: ((event: string, ...args: any[]) => void) | undefined;
 
@@ -27,6 +33,8 @@ export default class InitData {
       screenShortWidth.value = 0;
       screenShortHeight.value = 0;
       screenShortController = ref(null);
+      toolController = ref(null);
+      toolStatus.value = false;
       emit = undefined;
       $store = undefined;
       currentInstance = undefined;
@@ -60,6 +68,35 @@ export default class InitData {
   // 获取截图容器dom
   public getScreenShortController() {
     return screenShortController;
+  }
+
+  // 获取截图工具栏dom
+  public getToolController() {
+    return toolController;
+  }
+
+  // 获取截图工具栏展示状态
+  public getToolStatus() {
+    return toolStatus;
+  }
+
+  // 设置截图工具栏展示状态
+  public setToolStatus(status: boolean) {
+    toolStatus.value = status;
+  }
+
+  // 获取截图工具位置信息
+  public getToolLeft() {
+    return toolLeft;
+  }
+  public getToolTop() {
+    return toolTop;
+  }
+
+  // 设置截图工具位置信息
+  public setToolInfo(left: number, top: number) {
+    toolLeft.value = left;
+    toolTop.value = top;
   }
 
   /**

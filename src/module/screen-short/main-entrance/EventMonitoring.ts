@@ -1,4 +1,4 @@
-import { onMounted, getCurrentInstance, onUnmounted, Ref } from "vue";
+import { onMounted, getCurrentInstance, onUnmounted, Ref, nextTick } from "vue";
 import { SetupContext } from "@vue/runtime-core";
 import {
   cutOutBoxBorder,
@@ -18,6 +18,7 @@ import { drawCutOutBox } from "@/module/screen-short/split-methods/DrawCutOutBox
 import InitData from "@/module/screen-short/main-entrance/InitData";
 import { useStore } from "vuex";
 import html2canvas from "html2canvas";
+import { calculateToolLocation } from "@/module/screen-short/split-methods/CalculateToolLocation";
 
 export default class EventMonitoring {
   // 当前实例的响应式data数据
@@ -25,6 +26,8 @@ export default class EventMonitoring {
 
   // 截图区域canvas容器
   private screenShortController: Ref<HTMLCanvasElement | null>;
+  // 截图工具栏dom
+  private toolController: Ref<HTMLDivElement | null>;
   // 截图图片存放容器
   private screenShortImageController: HTMLCanvasElement | undefined;
   // 截图区域画布
@@ -70,6 +73,7 @@ export default class EventMonitoring {
     this.data = new InitData();
     // 获取截图区域canvas容器
     this.screenShortController = this.data.getScreenShortController();
+    this.toolController = this.data.getToolController();
     // 设置实例与属性
     this.data.setPropsData(context.emit);
     this.data.setProperty(useStore(), getCurrentInstance());
@@ -121,6 +125,8 @@ export default class EventMonitoring {
   private mouseDownEvent = (event: MouseEvent) => {
     this.dragging = true;
     this.clickFlag = true;
+    // 隐藏截图工具栏
+    this.data.setToolStatus(false);
     // 如果操作的是裁剪框
     if (this.borderOption) {
       this.draggingTrim = true;
@@ -185,6 +191,19 @@ export default class EventMonitoring {
     if (this.screenShortController.value != null) {
       // 修改鼠标状态为拖动
       this.screenShortController.value.style.cursor = "move";
+      // 显示截图工具栏
+      this.data.setToolStatus(true);
+      nextTick().then(() => {
+        if (this.toolController.value != null) {
+          // 计算截图工具栏位置
+          const toolLocation = calculateToolLocation(
+            this.cutOutBoxPosition,
+            this.toolController.value?.offsetWidth
+          );
+          // 设置截图工具栏位置
+          this.data.setToolInfo(toolLocation.mouseX, toolLocation.mouseY);
+        }
+      });
     }
   };
 
