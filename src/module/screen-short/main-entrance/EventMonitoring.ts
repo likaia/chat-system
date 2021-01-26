@@ -19,6 +19,7 @@ import InitData from "@/module/screen-short/main-entrance/InitData";
 import { useStore } from "vuex";
 import html2canvas from "html2canvas";
 import { calculateToolLocation } from "@/module/screen-short/split-methods/CalculateToolLocation";
+import { drawRectangle } from "@/module/screen-short/split-methods/DrawRectangle";
 
 export default class EventMonitoring {
   // 当前实例的响应式data数据
@@ -67,6 +68,10 @@ export default class EventMonitoring {
 
   // 鼠标点击状态
   private clickFlag = false;
+  // 当前点击的工具栏条目
+  private toolName = "";
+  private color = "red";
+  private history: Array<Record<string, any>> = [];
 
   constructor(props: Record<string, any>, context: SetupContext<any>) {
     // 实例化响应式data
@@ -125,8 +130,15 @@ export default class EventMonitoring {
   private mouseDownEvent = (event: MouseEvent) => {
     this.dragging = true;
     this.clickFlag = true;
-    // 隐藏截图工具栏
-    this.data.setToolStatus(false);
+    if (!this.data.getToolClickStatus().value) {
+      // 隐藏截图工具栏
+      this.data.setToolStatus(false);
+    }
+    if (this.data.getToolClickStatus().value) {
+      // 记录当前鼠标开始坐标
+      this.cutOutBoxPosition.startX = nonNegativeData(event.offsetX);
+      this.cutOutBoxPosition.startY = nonNegativeData(event.offsetY);
+    }
     // 如果操作的是裁剪框
     if (this.borderOption) {
       this.draggingTrim = true;
@@ -141,7 +153,11 @@ export default class EventMonitoring {
 
   // 鼠标移动事件
   private mouseMoveEvent = (event: MouseEvent) => {
-    if (this.screenShortCanvas == null) return;
+    if (
+      this.screenShortCanvas == null ||
+      this.screenShortController.value == null
+    )
+      return;
     this.clickFlag = false;
     // 获取裁剪框位置信息
     const { startX, startY, width, height } = this.cutOutBoxPosition;
@@ -151,6 +167,41 @@ export default class EventMonitoring {
     // 裁剪框临时宽高
     const tempWidth = currentX - startX;
     const tempHeight = currentY - startY;
+    // 工具栏绘制
+    if (this.data.getToolClickStatus().value && this.dragging) {
+      switch (this.toolName) {
+        case "square":
+          this.showLastHistory();
+          drawRectangle(
+            startX,
+            startY,
+            tempWidth,
+            tempHeight,
+            this.color,
+            this.screenShortCanvas,
+            this.screenShortController.value as HTMLCanvasElement,
+            this.screenShortImageController as HTMLCanvasElement
+          );
+          break;
+        case "round":
+          break;
+        case "right-top":
+          break;
+        case "brush":
+          break;
+        case "text":
+          break;
+        case "save":
+          break;
+        case "close":
+          break;
+        case "confirm":
+          break;
+        default:
+          break;
+      }
+      return;
+    }
     // 执行裁剪框操作函数
     this.operatingCutOutBox(
       currentX,
@@ -181,6 +232,17 @@ export default class EventMonitoring {
     // 绘制结束
     this.dragging = false;
     this.draggingTrim = false;
+    if (
+      this.screenShortController.value == null ||
+      this.screenShortCanvas == null
+    ) {
+      return;
+    }
+    if (this.data.getToolClickStatus().value) {
+      // 保存绘制记录
+      this.addHistoy();
+      return;
+    }
     // 保存裁剪框位置信息
     this.cutOutBoxPosition = this.tempCutOutBoxPosition;
     // 保存边框节点信息
@@ -200,6 +262,8 @@ export default class EventMonitoring {
             this.cutOutBoxPosition,
             this.toolController.value?.offsetWidth
           );
+          // 保存绘制记录
+          this.addHistoy();
           // 设置截图工具栏位置
           this.data.setToolInfo(toolLocation.mouseX, toolLocation.mouseY);
         }
@@ -250,7 +314,11 @@ export default class EventMonitoring {
         if (context.isPointInPath(currentX, currentY)) {
           switch (this.cutOutBoxBorderArr[i].index) {
             case 1:
-              this.screenShortController.value.style.cursor = "move";
+              if (this.data.getToolClickStatus().value) {
+                this.screenShortController.value.style.cursor = "crosshair";
+              } else {
+                this.screenShortController.value.style.cursor = "move";
+              }
               break;
             case 2:
               this.screenShortController.value.style.cursor = "ns-resize";
@@ -336,6 +404,48 @@ export default class EventMonitoring {
           this.screenShortImageController as HTMLCanvasElement
         ) as drawCutOutBoxReturnType;
       }
+    }
+  }
+
+  /**
+   * 裁剪框工具栏点击事件
+   * @param toolName
+   * @private
+   */
+  public toolClickEvent = (toolName: string) => {
+    // 更新当前点击的工具栏条目
+    this.toolName = toolName;
+    // 设置裁剪框工具栏为点击状态
+    this.data.setToolClickStatus(true);
+  };
+
+  /**
+   * 向历史记录中添加记录
+   * @private
+   */
+  private addHistoy() {
+    if (
+      this.screenShortCanvas != null &&
+      this.screenShortController.value != null
+    ) {
+      // 获取canvas画布与容器
+      const context = this.screenShortCanvas;
+      const controller = this.screenShortController.value;
+      // 保存当前画布状态
+      this.history.push({
+        data: context.getImageData(0, 0, controller.width, controller.height)
+      });
+    }
+  }
+
+  /**
+   * 显示最后一条历史记录
+   * @private
+   */
+  private showLastHistory() {
+    if (this.screenShortCanvas != null) {
+      const context = this.screenShortCanvas;
+      context.putImageData(this.history[this.history.length - 1]["data"], 0, 0);
     }
   }
 }

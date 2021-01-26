@@ -10,6 +10,9 @@ const toolStatus = ref<boolean>(false);
 const toolLeft = ref<number>(0);
 const toolTop = ref<number>(0);
 
+// 截图工具栏点击状态
+const toolClickStatus = ref<boolean>(false);
+
 // 获取截图容器dom
 let screenShortController = ref<HTMLCanvasElement | null>(null);
 // 获取截图工具栏容器dom
@@ -38,6 +41,7 @@ export default class InitData {
       emit = undefined;
       $store = undefined;
       currentInstance = undefined;
+      toolClickStatus.value = false;
     }
   }
 
@@ -97,6 +101,16 @@ export default class InitData {
   public setToolInfo(left: number, top: number) {
     toolLeft.value = left;
     toolTop.value = top;
+  }
+
+  // 获取截图工具栏点击状态
+  public getToolClickStatus() {
+    return toolClickStatus;
+  }
+
+  // 设置截图工具栏点击状态
+  public setToolClickStatus(status: boolean) {
+    toolClickStatus.value = status;
   }
 
   /**

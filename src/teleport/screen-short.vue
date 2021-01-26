@@ -14,14 +14,17 @@
       :style="{ left: toolLeft + 'px', top: toolTop + 'px' }"
       ref="toolController"
     >
-      <div class="item-panel square"></div>
-      <div class="item-panel round"></div>
-      <div class="item-panel right-top"></div>
-      <div class="item-panel brush"></div>
-      <div class="item-panel text"></div>
-      <div class="item-panel save"></div>
-      <div class="item-panel close"></div>
-      <div class="item-panel confirm"></div>
+      <div class="item-panel square" @click="toolClickEvent('square')"></div>
+      <div class="item-panel round" @click="toolClickEvent('round')"></div>
+      <div
+        class="item-panel right-top"
+        @click="toolClickEvent('right-top')"
+      ></div>
+      <div class="item-panel brush" @click="toolClickEvent('brush')"></div>
+      <div class="item-panel text" @click="toolClickEvent('text')"></div>
+      <div class="item-panel save" @click="toolClickEvent('save')"></div>
+      <div class="item-panel close" @click="toolClickEvent('close')"></div>
+      <div class="item-panel confirm" @click="toolClickEvent('confirm')"></div>
     </div>
   </teleport>
 </template>
@@ -43,7 +46,8 @@ export default {
     const toolStatus = data.getToolStatus();
     const toolLeft = data.getToolLeft();
     const toolTop = data.getToolTop();
-    new eventMonitoring(props, context as SetupContext<any>);
+    const event = new eventMonitoring(props, context as SetupContext<any>);
+    const toolClickEvent = event.toolClickEvent;
     return {
       screenShortWidth,
       screenShortHeight,
@@ -51,7 +55,8 @@ export default {
       toolController,
       toolStatus,
       toolLeft,
-      toolTop
+      toolTop,
+      toolClickEvent
     };
   }
 };
