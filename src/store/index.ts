@@ -85,6 +85,10 @@ export default createStore({
       state.profilePicture = userObj.profilePicture;
       state.userID = userObj.userID;
       state.username = userObj.username;
+      localStorage.setItem("token", userObj.token);
+      localStorage.setItem("profilePicture", userObj.profilePicture);
+      localStorage.setItem("userID", userObj.userID);
+      localStorage.setItem("username", userObj.username);
     },
     // 更新组件名
     updateComponentName(state, route) {
