@@ -71,6 +71,10 @@ const websiteManageAPI = {
   // 删除分组
   updateDeleteGroup<T>(params: paramsType<T>) {
     return services.post(`${base.lk}/user/deleteGroup`, params);
+  },
+  // 删除好友
+  updateDeleteFriend<T>(params: paramsType<T>) {
+    return services.post(`${base.lk}/user/deleteFriend`, params);
   }
 };
 
