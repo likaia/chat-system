@@ -120,3 +120,17 @@
     }
   }
 }
+
+#textInputPanel {
+  min-width: 20px;
+  min-height: 30px;
+  line-height: 30px;
+  padding: 5px;
+  box-sizing: border-box;
+  position: absolute;
+  outline: none;
+  top: 0;
+  left: 0;
+  color: red;
+  border: solid 1px red;
+}

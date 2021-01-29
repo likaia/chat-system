@@ -1,5 +1,6 @@
 import { ComponentInternalInstance, ref } from "vue";
 import { Store } from "vuex";
+import { positionInfoType } from "@/module/screen-short/type/ComponentType";
 
 // 截图容器宽高
 const screenShortWidth = ref<number>(0);
@@ -12,11 +13,22 @@ const toolTop = ref<number>(0);
 
 // 截图工具栏点击状态
 const toolClickStatus = ref<boolean>(false);
+// 文本输入工具栏点击状态
+const textClickStatus = ref<boolean>(false);
+// 裁剪框位置参数
+let cutOutBoxPosition: positionInfoType = {
+  startX: 0,
+  startY: 0,
+  width: 0,
+  height: 0
+};
 
 // 获取截图容器dom
 let screenShortController = ref<HTMLCanvasElement | null>(null);
 // 获取截图工具栏容器dom
 let toolController = ref<HTMLDivElement | null>(null);
+// 获取文本输入区域dom
+let textInputController = ref<HTMLDivElement | null>(null);
 // 事件处理
 let emit: ((event: string, ...args: any[]) => void) | undefined;
 
@@ -37,6 +49,13 @@ export default class InitData {
       screenShortHeight.value = 0;
       screenShortController = ref(null);
       toolController = ref(null);
+      textInputController = ref(null);
+      cutOutBoxPosition = {
+        startX: 0,
+        startY: 0,
+        width: 0,
+        height: 0
+      };
       toolStatus.value = false;
       emit = undefined;
       $store = undefined;
@@ -79,14 +98,29 @@ export default class InitData {
     return toolController;
   }
 
+  // 获取文本输入区域dom
+  public getTextInputController() {
+    return textInputController;
+  }
+
   // 获取截图工具栏展示状态
   public getToolStatus() {
     return toolStatus;
   }
 
+  // 获取文本输入工具栏展示状态
+  public getTextStatus() {
+    return textClickStatus;
+  }
+
   // 设置截图工具栏展示状态
   public setToolStatus(status: boolean) {
     toolStatus.value = status;
+  }
+
+  // 设置文本输入工具栏展示状态
+  public setTextStatus(status: boolean) {
+    textClickStatus.value = status;
   }
 
   // 获取截图工具位置信息
@@ -111,6 +145,24 @@ export default class InitData {
   // 设置截图工具栏点击状态
   public setToolClickStatus(status: boolean) {
     toolClickStatus.value = status;
+  }
+
+  // 获取裁剪框位置信息
+  public getCutOutBoxPosition() {
+    return cutOutBoxPosition;
+  }
+
+  // 设置裁剪框位置信息
+  public setCutOutBoxPosition(
+    mouseX: number,
+    mouseY: number,
+    width: number,
+    height: number
+  ) {
+    cutOutBoxPosition.startX = mouseX;
+    cutOutBoxPosition.startY = mouseY;
+    cutOutBoxPosition.width = width;
+    cutOutBoxPosition.height = height;
   }
 
   /**

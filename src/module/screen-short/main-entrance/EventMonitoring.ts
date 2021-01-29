@@ -3,9 +3,9 @@ import { SetupContext } from "@vue/runtime-core";
 import {
   cutOutBoxBorder,
   movePositionType,
-  cutBoxBorderType,
   zoomCutOutBoxReturnType,
-  drawCutOutBoxReturnType
+  drawCutOutBoxReturnType,
+  positionInfoType
 } from "@/module/screen-short/type/ComponentType.ts";
 import { drawMasking } from "@/module/screen-short/split-methods/DrawMasking";
 import {
@@ -20,10 +20,20 @@ import { useStore } from "vuex";
 import html2canvas from "html2canvas";
 import { calculateToolLocation } from "@/module/screen-short/split-methods/CalculateToolLocation";
 import { drawRectangle } from "@/module/screen-short/split-methods/DrawRectangle";
+import { drawCircle } from "@/module/screen-short/split-methods/DrawCircle";
+import { drawLineArrow } from "@/module/screen-short/split-methods/DrawLineArrow";
+import {
+  drawPencli,
+  initPencli
+} from "@/module/screen-short/split-methods/DrawPencil";
+import { drawText } from "@/module/screen-short/split-methods/DrawText";
+import { saveCanvasToImage } from "@/module/screen-short/common-methords/SaveCanvasToImage";
+import { saveCanvasToBase64 } from "@/module/screen-short/common-methords/SaveCanvasToBase64";
 
 export default class EventMonitoring {
   // 当前实例的响应式data数据
   private readonly data: InitData;
+  private emit: ((event: string, ...args: any[]) => void) | undefined;
 
   // 截图区域canvas容器
   private screenShortController: Ref<HTMLCanvasElement | null>;
@@ -33,16 +43,18 @@ export default class EventMonitoring {
   private screenShortImageController: HTMLCanvasElement | undefined;
   // 截图区域画布
   private screenShortCanvas: CanvasRenderingContext2D | undefined;
+  // 文本区域dom
+  private textInputController: Ref<HTMLDivElement | null> | undefined;
 
-  // 裁剪框位置参数
-  private cutOutBoxPosition: cutBoxBorderType = {
+  // 图形位置参数
+  private drawGraphPosition: positionInfoType = {
     startX: 0,
     startY: 0,
     width: 0,
     height: 0
   };
-  // 裁剪框临时位置参数
-  private tempCutOutBoxPosition: cutBoxBorderType = {
+  // 临时图形位置参数
+  private tempGraphPosition: positionInfoType = {
     startX: 0,
     startY: 0,
     width: 0,
@@ -71,7 +83,14 @@ export default class EventMonitoring {
   // 当前点击的工具栏条目
   private toolName = "";
   private color = "red";
+  private fontSize = 17;
+  private borderWidth = 2;
   private history: Array<Record<string, any>> = [];
+  // 文本输入框位置
+  private textInputPosition: { mouseX: number; mouseY: number } = {
+    mouseX: 0,
+    mouseY: 0
+  };
 
   constructor(props: Record<string, any>, context: SetupContext<any>) {
     // 实例化响应式data
@@ -79,17 +98,17 @@ export default class EventMonitoring {
     // 获取截图区域canvas容器
     this.screenShortController = this.data.getScreenShortController();
     this.toolController = this.data.getToolController();
+    this.textInputController = this.data.getTextInputController();
     // 设置实例与属性
     this.data.setPropsData(context.emit);
     this.data.setProperty(useStore(), getCurrentInstance());
 
     onMounted(() => {
+      this.emit = this.data.getEmit();
       // 设置截图区域canvas宽高
       this.data.setScreenShortInfo(window.innerWidth, window.innerHeight);
-      // 截取整个网页
-      html2canvas(document.body, {
-        allowTaint: true
-      }).then(canvas => {
+      // 截取整个网页，allowTaint: true可解决截图后跨域导致的图片不显示问题，但是会影响截图的主体功能
+      html2canvas(document.body, {}).then(canvas => {
         // 装载截图的dom为null则退出
         if (this.screenShortController.value == null) return;
 
@@ -130,24 +149,78 @@ export default class EventMonitoring {
   private mouseDownEvent = (event: MouseEvent) => {
     this.dragging = true;
     this.clickFlag = true;
-    if (!this.data.getToolClickStatus().value) {
+    const mouseX = nonNegativeData(event.offsetX);
+    const mouseY = nonNegativeData(event.offsetY);
+
+    // 如果当前操作的是截图工具栏
+    if (this.data.getToolClickStatus().value) {
+      // 记录当前鼠标开始坐标
+      this.drawGraphPosition.startX = mouseX;
+      this.drawGraphPosition.startY = mouseY;
+    } else {
       // 隐藏截图工具栏
       this.data.setToolStatus(false);
     }
-    if (this.data.getToolClickStatus().value) {
-      // 记录当前鼠标开始坐标
-      this.cutOutBoxPosition.startX = nonNegativeData(event.offsetX);
-      this.cutOutBoxPosition.startY = nonNegativeData(event.offsetY);
+    // 当前操作的是画笔
+    if (this.toolName == "brush" && this.screenShortCanvas) {
+      initPencli(this.screenShortCanvas, mouseX, mouseY);
     }
+    // 当前操作的文本
+    if (
+      this.toolName == "text" &&
+      this.textInputController?.value &&
+      this.screenShortController?.value &&
+      this.screenShortCanvas
+    ) {
+      // 修改鼠标样式
+      this.screenShortController.value.style.cursor = "text";
+      // 显示文本输入区域
+      this.data.setTextStatus(true);
+      // 判断输入框位置是否变化
+      if (
+        this.textInputPosition.mouseX != 0 &&
+        this.textInputPosition.mouseY != 0 &&
+        this.textInputPosition.mouseX != mouseX &&
+        this.textInputPosition.mouseY != mouseY
+      ) {
+        drawText(
+          this.textInputController.value?.innerText,
+          this.textInputPosition.mouseX,
+          this.textInputPosition.mouseY,
+          this.color,
+          this.fontSize,
+          this.screenShortCanvas
+        );
+        // 清空文本输入区域的内容
+        this.textInputController.value.innerHTML = "";
+        // 保存绘制记录
+        this.addHistoy();
+      }
+      // 计算文本框显示位置
+      const textMouseX = mouseX - 15;
+      const textMouseY = mouseY - 15;
+      // 修改文本区域位置
+      this.textInputController.value.style.left = textMouseX + "px";
+      this.textInputController.value.style.top = textMouseY + "px";
+      setTimeout(() => {
+        // 获取焦点
+        if (this.textInputController?.value) {
+          this.textInputController.value.focus();
+          // 记录当前输入框位置
+          this.textInputPosition = { mouseX: mouseX, mouseY: mouseY };
+        }
+      });
+    }
+
     // 如果操作的是裁剪框
     if (this.borderOption) {
       this.draggingTrim = true;
-      this.movePosition.moveStartX = nonNegativeData(event.offsetX);
-      this.movePosition.moveStartY = nonNegativeData(event.offsetY);
+      this.movePosition.moveStartX = mouseX;
+      this.movePosition.moveStartY = mouseY;
     } else {
       // 记录当前鼠标开始坐标
-      this.cutOutBoxPosition.startX = nonNegativeData(event.offsetX);
-      this.cutOutBoxPosition.startY = nonNegativeData(event.offsetY);
+      this.drawGraphPosition.startX = mouseX;
+      this.drawGraphPosition.startY = mouseY;
     }
   };
 
@@ -160,7 +233,7 @@ export default class EventMonitoring {
       return;
     this.clickFlag = false;
     // 获取裁剪框位置信息
-    const { startX, startY, width, height } = this.cutOutBoxPosition;
+    const { startX, startY, width, height } = this.drawGraphPosition;
     // 获取当前鼠标坐标
     const currentX = nonNegativeData(event.offsetX);
     const currentY = nonNegativeData(event.offsetY);
@@ -169,33 +242,54 @@ export default class EventMonitoring {
     const tempHeight = currentY - startY;
     // 工具栏绘制
     if (this.data.getToolClickStatus().value && this.dragging) {
+      this.showLastHistory();
       switch (this.toolName) {
         case "square":
-          this.showLastHistory();
           drawRectangle(
             startX,
             startY,
             tempWidth,
             tempHeight,
             this.color,
+            this.borderWidth,
             this.screenShortCanvas,
             this.screenShortController.value as HTMLCanvasElement,
             this.screenShortImageController as HTMLCanvasElement
           );
           break;
         case "round":
+          drawCircle(
+            this.screenShortCanvas,
+            currentX,
+            currentY,
+            startX,
+            startY,
+            this.borderWidth,
+            this.color
+          );
           break;
         case "right-top":
+          drawLineArrow(
+            this.screenShortCanvas,
+            startX,
+            startY,
+            currentX,
+            currentY,
+            30,
+            10,
+            this.borderWidth,
+            this.color
+          );
           break;
         case "brush":
-          break;
-        case "text":
-          break;
-        case "save":
-          break;
-        case "close":
-          break;
-        case "confirm":
+          // 画笔绘制
+          drawPencli(
+            this.screenShortCanvas,
+            currentX,
+            currentY,
+            this.borderWidth,
+            this.color
+          );
           break;
         default:
           break;
@@ -215,7 +309,7 @@ export default class EventMonitoring {
     // 如果鼠标未点击或者当前操作的是裁剪框都return
     if (!this.dragging || this.draggingTrim) return;
     // 绘制裁剪框
-    this.tempCutOutBoxPosition = drawCutOutBox(
+    this.tempGraphPosition = drawCutOutBox(
       startX,
       startY,
       tempWidth,
@@ -243,12 +337,17 @@ export default class EventMonitoring {
       this.addHistoy();
       return;
     }
-    // 保存裁剪框位置信息
-    this.cutOutBoxPosition = this.tempCutOutBoxPosition;
+    // 保存绘制后的图形位置信息
+    this.drawGraphPosition = this.tempGraphPosition;
+    // 如果工具栏未点击则保存裁剪框位置
+    if (!this.data.getToolClickStatus().value) {
+      const { startX, startY, width, height } = this.drawGraphPosition;
+      this.data.setCutOutBoxPosition(startX, startY, width, height);
+    }
     // 保存边框节点信息
     this.cutOutBoxBorderArr = saveBorderArrInfo(
       this.borderSize,
-      this.cutOutBoxPosition
+      this.drawGraphPosition
     );
     if (this.screenShortController.value != null) {
       // 修改鼠标状态为拖动
@@ -259,7 +358,7 @@ export default class EventMonitoring {
         if (this.toolController.value != null) {
           // 计算截图工具栏位置
           const toolLocation = calculateToolLocation(
-            this.cutOutBoxPosition,
+            this.drawGraphPosition,
             this.toolController.value?.offsetWidth
           );
           // 保存绘制记录
@@ -366,7 +465,7 @@ export default class EventMonitoring {
           this.screenShortController.value.height
         );
         // 重新绘制裁剪框
-        this.tempCutOutBoxPosition = drawCutOutBox(
+        this.tempGraphPosition = drawCutOutBox(
           x,
           y,
           width,
@@ -393,7 +492,7 @@ export default class EventMonitoring {
           this.borderOption as number
         ) as zoomCutOutBoxReturnType;
         // 绘制裁剪框
-        this.tempCutOutBoxPosition = drawCutOutBox(
+        this.tempGraphPosition = drawCutOutBox(
           tempStartX,
           tempStartY,
           tempWidth,
@@ -410,17 +509,31 @@ export default class EventMonitoring {
   /**
    * 裁剪框工具栏点击事件
    * @param toolName
-   * @private
    */
   public toolClickEvent = (toolName: string) => {
     // 更新当前点击的工具栏条目
     this.toolName = toolName;
+
+    // 保存图片
+    if (toolName == "save") {
+      this.getCanvasImgData(true);
+    }
+    // 销毁组件
+    if (toolName == "close") {
+      this.resetComponent();
+    }
+    // 确认截图
+    if (toolName == "confirm" && this.screenShortCanvas && this.emit) {
+      const base64 = this.getCanvasImgData(false);
+      this.emit("get-image-data", base64);
+    }
+
     // 设置裁剪框工具栏为点击状态
     this.data.setToolClickStatus(true);
   };
 
   /**
-   * 向历史记录中添加记录
+   * 保存当前画布状态
    * @private
    */
   private addHistoy() {
@@ -439,7 +552,7 @@ export default class EventMonitoring {
   }
 
   /**
-   * 显示最后一条历史记录
+   * 显示最新的画布状态
    * @private
    */
   private showLastHistory() {
@@ -448,4 +561,55 @@ export default class EventMonitoring {
       context.putImageData(this.history[this.history.length - 1]["data"], 0, 0);
     }
   }
+
+  /**
+   * 重置组件
+   */
+  private resetComponent = () => {
+    if (this.emit) {
+      // 隐藏截图工具栏
+      this.data.setToolStatus(false);
+      // 初始化响应式变量
+      this.data.setInitStatus(true);
+      // 销毁组件
+      this.emit("destroy-component", false);
+      return;
+    }
+    throw "组件重置失败";
+  };
+
+  /**
+   * 将指定区域的canvas转为图片
+   * @private
+   */
+  private getCanvasImgData = (isSave: boolean) => {
+    // 获取裁剪区域位置信息
+    const { startX, startY, width, height } = this.data.getCutOutBoxPosition();
+    let base64 = "";
+    // 保存图片,需要减去八个点的大小
+    if (this.screenShortCanvas) {
+      if (isSave) {
+        // 将canvas转为图片
+        saveCanvasToImage(
+          this.screenShortCanvas,
+          startX + this.borderSize / 1.5,
+          startY + this.borderSize / 1.5,
+          width - this.borderSize * 1.5,
+          height - this.borderSize * 1.5
+        );
+      } else {
+        // 将canvas转为base64
+        base64 = saveCanvasToBase64(
+          this.screenShortCanvas,
+          startX + this.borderSize / 1.5,
+          startY + this.borderSize / 1.5,
+          width - this.borderSize * 1.5,
+          height - this.borderSize * 1.5
+        );
+      }
+    }
+    // 重置组件
+    this.resetComponent();
+    return base64;
+  };
 }

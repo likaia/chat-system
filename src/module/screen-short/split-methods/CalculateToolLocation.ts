@@ -1,4 +1,4 @@
-import { cutBoxBorderType } from "@/module/screen-short/type/ComponentType";
+import { positionInfoType } from "@/module/screen-short/type/ComponentType";
 
 /**
  * 计算截图工具栏位置
@@ -6,7 +6,7 @@ import { cutBoxBorderType } from "@/module/screen-short/type/ComponentType";
  * @param toolWidth 截图工具栏宽度
  */
 export function calculateToolLocation(
-  position: cutBoxBorderType,
+  position: positionInfoType,
   toolWidth: number
 ) {
   // 工具栏X轴坐标 = (裁剪框的宽度 - 工具栏的宽度) / 2 + 裁剪框距离左侧的距离

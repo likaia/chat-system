@@ -26,6 +26,14 @@
       <div class="item-panel close" @click="toolClickEvent('close')"></div>
       <div class="item-panel confirm" @click="toolClickEvent('confirm')"></div>
     </div>
+    <!--文本输入区域-->
+    <div
+      id="textInputPanel"
+      ref="textInputController"
+      v-show="textStatus"
+      contenteditable="true"
+      spellcheck="false"
+    ></div>
   </teleport>
 </template>
 
@@ -33,6 +41,7 @@
 import initData from "@/module/screen-short/main-entrance/InitData";
 import eventMonitoring from "@/module/screen-short/main-entrance/EventMonitoring";
 import { SetupContext } from "@vue/runtime-core";
+import _ from "lodash";
 
 export default {
   name: "screen-short",
@@ -43,7 +52,9 @@ export default {
     const screenShortHeight = data.getScreenShortHeight();
     const screenShortController = data.getScreenShortController();
     const toolController = data.getToolController();
+    const textInputController = data.getTextInputController();
     const toolStatus = data.getToolStatus();
+    const textStatus = data.getTextStatus();
     const toolLeft = data.getToolLeft();
     const toolTop = data.getToolTop();
     const event = new eventMonitoring(props, context as SetupContext<any>);
@@ -52,12 +63,23 @@ export default {
       screenShortWidth,
       screenShortHeight,
       screenShortController,
+      textInputController,
       toolController,
       toolStatus,
+      textStatus,
       toolLeft,
       toolTop,
       toolClickEvent
     };
+  },
+  emits: {
+    // vue3中建议对所有emit事件进行验证
+    "destroy-component": (status: boolean) => {
+      return !_.isNull(status);
+    },
+    "get-image-data": (base64: string) => {
+      return !_.isNull(base64);
+    }
   }
 };
 </script>

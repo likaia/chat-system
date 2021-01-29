@@ -1,6 +1,6 @@
 import {
-  cutBoxBorderType,
-  cutOutBoxBorder
+  cutOutBoxBorder,
+  positionInfoType
 } from "@/module/screen-short/type/ComponentType";
 
 /**
@@ -11,7 +11,7 @@ import {
  */
 export function saveBorderArrInfo(
   borderSize: number,
-  positionInfo: cutBoxBorderType
+  positionInfo: positionInfoType
 ) {
   // 获取裁剪框位置信息
   const { startX, startY, width, height } = positionInfo;

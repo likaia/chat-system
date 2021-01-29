@@ -15,7 +15,7 @@ export type movePositionType = {
 };
 
 // 裁剪框位置参数
-export type cutBoxBorderType = {
+export type positionInfoType = {
   startX: number;
   startY: number;
   width: number;
