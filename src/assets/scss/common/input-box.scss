@@ -1,0 +1,57 @@
+$Color: #007fff;
+$boderColor: #f5f5f6;
+.input-box {
+  display: flex;
+  .title {
+    width: 100px;
+    line-height: 30px;
+  }
+  input {
+    width: 60%;
+    margin: 0 20px;
+    height: 30px;
+    color: #666;
+    border: 0;
+    outline: none;
+  }
+  .edit {
+    display: flex;
+    text-align: right;
+    width: 100px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    .icon {
+      cursor: pointer;
+      display: block;
+      width: 24px;
+      height: 24px;
+      background: url(~@/assets/img/more/edit-icon.6d6382b.svg) no-repeat
+        center;
+    }
+    span {
+      cursor: pointer;
+      color: $Color;
+      font-size: 14px;
+    }
+  }
+  .save {
+    display: flex;
+    width: 100px;
+    height: 30px;
+    font-size: 14px;
+    text-align: right;
+    align-items: center;
+    justify-content: center;
+    color: $Color;
+    span {
+      cursor: pointer;
+    }
+    .save-btn {
+      margin-right: 8px;
+    }
+    .cancel-btn {
+      color: #999;
+    }
+  }
+}

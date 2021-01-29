@@ -1,7 +1,7 @@
 <template>
   <div id="setting">
     <toast class="toast" v-if="isShow" :info="toastMsg" />
-    <table>
+    <table v-if="userInfo">
       <tbody>
         <tr>
           <td colspan="2">
@@ -49,7 +49,7 @@
               </select>
               <!-- 省份 -->
               <select ref="provinces" v-model="province" @change="getProvinces">
-                <option value="">请选择</option>
+                <!-- <option value="">请选择</option> -->
                 <option
                   v-for="(item, optionIndex) in list"
                   :value="item.code"
@@ -59,7 +59,7 @@
               </select>
               <!-- 城市 -->
               <select v-model="cityVal" @change="updateNativePlace">
-                <option value="">请选择</option>
+                <!-- <option value="">请选择</option> -->
                 <option
                   v-for="(item, optionIndex) in city"
                   :value="item.code"
@@ -106,7 +106,7 @@
             <div class="input-box">
               <span class="title">性别</span>
               <select v-model="userInfo.gender" @change="updateGender">
-                <option value="">性别</option>
+                <!-- <option value="">性别</option> -->
                 <option value="0">男</option>
                 <option value="1">女</option>
               </select>
@@ -177,7 +177,6 @@ import { defineComponent } from "vue";
 
 import inputBox from "@/components/common/input-box.vue";
 import toast from "@/components/common/toast.vue";
-import { set } from "lodash";
 import { responseDataType } from "@/type/ComponentDataType";
 import base from "../../api/base";
 
@@ -208,8 +207,8 @@ export default defineComponent({
         userId: this.$store.state.userID
       });
       this.userInfo = data;
-      console.log(this.userInfo);
       this.province = this.userInfo.province;
+      this.cityVal = this.userInfo.city;
       this.getProvinces(this.province);
     },
     uploadAvatar: function<T>(e: { target: { files: FileList } }) {
@@ -226,19 +225,29 @@ export default defineComponent({
           const fileName = `${base.lkBaseURL}/uploads/${res.fileName}`;
           // 头像赋值
           this.avatarSrc = fileName;
-          console.log(fileName);
           this.saveInfo(fileName, 0);
         });
     },
     // 更新用户信息
-    async saveInfo(val: string, keyNum: number) {
-      const userObj = this.switchInfo(val, keyNum);
+    async saveInfo(val: string, keyNum: number, cityVal: string) {
+      const userObj = this.switchInfo(val, keyNum, cityVal);
       const { data } = await this.$api.websiteManageAPI.updateUserInfo({
         userId: this.$store.state.userID,
         ...userObj
       });
-      console.log(data);
       if (data == "用户信息更新成功") {
+        const dataUid = await this.$api.websiteManageAPI.getUserDataByUid({
+          userId: this.$store.state.userID
+        });
+        if (dataUid.code == 0) {
+          this.$store.commit("updateUserInfo", {
+            token: this.$store.state.token,
+            profilePicture: dataUid.data.avatarSrc,
+            userID: this.$store.state.userID,
+            username: dataUid.data.userName
+          });
+        }
+
         this.toastMsg = data;
         this.isShow = true;
         setTimeout(() => {
@@ -265,10 +274,9 @@ export default defineComponent({
     // ------其他方法-------------
     getProvinces() {
       setTimeout(() => {
-        const optionIndex = this.$refs.provinces.selectedIndex - 1;
-        console.log("------------", optionIndex);
+        const optionIndex = this.$refs.provinces.selectedIndex;
         this.city = this.list[optionIndex].children;
-      }, 1000);
+      }, 0);
     },
     updateBirth() {
       // 更新出生日期
@@ -280,11 +288,9 @@ export default defineComponent({
     },
     updateNativePlace() {
       // 更新籍贯
-      console.log(this.cityVal);
       this.saveInfo(this.province, 11, this.cityVal);
     },
     switchInfo(val: string, keyNum: number, cityVal: string) {
-      console.log(val, keyNum, cityVal);
       let userObj = {};
       switch (keyNum) {
         case 0:
@@ -344,128 +350,12 @@ export default defineComponent({
   },
   created() {
     this.getUserDataByUid();
-    console.log(this.city, "-----");
-    console.log(111);
-  },
-  mounted() {
-    console.log(222);
   }
 });
 </script>
 
-<style scoped lang="scss">
-$borderColor: #ededed;
-$hoverColor: #f5f5f6;
-$fontColor: #bbbbbb;
-$listFontColor: #777777;
-$hoverFontColor: #12b7f5;
-$Color: #007fff;
-$boderColor: #f5f5f6;
-
-#setting {
-  width: 80%;
-  height: 800px;
-  min-width: 900px;
-  margin: auto;
-  overflow: auto;
-  .main-title {
-    width: 500px;
-    padding: 20px 0;
-    font-weight: 500;
-    font-size: 22px;
-  }
-  table {
-    width: 100%;
-    td {
-      padding: 20px 0;
-      border-bottom: 1px solid $boderColor;
-      .layout {
-        width: 140px;
-        height: 40px;
-        line-height: 40px;
-        font-size: 18px;
-        color: #fff;
-        text-align: center;
-        border: 0;
-        outline: none;
-        border-radius: 5px;
-        background-color: rgb(245, 108, 108);
-        margin: auto;
-        cursor: pointer;
-      }
-    }
-    td:nth-child(1) {
-      padding-right: 100px;
-    }
-    .uploadAvatar {
-      display: flex;
-      .title {
-        width: 100px;
-      }
-    }
-    .avatar {
-      width: 80px;
-      height: 80px;
-      overflow: hidden;
-      margin: 0 20px;
-      img {
-        width: 100%;
-      }
-    }
-    .btn-area {
-      position: relative;
-      .tips {
-        font-size: 14px;
-        color: $fontColor;
-      }
-      .up-btn {
-        cursor: pointer;
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        width: 80px;
-        height: 28px;
-        text-align: center;
-        font-size: 14px;
-        color: #fff;
-        line-height: 28px;
-        overflow: hidden;
-        border-radius: 2px;
-        background: $Color;
-        input {
-          cursor: pointer;
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 100%;
-          height: 28px;
-          opacity: 0;
-          z-index: 2;
-        }
-      }
-    }
-  }
-}
-
-.input-box {
-  display: flex;
-  .title {
-    width: 100px;
-    line-height: 30px;
-  }
-  select {
-    width: 70px;
-    height: 28px;
-    border-radius: 4px;
-    margin-right: 10px;
-    outline: none;
-  }
-}
-.toast {
-  position: fixed;
-  top: 100px;
-  left: 0;
-  right: 0;
-  margin: auto;
-}
-</style>
+<style
+  scoped
+  lang="scss"
+  src="@/assets/scss/moreListChild/settings.scss"
+></style>

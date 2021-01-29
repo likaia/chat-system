@@ -5,8 +5,7 @@
       type="text"
       @focus="onFocus"
       :placeholder="placeholder"
-      :value="inputVal"
-      @input="vModel($event.target.value)"
+      v-model="inputVal"
       ref="inputText"
     />
     <div v-if="isShowBtn" class="edit">
@@ -21,6 +20,7 @@
 </template>
 
 <script lang="ts">
+import _ from "lodash";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -38,115 +38,44 @@ export default defineComponent({
     return {
       currentIndex: 0,
       isShowBtn: true,
-      inputVal: this.value,
-      saveVal: ""
+      inputVal: this.value
     };
   },
   methods: {
-    onFocus() {
-      // 聚焦事件
-      this.isShowBtn = false;
-    },
-    edit() {
-      // 修改按钮
-      this.$refs.inputText.focus();
-      this.isShowBtn = false;
-    },
-    cancel() {
-      // 取消按钮
-      console.log("取消按钮");
-      this.inputVal = this.value;
-      this.isShowBtn = true;
-    },
+    // 保存内容
     save() {
-      // 保存按钮
-      if (this.inputVal == "") {
-        alert("保存信息不能为空");
-        return;
-      }
-      this.inputVal = this.saveVal;
-      this.isShowBtn = true;
+      this.isShowBtn = false;
       this.$emit("save-info", this.inputVal, this.keyNum);
+      this.isShowBtn = true;
     },
+    // 编辑内容
+    edit() {
+      this.isShowBtn = false;
+      this.$refs.inputText.focus();
+    },
+    // 获取最新内容
     changeValue() {
-      // 把父组件传过来的值，保存到data中
       this.inputVal = this.value;
     },
-    vModel(val: string) {
-      this.saveVal = val;
-      this.inputVal = val;
+    // 开启修改按钮选择
+    onFocus() {
+      this.isShowBtn = false;
+    },
+    // 取消修改
+    cancel() {
+      this.isShowBtn = true;
     }
   },
   created() {
     this.changeValue();
   },
-  mounted() {
-    console.log(this.value);
-  },
-  watch: {
-    inputVal(val) {
-      console.log(val);
+  emits: {
+    // vue3中建议对所有emit事件进行验证
+    "save-info": (val: string) => {
+      return !_.isEmpty(val);
     }
   }
 });
 </script>
 
-<style scoped lang="scss">
-$Color: #007fff;
-$boderColor: #f5f5f6;
-.input-box {
-  display: flex;
-  .title {
-    width: 100px;
-    line-height: 30px;
-  }
-  input {
-    width: 60%;
-    margin: 0 20px;
-    height: 30px;
-    color: #666;
-    border: 0;
-    outline: none;
-  }
-  .edit {
-    display: flex;
-    text-align: right;
-    width: 100px;
-    height: 30px;
-    align-items: center;
-    justify-content: center;
-    .icon {
-      cursor: pointer;
-      display: block;
-      width: 24px;
-      height: 24px;
-      background: url(../../assets/img/more/edit-icon.6d6382b.svg) no-repeat
-        center;
-    }
-    span {
-      cursor: pointer;
-      color: $Color;
-      font-size: 14px;
-    }
-  }
-  .save {
-    display: flex;
-    width: 100px;
-    height: 30px;
-    font-size: 14px;
-    text-align: right;
-    align-items: center;
-    justify-content: center;
-    color: $Color;
-    span {
-      cursor: pointer;
-    }
-    .save-btn {
-      margin-right: 8px;
-    }
-    .cancel-btn {
-      color: #999;
-    }
-  }
-}
-</style>
+<style scoped lang="scss" src="@/assets/scss/common/input-box.scss"></style>

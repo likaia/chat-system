@@ -35,7 +35,9 @@ export default createStore({
     // 关闭好友验证弹出框
     closeFriendCheckedAlert: false,
     // 关闭分组管理弹框
-    closeManageGroupsAlert: false
+    closeManageGroupsAlert: false,
+    // 关闭好友管理弹框
+    closeManageFriendAlert: false
   },
   mutations: {
     // 连接打开
@@ -116,6 +118,10 @@ export default createStore({
     // 更新分组重命名是否出现
     updateManageGroupsStatus(state, value: boolean) {
       state.closeManageGroupsAlert = value;
+    },
+    // 更新分组重命名是否出现
+    updateManageFriendStatus(state, value: boolean) {
+      state.closeManageFriendAlert = value;
     }
   },
   modules: {}

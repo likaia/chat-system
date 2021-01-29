@@ -1,0 +1,43 @@
+$borderColor: #ededed;
+$hoverColor: #f5f5f6;
+$fontColor: #bbbbbb;
+$listFontColor: #777777;
+$hoverFontColor: #12b7f5;
+
+#wrap {
+  height: 750px;
+  position: relative;
+}
+
+.content {
+  overflow: hidden;
+  position: absolute;
+  top: 44px;
+  bottom: 49px;
+  left: 0;
+  right: 0;
+}
+
+.tabbar {
+  background: #fff;
+  display: flex;
+  width: 80%;
+  margin: auto;
+  margin-top: 30px;
+  .date {
+    flex: 1;
+    p:nth-child(1) {
+      font-size: 32px;
+    }
+    p:nth-child(2) {
+      color: $fontColor;
+      font-size: 12px;
+      span {
+        padding-right: 10px;
+      }
+    }
+  }
+  .tab-control {
+    flex: 1;
+  }
+}
