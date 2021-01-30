@@ -21,8 +21,22 @@
         @click="toolClickEvent('right-top')"
       ></div>
       <div class="item-panel brush" @click="toolClickEvent('brush')"></div>
+      <div
+        class="item-panel mosaicPen"
+        @click="toolClickEvent('mosaicPen')"
+      ></div>
       <div class="item-panel text" @click="toolClickEvent('text')"></div>
+      <div
+        class="item-panel seperateLine"
+        @click="toolClickEvent('seperateLine')"
+      ></div>
       <div class="item-panel save" @click="toolClickEvent('save')"></div>
+      <div
+        v-if="undoStatus"
+        class="item-panel undo"
+        @click="toolClickEvent('undo')"
+      ></div>
+      <div v-else class="item-panel undo-disabled"></div>
       <div class="item-panel close" @click="toolClickEvent('close')"></div>
       <div class="item-panel confirm" @click="toolClickEvent('confirm')"></div>
     </div>
@@ -55,6 +69,7 @@ export default {
     const textInputController = data.getTextInputController();
     const toolStatus = data.getToolStatus();
     const textStatus = data.getTextStatus();
+    const undoStatus = data.getUndoStatus();
     const toolLeft = data.getToolLeft();
     const toolTop = data.getToolTop();
     const event = new eventMonitoring(props, context as SetupContext<any>);
@@ -67,6 +82,7 @@ export default {
       toolController,
       toolStatus,
       textStatus,
+      undoStatus,
       toolLeft,
       toolTop,
       toolClickEvent

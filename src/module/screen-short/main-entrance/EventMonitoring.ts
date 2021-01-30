@@ -29,6 +29,7 @@ import {
 import { drawText } from "@/module/screen-short/split-methods/DrawText";
 import { saveCanvasToImage } from "@/module/screen-short/common-methords/SaveCanvasToImage";
 import { saveCanvasToBase64 } from "@/module/screen-short/common-methords/SaveCanvasToBase64";
+import { drawMosaic } from "@/module/screen-short/split-methods/DrawMosaic";
 
 export default class EventMonitoring {
   // 当前实例的响应式data数据
@@ -85,6 +86,13 @@ export default class EventMonitoring {
   private color = "red";
   private fontSize = 17;
   private borderWidth = 2;
+  // 撤销点击次数
+  private undoClickNum = 0;
+  // 最大可撤销次数
+  private maxUndoNum = 15;
+  // 马赛克涂抹区域大小和模糊度
+  private smearAreaSize = 30;
+  private degreeOfBlur = 5;
   private history: Array<Record<string, any>> = [];
   // 文本输入框位置
   private textInputPosition: { mouseX: number; mouseY: number } = {
@@ -147,6 +155,8 @@ export default class EventMonitoring {
 
   // 鼠标按下事件
   private mouseDownEvent = (event: MouseEvent) => {
+    // 当前操作的是撤销
+    if (this.toolName == "undo") return;
     this.dragging = true;
     this.clickFlag = true;
     const mouseX = nonNegativeData(event.offsetX);
@@ -161,8 +171,8 @@ export default class EventMonitoring {
       // 隐藏截图工具栏
       this.data.setToolStatus(false);
     }
-    // 当前操作的是画笔
     if (this.toolName == "brush" && this.screenShortCanvas) {
+      // 当前操作的是画笔
       initPencli(this.screenShortCanvas, mouseX, mouseY);
     }
     // 当前操作的文本
@@ -228,7 +238,8 @@ export default class EventMonitoring {
   private mouseMoveEvent = (event: MouseEvent) => {
     if (
       this.screenShortCanvas == null ||
-      this.screenShortController.value == null
+      this.screenShortController.value == null ||
+      this.toolName == "undo"
     )
       return;
     this.clickFlag = false;
@@ -242,7 +253,10 @@ export default class EventMonitoring {
     const tempHeight = currentY - startY;
     // 工具栏绘制
     if (this.data.getToolClickStatus().value && this.dragging) {
-      this.showLastHistory();
+      // 当前操作的不是马赛克则显示最后一次画布绘制时的状态
+      if (this.toolName != "mosaicPen") {
+        this.showLastHistory();
+      }
       switch (this.toolName) {
         case "square":
           drawRectangle(
@@ -291,6 +305,16 @@ export default class EventMonitoring {
             this.color
           );
           break;
+        case "mosaicPen":
+          // 绘制马赛克，为了确保鼠标位置在绘制区域中间，所以对x、y坐标进行-10处理
+          drawMosaic(
+            currentX - 10,
+            currentY - 10,
+            this.smearAreaSize,
+            this.degreeOfBlur,
+            this.screenShortCanvas
+          );
+          break;
         default:
           break;
       }
@@ -323,6 +347,8 @@ export default class EventMonitoring {
 
   // 鼠标抬起事件
   private mouseUpEvent = () => {
+    // 当前操作的是撤销
+    if (this.toolName == "undo") return;
     // 绘制结束
     this.dragging = false;
     this.draggingTrim = false;
@@ -361,8 +387,6 @@ export default class EventMonitoring {
             this.drawGraphPosition,
             this.toolController.value?.offsetWidth
           );
-          // 保存绘制记录
-          this.addHistoy();
           // 设置截图工具栏位置
           this.data.setToolInfo(toolLocation.mouseX, toolLocation.mouseY);
         }
@@ -514,6 +538,15 @@ export default class EventMonitoring {
     // 更新当前点击的工具栏条目
     this.toolName = toolName;
 
+    // 清空文本输入区域的内容并隐藏文本输入框
+    if (this.textInputController?.value != null && this.data.getTextStatus()) {
+      this.textInputController.value.innerHTML = "";
+      this.data.setTextStatus(false);
+    }
+    // 初始化点击状态
+    this.dragging = false;
+    this.draggingTrim = false;
+
     // 保存图片
     if (toolName == "save") {
       this.getCanvasImgData(true);
@@ -526,6 +559,10 @@ export default class EventMonitoring {
     if (toolName == "confirm" && this.screenShortCanvas && this.emit) {
       const base64 = this.getCanvasImgData(false);
       this.emit("get-image-data", base64);
+    }
+    // 撤销
+    if (toolName == "undo") {
+      this.takeOutHistory();
     }
 
     // 设置裁剪框工具栏为点击状态
@@ -544,10 +581,16 @@ export default class EventMonitoring {
       // 获取canvas画布与容器
       const context = this.screenShortCanvas;
       const controller = this.screenShortController.value;
+      if (this.history.length > this.maxUndoNum) {
+        // 删除最早的一条画布记录
+        this.history.unshift();
+      }
       // 保存当前画布状态
       this.history.push({
         data: context.getImageData(0, 0, controller.width, controller.height)
       });
+      // 启用撤销按钮
+      this.data.setUndoStatus(true);
     }
   }
 
@@ -558,7 +601,34 @@ export default class EventMonitoring {
   private showLastHistory() {
     if (this.screenShortCanvas != null) {
       const context = this.screenShortCanvas;
+      if (this.history.length <= 0) {
+        this.addHistoy();
+      }
       context.putImageData(this.history[this.history.length - 1]["data"], 0, 0);
+    }
+  }
+
+  /**
+   * 取出一条历史记录
+   */
+  private takeOutHistory() {
+    const lastImageData = this.history.pop();
+    if (this.screenShortCanvas != null && lastImageData) {
+      const context = this.screenShortCanvas;
+      if (this.undoClickNum == 0 && this.history.length > 0) {
+        // 首次取出需要取两条历史记录
+        const firstPopImageData = this.history.pop() as Record<string, any>;
+        context.putImageData(firstPopImageData["data"], 0, 0);
+      } else {
+        context.putImageData(lastImageData["data"], 0, 0);
+      }
+    }
+
+    this.undoClickNum++;
+    // 历史记录已取完，禁用撤回按钮点击
+    if (this.history.length <= 0) {
+      this.undoClickNum = 0;
+      this.data.setUndoStatus(false);
     }
   }
 

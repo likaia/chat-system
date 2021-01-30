@@ -15,6 +15,8 @@ const toolTop = ref<number>(0);
 const toolClickStatus = ref<boolean>(false);
 // 文本输入工具栏点击状态
 const textClickStatus = ref<boolean>(false);
+// 撤销状态
+const undoStatus = ref<boolean>(false);
 // 裁剪框位置参数
 let cutOutBoxPosition: positionInfoType = {
   startX: 0,
@@ -163,6 +165,15 @@ export default class InitData {
     cutOutBoxPosition.startY = mouseY;
     cutOutBoxPosition.width = width;
     cutOutBoxPosition.height = height;
+  }
+
+  // 获取撤销状态
+  public getUndoStatus() {
+    return undoStatus;
+  }
+  // 设置撤销状态
+  public setUndoStatus(status: boolean) {
+    undoStatus.value = status;
   }
 
   /**

@@ -76,6 +76,25 @@
     }
   }
 
+  .mosaicPen {
+    background-image: url("~@/assets/img/screen-short/mosaicPen.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("~@/assets/img/screen-short/mosaicPen-hover.png");
+    }
+
+    &:active {
+      background-image: url("~@/assets/img/screen-short/mosaicPen-click.png");
+    }
+  }
+
+  .seperateLine {
+    width: 1px;
+    background-image: url("~@/assets/img/screen-short/seperateLine.png");
+    background-size: cover;
+  }
+
   .text {
     background-image: url("~@/assets/img/screen-short/text.png");
     background-size: cover;
@@ -108,6 +127,20 @@
 
     &:hover {
       background-image: url("~@/assets/img/screen-short/close-hover.png");
+    }
+  }
+
+  .undo-disabled {
+    background-size: cover;
+    background-image: url("~@/assets/img/screen-short/undo-disabled.png");
+  }
+
+  .undo {
+    background-size: cover;
+    background-image: url("~@/assets/img/screen-short/undo.png");
+
+    &:hover{
+      background-image: url("~@/assets/img/screen-short/undo-hover.png");
     }
   }
 
