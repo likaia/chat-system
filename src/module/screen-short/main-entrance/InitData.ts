@@ -13,6 +13,16 @@ const toolTop = ref<number>(0);
 
 // 截图工具栏点击状态
 const toolClickStatus = ref<boolean>(false);
+// 截图工具栏画笔选择显示状态
+const optionStatus = ref<boolean>(false);
+// 颜色面板展示状态
+const colorPanelStatus = ref<boolean>(false);
+// 当前选择的颜色
+const selectedColor = ref<string>("#F53340");
+// 当前点击的工具栏名称
+const toolName = ref<string>("");
+//  当前选择的画笔大小
+const penSize = ref<number>(2);
 // 文本输入工具栏点击状态
 const textClickStatus = ref<boolean>(false);
 // 撤销状态
@@ -24,6 +34,8 @@ let cutOutBoxPosition: positionInfoType = {
   width: 0,
   height: 0
 };
+// 截图工具栏画笔选择三角形角标位置
+const optionIcoPosition = ref<number>(0);
 
 // 获取截图容器dom
 let screenShortController = ref<HTMLCanvasElement | null>(null);
@@ -31,6 +43,9 @@ let screenShortController = ref<HTMLCanvasElement | null>(null);
 let toolController = ref<HTMLDivElement | null>(null);
 // 获取文本输入区域dom
 let textInputController = ref<HTMLDivElement | null>(null);
+// 截图工具栏画笔选择dom
+let optionIcoController = ref<HTMLDivElement | null>(null);
+let optionController = ref<HTMLDivElement | null>(null);
 // 事件处理
 let emit: ((event: string, ...args: any[]) => void) | undefined;
 
@@ -52,6 +67,8 @@ export default class InitData {
       screenShortController = ref(null);
       toolController = ref(null);
       textInputController = ref(null);
+      optionController = ref(null);
+      optionIcoController = ref(null);
       cutOutBoxPosition = {
         startX: 0,
         startY: 0,
@@ -59,10 +76,16 @@ export default class InitData {
         height: 0
       };
       toolStatus.value = false;
+      optionStatus.value = false;
+      colorPanelStatus.value = false;
       emit = undefined;
       $store = undefined;
       currentInstance = undefined;
       toolClickStatus.value = false;
+      optionIcoPosition.value = 0;
+      selectedColor.value = "#F53340";
+      toolName.value = "";
+      penSize.value = 2;
     }
   }
 
@@ -174,6 +197,62 @@ export default class InitData {
   // 设置撤销状态
   public setUndoStatus(status: boolean) {
     undoStatus.value = status;
+  }
+
+  // 获取/设置截图工具栏画笔选择工具展示状态
+  public getOptionStatus() {
+    return optionStatus;
+  }
+  public setOptionStatus(status: boolean) {
+    optionStatus.value = status;
+  }
+
+  // 获取截图工具栏画笔选择工具dom
+  public getOptionIcoController() {
+    return optionIcoController;
+  }
+  public getOptionController() {
+    return optionController;
+  }
+
+  // 获取/设置三角形角标位置
+  public getOptionIcoPosition() {
+    return optionIcoPosition;
+  }
+  public setOptionIcoPosition(position: number) {
+    optionIcoPosition.value = position;
+  }
+
+  // 获取/设置颜色选择面板显示状态
+  public getColorPanelStatus() {
+    return colorPanelStatus;
+  }
+  public setColorPanelStatus(status: boolean) {
+    colorPanelStatus.value = status;
+  }
+
+  // 获取/设置当前选择的颜色
+  public getSelectedColor() {
+    return selectedColor;
+  }
+  public setSelectedColor(color: string) {
+    selectedColor.value = color;
+  }
+
+  // 获取/设置当前点击的工具栏条目名称
+  public getToolName() {
+    return toolName;
+  }
+  public setToolName(itemName: string) {
+    toolName.value = itemName;
+  }
+
+  // 获取/设置当前画笔大小
+  public getPenSize() {
+    return penSize;
+  }
+  public setPenSize(size: number) {
+    penSize.value = size;
   }
 
   /**

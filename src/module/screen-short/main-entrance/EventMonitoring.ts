@@ -30,6 +30,8 @@ import { drawText } from "@/module/screen-short/split-methods/DrawText";
 import { saveCanvasToImage } from "@/module/screen-short/common-methords/SaveCanvasToImage";
 import { saveCanvasToBase64 } from "@/module/screen-short/common-methords/SaveCanvasToBase64";
 import { drawMosaic } from "@/module/screen-short/split-methods/DrawMosaic";
+import { calculateOptionIcoPosition } from "@/module/screen-short/split-methods/CalculateOptionIcoPosition";
+import { setSelectedClassName } from "@/module/screen-short/common-methords/SetSelectedClassName";
 
 export default class EventMonitoring {
   // 当前实例的响应式data数据
@@ -46,7 +48,9 @@ export default class EventMonitoring {
   private screenShortCanvas: CanvasRenderingContext2D | undefined;
   // 文本区域dom
   private textInputController: Ref<HTMLDivElement | null> | undefined;
-
+  //  截图工具栏画笔选项dom
+  private optionController: Ref<HTMLDivElement | null> | undefined;
+  private optionIcoController: Ref<HTMLDivElement | null> | undefined;
   // 图形位置参数
   private drawGraphPosition: positionInfoType = {
     startX: 0,
@@ -83,15 +87,12 @@ export default class EventMonitoring {
   private clickFlag = false;
   // 当前点击的工具栏条目
   private toolName = "";
-  private color = "red";
   private fontSize = 17;
-  private borderWidth = 2;
   // 撤销点击次数
   private undoClickNum = 0;
   // 最大可撤销次数
   private maxUndoNum = 15;
-  // 马赛克涂抹区域大小和模糊度
-  private smearAreaSize = 30;
+  // 马赛克涂抹区域大小
   private degreeOfBlur = 5;
   private history: Array<Record<string, any>> = [];
   // 文本输入框位置
@@ -107,9 +108,12 @@ export default class EventMonitoring {
     this.screenShortController = this.data.getScreenShortController();
     this.toolController = this.data.getToolController();
     this.textInputController = this.data.getTextInputController();
+    this.optionController = this.data.getOptionController();
+    this.optionIcoController = this.data.getOptionIcoController();
     // 设置实例与属性
     this.data.setPropsData(context.emit);
     this.data.setProperty(useStore(), getCurrentInstance());
+    // 设置画笔颜色与大小
 
     onMounted(() => {
       this.emit = this.data.getEmit();
@@ -197,7 +201,7 @@ export default class EventMonitoring {
           this.textInputController.value?.innerText,
           this.textInputPosition.mouseX,
           this.textInputPosition.mouseY,
-          this.color,
+          this.data.getSelectedColor().value,
           this.fontSize,
           this.screenShortCanvas
         );
@@ -264,8 +268,8 @@ export default class EventMonitoring {
             startY,
             tempWidth,
             tempHeight,
-            this.color,
-            this.borderWidth,
+            this.data.getSelectedColor().value,
+            this.data.getPenSize().value,
             this.screenShortCanvas,
             this.screenShortController.value as HTMLCanvasElement,
             this.screenShortImageController as HTMLCanvasElement
@@ -278,8 +282,8 @@ export default class EventMonitoring {
             currentY,
             startX,
             startY,
-            this.borderWidth,
-            this.color
+            this.data.getPenSize().value,
+            this.data.getSelectedColor().value
           );
           break;
         case "right-top":
@@ -291,8 +295,8 @@ export default class EventMonitoring {
             currentY,
             30,
             10,
-            this.borderWidth,
-            this.color
+            this.data.getPenSize().value,
+            this.data.getSelectedColor().value
           );
           break;
         case "brush":
@@ -301,8 +305,8 @@ export default class EventMonitoring {
             this.screenShortCanvas,
             currentX,
             currentY,
-            this.borderWidth,
-            this.color
+            this.data.getPenSize().value,
+            this.data.getSelectedColor().value
           );
           break;
         case "mosaicPen":
@@ -310,7 +314,7 @@ export default class EventMonitoring {
           drawMosaic(
             currentX - 10,
             currentY - 10,
-            this.smearAreaSize,
+            this.data.getPenSize().value,
             this.degreeOfBlur,
             this.screenShortCanvas
           );
@@ -533,11 +537,28 @@ export default class EventMonitoring {
   /**
    * 裁剪框工具栏点击事件
    * @param toolName
+   * @param index
+   * @param mouseEvent
    */
-  public toolClickEvent = (toolName: string) => {
+  public toolClickEvent = (
+    toolName: string,
+    index: number,
+    mouseEvent: MouseEvent
+  ) => {
     // 更新当前点击的工具栏条目
     this.toolName = toolName;
-
+    this.data.setToolName(toolName);
+    // 为当前点击项添加选中时的class名
+    setSelectedClassName(mouseEvent, index, false);
+    if (toolName != "text") {
+      // 显示画笔选择工具栏
+      this.data.setOptionStatus(true);
+      // 设置画笔选择工具栏三角形角标位置
+      this.data.setOptionIcoPosition(calculateOptionIcoPosition(index));
+    } else {
+      // 隐藏画笔工具栏
+      this.data.setOptionStatus(false);
+    }
     // 清空文本输入区域的内容并隐藏文本输入框
     if (this.textInputController?.value != null && this.data.getTextStatus()) {
       this.textInputController.value.innerHTML = "";
@@ -562,6 +583,8 @@ export default class EventMonitoring {
     }
     // 撤销
     if (toolName == "undo") {
+      // 隐藏画笔选项工具栏
+      this.data.setOptionStatus(false);
       this.takeOutHistory();
     }
 
