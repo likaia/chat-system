@@ -40,6 +40,7 @@
     "vue-right-click-menu-next": "^1.1.0",
     "vue-router": "^4.0.0-0",
     "vue-solar-lunar": "^1.0.1",
+    "vue-web-screen-shot": "^1.0.2",
     "vuex": "^4.0.0-0"
   },
   "devDependencies": {
