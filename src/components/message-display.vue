@@ -290,7 +290,6 @@
 <script lang="ts">
 import { defineComponent, ComputedRef } from "vue";
 import _ from "lodash";
-import screenShort from "@/teleport/screen-short.vue";
 import { messageDisplayPropsType } from "@/type/ComponentDataType";
 import { SetupContext } from "@vue/runtime-core";
 import initData from "@/module/message-display/main-entrance/InitData";
@@ -313,7 +312,6 @@ export default defineComponent({
     buddyName: String, // 好友昵称
     serverTime: String // 服务器时间
   },
-  components: { screenShort },
   setup(props, context) {
     // 初始化组件需要的data数据
     const {
