@@ -67,6 +67,8 @@ export default async function sendMessage(event?: KeyboardEvent) {
   }
   // 消息发送: 发送文字，为空则不发送
   if (msgText.trim().length > 0) {
+    // 标识当前消息为发送端
+    data.isSendMessages.value = true;
     // 获取$socket
     internalInstance?.appContext.config.globalProperties.$socket.sendObj({
       msg: msgText,

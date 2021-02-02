@@ -77,6 +77,7 @@ let buddyId = ref<string>("");
 let buddyName = ref<string>("");
 let serverTime = ref<string>("");
 let screenshortStatus = ref<boolean>(false);
+let isSendMessages = ref<boolean>(false);
 
 // 事件处理
 let emit: (event: string, ...args: any[]) => void = () => {
@@ -154,6 +155,7 @@ export default function initData(): messageDisplayDataType {
     buddyName = ref<string>("");
     serverTime = ref<string>("");
     screenshortStatus = ref<boolean>(false);
+    isSendMessages = ref<boolean>(false);
   };
 
   // 返回组件需要的Data
@@ -187,6 +189,7 @@ export default function initData(): messageDisplayDataType {
     buddyName,
     serverTime,
     screenshortStatus,
+    isSendMessages,
     setData,
     emit,
     $store,

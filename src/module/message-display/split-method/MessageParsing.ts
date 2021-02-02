@@ -98,23 +98,24 @@ export default async function messageParsing(
   msgObj.msgText = finalMsgText;
   // 渲染页面
   if (insertStart) {
+    let scrollHeight = 0;
     // 向数组头部添加消息对象
     senderMessageList.unshift(msgObj);
     // 修改滚动条位置
     nextTick().then(() => {
-      if (messagesContainer.value?.scrollHeight) {
-        // 加载历史消息，修改滚动条位置：当前消息记录容器高度 - 消息记录容器高度
-        messagesContainer.value.scrollTop =
-          messagesContainer.value.scrollHeight - msgListPanelHeight.value;
-        // 一条消息渲染完成，待渲染消息总条数自减
-        msgTotals.value--;
-        // 判断消息是否渲染完成
-        if (msgTotals.value === 0) {
-          // 关闭加载动画
-          isLoading.value = false;
-          // 加载历史消息完成，更新消息记录容器高度
-          msgListPanelHeight.value = messagesContainer.value.scrollHeight;
-        }
+      if (messagesContainer.value == null) return;
+      scrollHeight = messagesContainer.value.scrollHeight;
+      // 加载历史消息，修改滚动条位置：当前消息记录容器高度 - 消息记录容器高度
+      messagesContainer.value.scrollTop =
+        scrollHeight - msgListPanelHeight.value;
+      // 一条消息渲染完成，待渲染消息总条数自减
+      msgTotals.value--;
+      // 判断消息是否渲染完成
+      if (msgTotals.value === 0) {
+        // 关闭加载动画
+        isLoading.value = false;
+        // 加载历史消息完成，更新消息记录容器高度
+        msgListPanelHeight.value = scrollHeight;
       }
     });
   } else {
@@ -144,15 +145,20 @@ export default async function messageParsing(
     senderMessageList.push(msgObj);
     // 修改滚动条位置
     nextTick().then(() => {
-      // scrollHeight存在且滚动条在底部则更新滚动条位置
-      if (messagesContainer.value?.scrollHeight && isBottomOut.value) {
+      let scrollHeight = 0;
+      if (messagesContainer.value == null) return;
+      scrollHeight = messagesContainer.value.scrollHeight;
+      // 当前滚动条在底部或者当前消息为发送端所发送的则修改滚动条位置
+      console.log(isBottomOut.value, data.isSendMessages.value);
+      if (isBottomOut.value || data.isSendMessages.value) {
         // 新消息渲染完成，修改滚动条位置
-        messagesContainer.value.scrollTop =
-          messagesContainer.value.scrollHeight;
+        messagesContainer.value.scrollTop = scrollHeight;
         // 更新消息记录容器高度
-        msgListPanelHeight.value = messagesContainer.value.scrollHeight;
+        msgListPanelHeight.value = scrollHeight;
         // 修改组件第一次加载状态为false
         isFirstLoading.value = false;
+        // 修改消息发送端状态为false
+        data.isSendMessages.value = false;
       }
     });
   }
