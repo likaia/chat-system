@@ -101,7 +101,7 @@ export default async function messageParsing(
     // 向数组头部添加消息对象
     senderMessageList.unshift(msgObj);
     // 修改滚动条位置
-    await nextTick(() => {
+    nextTick().then(() => {
       if (messagesContainer.value?.scrollHeight) {
         // 加载历史消息，修改滚动条位置：当前消息记录容器高度 - 消息记录容器高度
         messagesContainer.value.scrollTop =
@@ -143,7 +143,7 @@ export default async function messageParsing(
     // 向数组尾部添加消息对象
     senderMessageList.push(msgObj);
     // 修改滚动条位置
-    await nextTick(() => {
+    nextTick().then(() => {
       // scrollHeight存在且滚动条在底部则更新滚动条位置
       if (messagesContainer.value?.scrollHeight && isBottomOut.value) {
         // 新消息渲染完成，修改滚动条位置
