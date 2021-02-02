@@ -33,7 +33,11 @@ export default createStore({
     // 关闭添加好友信息弹出框
     closeFriendAllAlert: false,
     // 关闭好友验证弹出框
-    closeFriendCheckedAlert: false
+    closeFriendCheckedAlert: false,
+    // 关闭分组管理弹框
+    closeManageGroupsAlert: false,
+    // 关闭好友管理弹框
+    closeManageFriendAlert: false
   },
   mutations: {
     // 连接打开
@@ -81,6 +85,10 @@ export default createStore({
       state.profilePicture = userObj.profilePicture;
       state.userID = userObj.userID;
       state.username = userObj.username;
+      localStorage.setItem("token", userObj.token);
+      localStorage.setItem("profilePicture", userObj.profilePicture);
+      localStorage.setItem("userID", userObj.userID);
+      localStorage.setItem("username", userObj.username);
     },
     // 更新组件名
     updateComponentName(state, route) {
@@ -110,6 +118,14 @@ export default createStore({
     // 更新好友验证弹出框是否存在
     updateFriendCheckedStatus(state, value: boolean) {
       state.closeFriendCheckedAlert = value;
+    },
+    // 更新分组重命名是否出现
+    updateManageGroupsStatus(state, value: boolean) {
+      state.closeManageGroupsAlert = value;
+    },
+    // 更新分组重命名是否出现
+    updateManageFriendStatus(state, value: boolean) {
+      state.closeManageFriendAlert = value;
     }
   },
   modules: {}

@@ -278,6 +278,12 @@
         <div class="ico-panel"></div>
       </div>
     </div>
+    <!--截图组件-->
+    <screen-short
+      v-if="screenshortStatus"
+      @destroy-component="destroyComponent"
+      @get-image-data="getImg"
+    ></screen-short>
   </div>
 </template>
 
@@ -294,6 +300,8 @@ import toolbarSwitch from "@/module/message-display/components-metords/ToolbarSw
 import sendImage from "@/module/message-display/components-metords/SendImage";
 import sendMessage from "@/module/message-display/components-metords/SendMessage";
 import emojiConversion from "@/module/message-display/components-metords/EmojiConversion";
+import destroyComponent from "@/module/message-display/components-metords/DestroyComponent";
+import getImg from "@/module/message-display/split-method/GetImg";
 
 export default defineComponent({
   name: "message-display",
@@ -321,6 +329,7 @@ export default defineComponent({
       pageEnd,
       pageNo,
       pageSize,
+      screenshortStatus,
       sessionMessageData,
       msgListPanelHeight,
       isLoading,
@@ -362,6 +371,7 @@ export default defineComponent({
       isLastPage,
       msgTotals,
       isFirstLoading,
+      screenshortStatus,
       messagesContainer,
       msgInputContainer,
       selectImg,
@@ -372,7 +382,9 @@ export default defineComponent({
       toolbarSwitch,
       sendImage,
       sendMessage,
-      emojiConversion
+      emojiConversion,
+      destroyComponent,
+      getImg
     };
   },
   emits: {

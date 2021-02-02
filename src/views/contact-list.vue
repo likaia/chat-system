@@ -141,7 +141,9 @@
           <div
             class="main-content"
             @click="groupingStatus(index)"
-            v-right-click="rightMenuObj"
+            v-right-click:[{childrenId:item.childrenId,groupName:item.groupName}]="
+              rightMenuObj
+            "
           >
             <div class="icon-panel">
               <img
@@ -166,6 +168,17 @@
                 v-if="list.userId !== undefined"
               >
                 <div
+                  v-right-click:[{childrenId:item.childrenId,userId:list.userId,userName:list.userName}]="
+                    rightMenuFriend
+                  "
+                  @dblclick.stop="
+                    singleChat({
+                      avatarSrc: list.avatarSrc,
+                      type: 0,
+                      userId: list.userId,
+                      userName: list.userName
+                    })
+                  "
                   class="main-panel"
                   @click="
                     getBuddyInfo(list.userId, list.groupName, list.remarks)
@@ -219,6 +232,14 @@
         :friendCheckedDataList="friendsCheckedList"
         @close-checked-alert="closeCheckedAlert(noShow)"
       ></friendsCheckedAlert>
+      <manageGroups
+        v-if="getManageGroupsData"
+        :manageGroupsArgs="manageGroupsArgs"
+      ></manageGroups>
+      <manageFriend
+        v-if="getManageFriendData"
+        :manageFriendArgs="manageFriendArgs"
+      ></manageFriend>
     </teleport>
   </div>
 </template>
@@ -229,13 +250,15 @@ import { defineComponent } from "vue";
 import dataPanel from "@/components/data-panel.vue";
 import addFriendsList from "./addFriend/addFriends-list.vue";
 import friendsCheckedAlert from "./addFriend/friendsChecked-alert.vue";
+import manageGroups from "./manageGroups/manageGroups.vue";
+import manageFriend from "./manageFriend/manageFriend.vue";
 import {
   contactListDataType,
   friendsListType,
   friendsDataType,
   responseDataType
 } from "@/type/ComponentDataType";
-// import data from "@/api/index.ts"
+import { rightMenuType } from "vue-right-click-menu-next/dist/lib/type/pluginsType";
 export default defineComponent({
   name: "contact-list",
   data(): contactListDataType<friendsListType<friendsDataType>> {
@@ -247,20 +270,6 @@ export default defineComponent({
       widgetIsNull: true,
       groupName: "",
       remarks: "",
-      rightMenuObj: {
-        text: ["添加分组", "删除分组", "分组重命名"],
-        handler: {
-          addGroup() {
-            console.log("添加分组事件");
-          },
-          delGroup() {
-            console.log("删除分组事件");
-          },
-          renameGroup() {
-            console.log("分组重命名事件");
-          }
-        }
-      },
       friendsCheckedList: {
         serverTime: "",
         friendsCheckedInfo: [],
@@ -272,13 +281,17 @@ export default defineComponent({
         }
       },
       showFriendCheckedContent: true,
-      showCheckedAlert: false
+      showCheckedAlert: false,
+      manageGroupsArgs: {},
+      manageFriendArgs: {}
     };
   },
   components: {
     dataPanel,
     addFriendsList,
-    friendsCheckedAlert
+    friendsCheckedAlert,
+    manageGroups,
+    manageFriend
   },
   methods: {
     // 获取列表好友信息
@@ -584,12 +597,30 @@ export default defineComponent({
     // 关闭好友添加时选择框
     closeCheckedAlert(noShow: boolean) {
       this.showCheckedAlert = noShow;
+    },
+    // 跳转到单聊
+    singleChat(params: object) {
+      this.$api.messageListAPI
+        .addMessage(params)
+        .then((res: responseDataType) => {
+          if (res.code == 0) {
+            this.$router.replace("/");
+          }
+        });
     }
   },
   // 请求好友列表与验证消息
   mounted() {
     this.getToBeVerifiedList();
     this.getFriendsList();
+    this.$options.sockets.onmessage = (res: any) => {
+      const obj = JSON.parse(res.data);
+      console.log(res);
+
+      if (obj.code == 1) {
+        this.$router.go(0);
+      }
+    };
   },
   // 页面更新前晴空分组列表dom
   beforeUpdate() {
@@ -603,6 +634,91 @@ export default defineComponent({
     },
     getCheckedData() {
       return this.$store.state.closeFriendCheckedAlert;
+    },
+    getManageGroupsData() {
+      return this.$store.state.closeManageGroupsAlert;
+    },
+    getManageFriendData() {
+      return this.$store.state.closeManageFriendAlert;
+    },
+    rightMenuObj(): rightMenuType {
+      // 右键菜单对象，菜单内容和处理事件
+      const obj: rightMenuType = {
+        this: this,
+        text: [
+          "添加分组",
+          {
+            status: this.friendsList.length > 1 ? false : true,
+            content: "删除分组"
+          },
+          "分组重命名"
+        ],
+        handler: {
+          addGroup(parameter: any) {
+            obj.this.manageGroupsArgs = {};
+            obj.this.$store.commit("updateManageGroupsStatus", true);
+            if (parameter.childrenId > 0) {
+              obj.this.manageGroupsArgs = parameter;
+              obj.this.manageGroupsArgs.typeName = "addGroup";
+            }
+            console.log("添加分组事件", parameter);
+          },
+          delGroup(parameter: any) {
+            obj.this.manageGroupsArgs = {};
+            obj.this.$store.commit("updateManageGroupsStatus", true);
+            if (parameter.childrenId > 0) {
+              obj.this.manageGroupsArgs = parameter;
+              obj.this.manageGroupsArgs.typeName = "delGroup";
+            }
+            console.log("删除分组事件", parameter);
+          },
+          renameGroup(parameter: any) {
+            obj.this.manageGroupsArgs = {};
+            obj.this.$store.commit("updateManageGroupsStatus", true);
+            if (parameter.childrenId > 0) {
+              obj.this.manageGroupsArgs = parameter;
+              obj.this.manageGroupsArgs.typeName = "renameGroup";
+            }
+            console.log("分组重命名事件", parameter);
+          }
+        }
+      };
+      return obj;
+    },
+    rightMenuFriend(): rightMenuType {
+      // 右键菜单对象，菜单内容和处理事件
+      const obj: rightMenuType = {
+        this: this,
+        text: [
+          "发送即时消息",
+          "查看聊天记录",
+          "在单聊窗口打开",
+          "移动联系人至",
+          "删除好友"
+        ],
+        handler: {
+          sendInfo(parameter: any) {
+            console.log("发送即时消息事件", parameter);
+          },
+          baseInfoFriend(parameter: any) {
+            console.log("查看聊天记录事件", parameter);
+          },
+          singleChat(parameter: any) {
+            console.log("在单聊窗口打开事件", parameter);
+          },
+          removeFriend(parameter: any) {
+            console.log("移动联系人至事件", parameter);
+          },
+          delFriend(parameter: any) {
+            obj.this.manageFriendArgs = {};
+            obj.this.$store.commit("updateManageFriendStatus", true);
+            obj.this.manageFriendArgs = parameter;
+            obj.this.manageFriendArgs.typeName = "delFriend";
+            console.log("删除好友事件", parameter);
+          }
+        }
+      };
+      return obj;
     }
   }
 });

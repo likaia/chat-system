@@ -1,125 +1,103 @@
-.addFriends-identityChecked-outer-mask{
+.identityChecked-content {
+  min-width: 500px;
+  min-height: 310px;
+  background: white;
+  position: absolute;
+  z-index: 999;
+  padding: 15px 0;
+  border-radius: 3px;
+
+  .userInfo {
+    padding: 10px 40px;
+  }
+
+  .checkedInfo {
+    padding: 10px 40px;
+
+    p {
+      padding-bottom: 5px;
+    }
+
+    textarea {
+      resize: none;
+      height: 100px;
+      width: 98%;
+      padding: 1%;
+      font-size: 16px;
+      border-radius: 3px;
+    }
+  }
+
+  .groupInfo {
+    padding: 0 40px;
+
+    .selectedGroupInfo {
+      margin-bottom: 10px;
+
+      select {
+        background-color: #f4f4f4;
+        border: none;
+        height: 23px;
+      }
+    }
+
+    .remarksInfo {
+      margin-bottom: 15px;
+
+      input {
+        width: 100px;
+        height: 23px;
+        padding-left: 4px;
+        background: #f4f4f4;
+        border: none;
+      }
+    }
+  }
+
+  .buttonInfo {
+    text-align: center;
+
+    .cencelCheckedButton {
+      background-color: white;
+      margin-right: 20px;
+      width: 90px;
+      height: 30px;
+      border: #f3f3f3 1px solid;
+    }
+
+    .sendCheckedButton {
+      color: #666;
+      background-color: #eee;
+      border: none;
+      width: 90px;
+      height: 30px;
+    }
+  }
+}
+
+.sendRequestMessage {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.2);
+  background: transparent;
+  z-index: 1000;
 
-  .addFriends-identityChecked-inside-mask{
-    width: 100vw;
-    height: 100vh;
+  div {
+    width: 300px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -150px;
+    margin-top: -40px;
+    color: white;
+    border-radius: 3px;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: unset;
-    z-index: -999;
-
-    .identityChecked-content {
-      min-width: 500px;
-      min-height: 310px;
-      background: white;
-      position: absolute;
-      z-index: 999;
-      padding: 15px 0;
-      border-radius: 3px;
-
-      .userInfo {
-        padding: 10px 40px;
-      }
-
-      .checkedInfo {
-        padding: 10px 40px;
-
-        p {
-          padding-bottom: 5px;
-        }
-
-        textarea {
-          resize: none;
-          height: 100px;
-          width: 98%;
-          padding: 1%;
-          font-size: 16px;
-          border-radius: 3px;
-        }
-      }
-
-      .groupInfo {
-        padding: 0 40px;
-
-        .selectedGroupInfo {
-          margin-bottom: 10px;
-
-          select {
-            background-color: #f4f4f4;
-            border: none;
-            height: 23px;
-          }
-        }
-
-        .remarksInfo {
-          margin-bottom: 15px;
-
-          input {
-            width: 100px;
-            height: 23px;
-            padding-left: 4px;
-            background: #f4f4f4;
-            border: none;
-          }
-        }
-      }
-
-      .buttonInfo {
-        text-align: center;
-
-        .cencelCheckedButton {
-          background-color: white;
-          margin-right: 20px;
-          width: 90px;
-          height: 30px;
-          border: #f3f3f3 1px solid;
-        }
-
-        .sendCheckedButton {
-          color: #666;
-          background-color: #eee;
-          border: none;
-          width: 90px;
-          height: 30px;
-        }
-      }
-    }
-
-    .sendRequestMessage {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: transparent;
-      z-index: 1000;
-
-      div {
-        width: 300px;
-        height: 80px;
-        background: rgba(0, 0, 0, 0.5);
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        margin-left: -150px;
-        margin-top: -40px;
-        color: white;
-        border-radius: 3px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-      }
-    }
-
+    z-index: 1000;
   }
 }
-    
-
