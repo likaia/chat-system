@@ -284,6 +284,10 @@
       @destroy-component="destroyComponent"
       @get-image-data="getImg"
     ></screen-short>
+    <!--查看大图组件-->
+    <show-img
+      src="https://www.kaisir.cn/uploads/chatImg/43fa70deb6d44319903befb21b543521.png?width=480&height=400"
+    ></show-img>
   </div>
 </template>
 
@@ -302,9 +306,11 @@ import sendMessage from "@/module/message-display/components-metords/SendMessage
 import emojiConversion from "@/module/message-display/components-metords/EmojiConversion";
 import destroyComponent from "@/module/message-display/components-metords/DestroyComponent";
 import getImg from "@/module/message-display/split-method/GetImg";
+import ShowImg from "@/views/teleport/show-img.vue";
 
 export default defineComponent({
   name: "message-display",
+  components: { ShowImg },
   props: {
     listId: String, // 消息id
     messageStatus: Number, // 消息类型
