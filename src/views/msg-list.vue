@@ -308,8 +308,16 @@ export default defineComponent({
                 // 更新在线人数
                 this.$store.commit("updateOnlineUsers", data.onlineUsers);
               } else if (data.code === -1) {
-                // 消息发送失败
-                alert(data.msg);
+                // 消息发送失败,退出登陆
+                this.$api.websiteManageAPI
+                  .updateOnlineStatus({
+                    userId: this.$store.state.userID,
+                    status: false
+                  })
+                  .then(() => {
+                    localStorage.clear();
+                    this.$router.push("/login");
+                  });
                 return;
               } else {
                 // 更新在线人数
