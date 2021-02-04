@@ -141,6 +141,7 @@
         .msg-body {
           max-width: 95%;
           min-height: 40px;
+          overflow: hidden;
           background: #f4f3f3;
           border-radius: 5px;
           padding: 10px;
@@ -237,6 +238,7 @@
           max-width: 95%;
           min-height: 40px;
           background: #d8e8dc;
+          overflow: hidden;
           border-radius: 5px;
           display: flex;
           align-items: center;
