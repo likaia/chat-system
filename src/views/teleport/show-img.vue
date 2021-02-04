@@ -18,29 +18,20 @@
         >
           <div class="icon-panel">
             <div class="fillet-ico-panel close-ico">
-              <img
-                src="@/assets/img/close.png"
-                alt=""
-                :style="{ display: leftIco }"
-              />
+              <img src="@/assets/img/close.png" alt="" v-show="leftIco" />
             </div>
-
             <div class="fillet-ico-panel mini-ico">
-              <img
-                src="@/assets/img/min.png"
-                alt=""
-                :style="{ display: leftIco }"
-              />
+              <img src="@/assets/img/min.png" alt="" v-show="leftIco" />
             </div>
             <div class="fillet-ico-panel max-ico">
-              <img
-                src="@/assets/img/max.png"
-                alt=""
-                :style="{ display: leftIco }"
-              />
+              <img src="@/assets/img/max.png" alt="" v-show="leftIco" />
             </div>
           </div>
         </div>
+      </div>
+      <!--图片展示区域-->
+      <div class="content-panel">
+        <img :src="imgSrc" alt="聊天图片预览" />
       </div>
     </div>
   </teleport>
@@ -51,6 +42,7 @@ import { SetupContext } from "@vue/runtime-core";
 import InitData from "@/module/show-img/main-entrance/InitData";
 import EventMonitoring from "@/module/show-img/main-entrance/EventMonitoring";
 import { imgPropsType } from "@/module/show-img/type/ShowImgDataType";
+import { showLeftIco } from "@/module/show-img/common-methords/ShowLeftIco";
 
 export default {
   name: "show-img",
@@ -65,6 +57,7 @@ export default {
     const photoContainerTop = data.getPhotoContainerTop();
     const photoContainerLeft = data.getPhotoContainerLeft();
     const imgSrc = data.getImgsrc();
+    const leftIco = data.getLeftIcoStatus();
     new EventMonitoring(props as imgPropsType, context as SetupContext<any>);
     return {
       photoContainer,
@@ -72,7 +65,9 @@ export default {
       photoContainerHeight,
       photoContainerTop,
       photoContainerLeft,
-      imgSrc
+      imgSrc,
+      leftIco,
+      showLeftIco
     };
   }
 };
