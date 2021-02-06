@@ -30,7 +30,7 @@
       <feed-back />
     </div>
     <div v-if="tabIndex == 2">
-      <scroll class="content">
+      <scroll>
         <setting />
       </scroll>
     </div>

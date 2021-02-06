@@ -1,8 +1,6 @@
 <template>
   <div class="wrapper" ref="wrapper">
-    <div class="content">
-      <slot></slot>
-    </div>
+    <slot></slot>
   </div>
 </template>
 
@@ -21,39 +19,65 @@ export default defineComponent({
     pullUpLoad: {
       type: Boolean,
       default: false
+    },
+    pullUp: {
+      type: Boolean,
+      default: false
+    },
+    loadMore: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
     return {
       scroll: null,
-      message: "哈哈哈"
+      message: "哈哈哈",
+      loadMoreData: {},
+      y: 0
     };
   },
   mounted() {
+    this.loadMoreData = this.loadMore;
+    this.$refs.wrapper.style.height = window.innerHeight * 0.66 + "px";
     // 1.创建BScroll对象
-    this.scroll = new BScroll(this.$refs.wrapper, {
-      click: true,
-      probeType: this.probeType,
-      mouseWheel: true
-    });
 
-    // 2.监听滚动的位置
-    // this.scroll.on("scroll", position => {
-    //   // console.log(position);
-    //   this.$emit("scroll", position);
-    // });
-
-    // 3.监听上拉事件
-    // this.scroll.on("pullingUp", () => {
-    //   this.$emit("pulling-up");
-    // });
+    setTimeout(() => {
+      this.scroll = new BScroll(this.$refs.wrapper, {
+        click: true,
+        probeType: this.probeType,
+        mouseWheel: true,
+        pullUp: this.pullUp
+      });
+      this.pullingUp();
+    }, 20);
   },
   methods: {
-    scrollTo(x: string, y: string, time = 300) {
-      this.scroll.scrollTo(x, y, time);
+    refresh() {
+      this.scroll && this.scroll.refresh();
+    },
+    pullingUp() {
+      this.scroll &&
+        this.scroll.on("scrollEnd", () => {
+          // 禁止上滑加载数据
+          if (this.scroll.y <= this.y) {
+            // 触底加载
+            if (this.scroll.y == this.scroll.maxScrollY) {
+              this.loadMoreData.pageNo++;
+              this.loadMoreData.isActionPullup = true;
+              this.$emit("pulling-up", this.loadMoreData);
+              this.y = this.scroll.y;
+            }
+          }
+        });
     }
   }
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.wrapper {
+  width: 100%;
+  overflow: hidden;
+}
+</style>
