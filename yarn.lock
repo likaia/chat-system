@@ -9641,13 +9641,12 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
 
-vue-web-screen-shot@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/vue-web-screen-shot/-/vue-web-screen-shot-1.0.2.tgz#b41ddb21dad8d304025bfa20114d84b783f33f06"
-  integrity sha512-vMXID6orivby4Mwua6ec3Wv/HByM1zX/8x6ospI0CPneohrawnIbGg7QQ6LPPx1vaYO/IC0k7Tb99dZ8Sf9ADQ==
+vue-web-screen-shot@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/vue-web-screen-shot/-/vue-web-screen-shot-1.1.0.tgz#f1900f23255851d59f42094942cd8574565a50a9"
+  integrity sha512-pLRwr76iJknSt5o/gQjWSCsGhQBdjlxteFAape+48riaHwO63vx9J5kJLDT7KVqm7541nE8QYKhNairE7OUl8w==
   dependencies:
     "@types/lodash" "^4.14.161"
-    html2canvas "^1.0.0-rc.7"
 
 vue@^3.0.0-0:
   version "3.0.5"
