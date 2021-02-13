@@ -1,6 +1,7 @@
 import { ref } from "vue";
 
 let photoContainer = ref<HTMLDivElement | null>(null);
+const topContainer = ref<HTMLDivElement | null>(null);
 const photoContainerWidth = ref<number>(0);
 const photoContainerHeight = ref<number>(0);
 const photoContainerTop = ref<number>(0);
@@ -11,7 +12,7 @@ const leftIco = ref<boolean>(false);
 let emit: ((event: string, ...args: any[]) => void) | undefined;
 
 // 数据初始化标识
-const initStatus = false;
+let initStatus = false;
 
 export default class InitData {
   constructor() {
@@ -23,13 +24,20 @@ export default class InitData {
       photoContainerHeight.value = 0;
       photoContainerTop.value = 0;
       photoContainerLeft.value = 0;
+      imgSrc.value = "";
       leftIco.value = false;
+      // 初始化成功后将标示设为false
+      initStatus = false;
     }
   }
 
   // 获取图片容器
   public getPhotoContainer() {
     return photoContainer;
+  }
+  // 获取顶部拖拽区域容器
+  public getTopContainer() {
+    return topContainer;
   }
 
   // 设置图片容器宽高
@@ -54,7 +62,7 @@ export default class InitData {
     return photoContainerLeft;
   }
   // 设置图片容器位置
-  public setPhotoContainerPosition(top: number, left: number) {
+  public setPhotoContainerPosition(left: number, top: number) {
     photoContainerTop.value = top;
     photoContainerLeft.value = left;
   }
@@ -81,5 +89,13 @@ export default class InitData {
   }
   public getEmit() {
     return emit;
+  }
+
+  // 销毁组件
+  public destroyComponent() {
+    if (emit == null) return;
+    // 数据初始化标示设为true
+    initStatus = true;
+    emit("destroy-component", false);
   }
 }

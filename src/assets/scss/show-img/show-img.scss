@@ -39,21 +39,29 @@ $rightWidth: 90%;
     height: 11px;
   }
 }
-
+.center {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
 #photoPanel {
   width: 100px;
   height: 100px;
-  background: rgba(0,0,0,.6);
+  min-width: 260px;
+  min-height: 315px;
+  max-height: 940px;
   border-radius: 5px;
+  overflow: hidden;
+  border: solid 1px $topColor;
   position: absolute;
-  top: 0;
-  left: 0;
 
   /*顶部菜单栏样式*/
   .top-panel {
     width: 100%;
     height: 55px;
-    background: $topColor;
+    background: rgba(0,0,0,.8);
     display: flex;
     align-items: center;
 
@@ -84,6 +92,7 @@ $rightWidth: 90%;
   /*内容展示区域*/
   .content-panel {
     width: 100%;
+    background: rgba(0,0,0,.6);
     height: calc(100% - 55px);
 
     img {

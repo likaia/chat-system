@@ -2,6 +2,7 @@
   <teleport to="body">
     <div
       id="photoPanel"
+      class="center"
       ref="photoContainer"
       :style="{
         width: photoContainerWidth + 'px',
@@ -10,7 +11,7 @@
         left: photoContainerLeft + 'px'
       }"
     >
-      <div class="top-panel" ref="topPanel">
+      <div class="top-panel" ref="topContainer">
         <div
           class="left-panel"
           @mouseover="showLeftIco(true)"
@@ -18,7 +19,12 @@
         >
           <div class="icon-panel">
             <div class="fillet-ico-panel close-ico">
-              <img src="@/assets/img/close.png" alt="" v-show="leftIco" />
+              <img
+                src="@/assets/img/close.png"
+                alt=""
+                v-show="leftIco"
+                @click="destroyComponent()"
+              />
             </div>
             <div class="fillet-ico-panel mini-ico">
               <img src="@/assets/img/min.png" alt="" v-show="leftIco" />
@@ -43,6 +49,7 @@ import InitData from "@/module/show-img/main-entrance/InitData";
 import EventMonitoring from "@/module/show-img/main-entrance/EventMonitoring";
 import { imgPropsType } from "@/module/show-img/type/ShowImgDataType";
 import { showLeftIco } from "@/module/show-img/common-methords/ShowLeftIco";
+import _ from "lodash";
 
 export default {
   name: "show-img",
@@ -52,23 +59,32 @@ export default {
   setup(props: imgPropsType, context: SetupContext<any>) {
     const data = new InitData();
     const photoContainer = data.getPhotoContainer();
+    const topContainer = data.getTopContainer();
     const photoContainerWidth = data.getPhotoControllerWidth();
     const photoContainerHeight = data.getPhotoControllerHeight();
     const photoContainerTop = data.getPhotoContainerTop();
     const photoContainerLeft = data.getPhotoContainerLeft();
     const imgSrc = data.getImgsrc();
     const leftIco = data.getLeftIcoStatus();
+    const destroyComponent = data.destroyComponent;
     new EventMonitoring(props as imgPropsType, context as SetupContext<any>);
     return {
       photoContainer,
+      topContainer,
       photoContainerWidth,
       photoContainerHeight,
       photoContainerTop,
       photoContainerLeft,
       imgSrc,
       leftIco,
-      showLeftIco
+      showLeftIco,
+      destroyComponent
     };
+  },
+  emits: {
+    "destroy-component": (status: boolean) => {
+      return !_.isNull(status);
+    }
   }
 };
 </script>

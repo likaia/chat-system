@@ -7,6 +7,7 @@ import insertStr from "@/module/message-display/common-methords/InsertStr";
 import getImageInfo from "@/module/message-display/common-methords/GetImageInfo";
 import { nextTick } from "vue";
 import initData from "@/module/message-display/main-entrance/InitData";
+import { showImg } from "@/module/message-display/components-metords/ShowImg";
 
 export default async function messageParsing(
   msgObj: msgListType,
@@ -76,7 +77,7 @@ export default async function messageParsing(
         // 生成正则表达式条件，添加\\用于对？的转义
         const regularItem = insertStr(item, charIndex, "\\");
         // 解析为img标签
-        const imgTag = `<img style="display: block" width="${thisImgWidth}px" height="${thisImgHeight}px" src="${imgSrc}" alt="聊天图片">`;
+        const imgTag = `<img class="previewable" style="display: block" width="${thisImgWidth}px" height="${thisImgHeight}px" src="${imgSrc}" alt="聊天图片">`;
         // 替换匹配的字符串为img标签:全局替换
         msgText = msgText.replace(new RegExp(`/${regularItem}/`, "g"), imgTag);
       }
@@ -103,6 +104,14 @@ export default async function messageParsing(
     senderMessageList.unshift(msgObj);
     // 修改滚动条位置
     nextTick().then(() => {
+      // 为可预览图片添加点击事件监听
+      const previewablePanel = document.getElementsByClassName("previewable");
+      for (let i = 0; i < previewablePanel.length; i++) {
+        const item = previewablePanel.item(i) as HTMLImageElement;
+        item.addEventListener("click", () => {
+          showImg(item.src);
+        });
+      }
       if (messagesContainer.value == null) return;
       scrollHeight = messagesContainer.value.scrollHeight;
       // 加载历史消息，修改滚动条位置：当前消息记录容器高度 - 消息记录容器高度
@@ -145,11 +154,18 @@ export default async function messageParsing(
     senderMessageList.push(msgObj);
     // 修改滚动条位置
     nextTick().then(() => {
+      // 为可预览图片添加点击事件监听
+      const previewablePanel = document.getElementsByClassName("previewable");
+      for (let i = 0; i < previewablePanel.length; i++) {
+        const item = previewablePanel.item(i) as HTMLImageElement;
+        item.addEventListener("click", () => {
+          showImg(item.src);
+        });
+      }
       let scrollHeight = 0;
       if (messagesContainer.value == null) return;
       scrollHeight = messagesContainer.value.scrollHeight;
       // 当前滚动条在底部或者当前消息为发送端所发送的则修改滚动条位置
-      console.log(isBottomOut.value, data.isSendMessages.value);
       if (isBottomOut.value || data.isSendMessages.value) {
         // 新消息渲染完成，修改滚动条位置
         messagesContainer.value.scrollTop = scrollHeight;

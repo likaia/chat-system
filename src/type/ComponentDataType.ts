@@ -79,6 +79,8 @@ export type messageDisplayDataType = {
   buddyName: Ref<string>; // 好友昵称
   serverTime: Ref<string>; // 服务器时间
   screenshortStatus: Ref<boolean>; // 截图组件展示状态
+  showImgStatus: Ref<boolean>; // 预览图片组件展示状态
+  imgSrc: Ref<string>; // 当前预览的图片
   isSendMessages: Ref<boolean>; // 是否为发送端发送的消息
   setData: (
     listIdParam: Ref<string>,

@@ -77,6 +77,8 @@ let buddyId = ref<string>("");
 let buddyName = ref<string>("");
 let serverTime = ref<string>("");
 let screenshortStatus = ref<boolean>(false);
+let showImgStatus = ref<boolean>(false);
+let imgSrc = ref<string>("");
 let isSendMessages = ref<boolean>(false);
 
 // 事件处理
@@ -155,6 +157,8 @@ export default function initData(): messageDisplayDataType {
     buddyName = ref<string>("");
     serverTime = ref<string>("");
     screenshortStatus = ref<boolean>(false);
+    showImgStatus = ref<boolean>(false);
+    imgSrc = ref<string>("");
     isSendMessages = ref<boolean>(false);
   };
 
@@ -189,6 +193,8 @@ export default function initData(): messageDisplayDataType {
     buddyName,
     serverTime,
     screenshortStatus,
+    showImgStatus,
+    imgSrc,
     isSendMessages,
     setData,
     emit,
