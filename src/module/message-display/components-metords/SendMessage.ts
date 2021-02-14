@@ -70,7 +70,7 @@ export default async function sendMessage(event?: KeyboardEvent) {
     // 标识当前消息为发送端
     data.isSendMessages.value = true;
     // 获取$socket
-    internalInstance?.appContext.config.globalProperties.$socket.sendObj({
+    internalInstance?.proxy.$socket.sendObj({
       msg: msgText,
       buddyId: buddyId.value,
       messageStatus: messageStatus.value,
