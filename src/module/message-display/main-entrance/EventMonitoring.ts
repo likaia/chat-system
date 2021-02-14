@@ -18,7 +18,6 @@ import { SetupContext } from "@vue/runtime-core";
 import _ from "lodash";
 import playSound from "@/module/message-display/split-method/PlaySound";
 import renderPage from "@/module/message-display/split-method/RenderPage";
-import { showImg } from "@/module/message-display/components-metords/ShowImg";
 
 export default function eventMonitoring(
   props: messageDisplayPropsType,

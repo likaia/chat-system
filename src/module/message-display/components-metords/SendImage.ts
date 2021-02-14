@@ -52,7 +52,7 @@ export default function sendImage(e: { target: { files: FileList } }) {
             messageStatus: messageStatus.value,
             code: 0,
             avatarSrc: $store.state.profilePicture,
-            token: $store.state.token,
+            token: $store.state.refreshToken,
             msgId: listId.value
           });
         });

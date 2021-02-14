@@ -76,7 +76,7 @@ export default async function sendMessage(event?: KeyboardEvent) {
       messageStatus: messageStatus.value,
       code: 0,
       avatarSrc: $store.state.profilePicture,
-      token: $store.state.token,
+      token: $store.state.refreshToken,
       msgId: listId.value
     });
     // 清空输入框中的内容

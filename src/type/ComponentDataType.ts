@@ -29,6 +29,7 @@ export type responseDataType<T = any> = {
 // 用户个人信息类型
 export type userInfoType = {
   token: string;
+  refreshToken: string;
   userID: string;
   profilePicture: string;
   username: string;

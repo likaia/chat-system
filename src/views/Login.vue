@@ -246,6 +246,7 @@ export default defineComponent({
                 if (res.code === 0) {
                   // 存储当前用户信息
                   localStorage.setItem("token", res.data.token);
+                  localStorage.setItem("refreshToken", res.data.refreshToken);
                   localStorage.setItem("profilePicture", res.data.avatarSrc);
                   localStorage.setItem("userID", res.data.userID);
                   localStorage.setItem("username", res.data.username);

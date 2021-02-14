@@ -4,6 +4,7 @@ import { rightMenuAttribute, userInfoType } from "@/type/ComponentDataType";
 export default createStore({
   state: {
     token: "",
+    refreshToken: "",
     userID: "",
     // 用户头像
     profilePicture: "",
@@ -82,6 +83,7 @@ export default createStore({
     // 更新用户信息
     updateUserInfo(state, userObj: userInfoType) {
       state.token = userObj.token;
+      state.refreshToken = userObj.refreshToken;
       state.profilePicture = userObj.profilePicture;
       state.userID = userObj.userID;
       state.username = userObj.username;
