@@ -11,10 +11,13 @@ import fileManageAPI from "@/api/fileManageAPI";
 import messageListAPI from "@/api/messageListAPI";
 // 服务器信息接口
 import serverAPI from "@/api/serverAPI";
+// 第三方登录接口
+import authLoginAPI from "@/api/authLoginAPI";
 // 导出接口
 export default {
   websiteManageAPI,
   fileManageAPI,
   messageListAPI,
-  serverAPI
+  serverAPI,
+  authLoginAPI
 };
