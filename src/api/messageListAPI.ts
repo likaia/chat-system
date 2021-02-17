@@ -10,45 +10,51 @@ type paramsType<T = any> = {
 const messageListAPI = {
   // 获取消息列表接口
   getMessageList(params: paramsType) {
-    return services.get(`${base.lk}/MessageManagement/getMessageList`, {
+    return services.get(`${base.develop}/MessageManagement/getMessageList`, {
       params: params
     });
   },
   // 获取消息内容列表接口
   getMessageTextList(params: paramsType) {
-    return services.get(`${base.lk}/MessageManagement/getMessageTextList`, {
-      params: params
-    });
+    return services.get(
+      `${base.develop}/MessageManagement/getMessageTextList`,
+      {
+        params: params
+      }
+    );
   },
   // 添加消息
   addMessage(params: paramsType) {
-    return services.post(`${base.lk}/MessageManagement/addMessageInfo`, params);
+    return services.post(
+      `${base.develop}/MessageManagement/addMessageInfo`,
+      params
+    );
   },
   // 添加消息内容
   addMessageText(params: paramsType) {
     return services.post(
-      `${base.lk}/MessageManagement/addMessageTextInfo`,
+      `${base.develop}/MessageManagement/addMessageTextInfo`,
       params
     );
   },
   // 更新消息
   updateMessage(params: paramsType) {
     return services.post(
-      `${base.lk}/MessageManagement/updateMessageInfo`,
+      `${base.develop}/MessageManagement/updateMessageInfo`,
       params
     );
   },
   // 删除消息
   deleteMessage(params: paramsType) {
     return services.post(
-      `${base.lk}/MessageManagement/deleteMessageInfo`,
+      `${base.develop}/MessageManagement/deleteMessageInfo`,
       params
     );
   },
   // 删除消息内容
   deleteMessageText(params: paramsType) {
     return services.post(
-      `${base.lk}/MessageManagement/deleteMessageTextInfo`,
+      `${base.develop}/MessageManagement/deleteMessageTextInfo`,
       params
     );
   }

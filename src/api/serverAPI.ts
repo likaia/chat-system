@@ -5,7 +5,7 @@ import base from "@/api/base";
 const serverAPI = {
   // 获取服务器时间
   getServerTime() {
-    return services.get(`${base.lkBaseURL}/other/getServerTime`);
+    return services.get(`${base.developBase}/other/getServerTime`);
   }
 };
 

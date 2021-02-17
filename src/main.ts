@@ -22,7 +22,7 @@ app
 // 使用VueNativeSock插件，并进行相关配置
 app.use(
   VueNativeSock,
-  `${base.lkWebSocket}/${localStorage.getItem("userID")}`,
+  `${base.lkWebSocketDevLop}/${localStorage.getItem("userID")}`,
   {
     // 启用Vuex集成
     store: store,

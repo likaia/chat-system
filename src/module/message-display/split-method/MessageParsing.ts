@@ -43,7 +43,7 @@ export default async function messageParsing(
       item = item.replace(/\//g, "");
       // 图片渲染
       if (isImg(item)) {
-        const imgSrc = `${base.lkBaseURL}/uploads/chatImg/${item}`;
+        const imgSrc = `${base.developBase}/uploads/chatImg/${item}`;
         let thisImgWidth = 0;
         let thisImgHeight = 0;
         // 判断图片中是否包含宽高信息

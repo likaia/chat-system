@@ -187,7 +187,9 @@ export default defineComponent({
       localStorage.getItem("userID") !== null
     ) {
       // 连接websocket服务器
-      this.$connect(`${base.lkWebSocket}/${localStorage.getItem("userID")}`);
+      this.$connect(
+        `${base.lkWebSocketDevLop}/${localStorage.getItem("userID")}`
+      );
     }
     // 监听全局点击事件
     document.addEventListener("click", () => {

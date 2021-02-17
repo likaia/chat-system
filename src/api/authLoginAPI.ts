@@ -14,13 +14,13 @@ type paramsType = {
 const authLoginAPI = {
   // 获取授权url地址
   getAuthorize(params: { platform: string }) {
-    return services.get(`${base.lk}/user/getAuthorize`, {
+    return services.get(`${base.develop}/user/getAuthorize`, {
       params: params
     });
   },
   // 授权登录
   authorizeLogin(params: paramsType) {
-    return services.post(`${base.lk}/user/authorizeLogin`, params);
+    return services.post(`${base.develop}/user/authorizeLogin`, params);
   }
 };
 
