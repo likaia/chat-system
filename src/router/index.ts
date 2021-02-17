@@ -11,32 +11,18 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/",
         name: "message",
-        component: () => import("../views/msg-list.vue"),
-        children: [
-          {
-            name: "messageDisplay",
-            path: "messageDisplay",
-            component: () => import("../components/message-display.vue")
-          }
-        ]
+        component: () => import("@/views/msg-list.vue")
       },
       {
         path: "list",
         name: "list",
         props: true,
-        component: () => import("../views/contact-list.vue"),
-        children: [
-          {
-            name: "dataPanel",
-            path: "dataPanel/:userId",
-            component: () => import("../components/data-panel.vue")
-          }
-        ]
+        component: () => import("@/views/contact-list.vue")
       },
       {
         name: "more",
         path: "more",
-        component: () => import("../views/more-list.vue")
+        component: () => import("@/views/more-list.vue")
       }
     ]
   },
