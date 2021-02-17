@@ -243,6 +243,8 @@ export default defineComponent({
           userId: this.$store.state.userID
         })
         .then((res: responseDataType) => {
+          // 获取好友列表传递的用户ID
+          const userId = this.$route.params.userId;
           if (res.code === 0) {
             // 接口返回的数据
             const messageList: Array<totalMessage> = res.data.messageList;
@@ -285,6 +287,21 @@ export default defineComponent({
             // 渲染页面
             this.msgList = messageList;
             this.$nextTick(() => {
+              if (userId) {
+                for (let i = 0; i < messageList.length; i++) {
+                  const item = messageList[i];
+                  if (_.isEqual(item.buddyId, userId)) {
+                    // 打开聊天窗口
+                    this.showChatInterface(
+                      item.buddyId,
+                      i,
+                      item.type,
+                      item.buddyId,
+                      item.userName
+                    );
+                  }
+                }
+              }
               // 滚动时显示滚动条，不滚动时隐藏滚动条
               let scrollTimer = 0;
               this.$refs.listController.onscroll = () => {

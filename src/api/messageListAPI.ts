@@ -1,6 +1,7 @@
 // 消息列表接口
 import services from "../config/axios";
-import base from "./base"; // 导入接口域名列表
+import base from "./base";
+import { addTotalMessageType } from "@/type/ComponentDataType"; // 导入接口域名列表
 
 // 定义参数类型
 type paramsType<T = any> = {
@@ -21,8 +22,11 @@ const messageListAPI = {
     });
   },
   // 添加消息
-  addMessage(params: paramsType) {
-    return services.post(`${base.lk}/MessageManagement/addMessageInfo`, params);
+  addMessage(params: addTotalMessageType) {
+    return services.post(
+      `${base.lk}/MessageManagement/addMessageInfo`,
+      params
+    );
   },
   // 添加消息内容
   addMessageText(params: paramsType) {
