@@ -287,3 +287,11 @@ export type getAuthorizeDataType = {
   authorizeUrl: string; // 授权链接
   state: string; // 状态码
 };
+
+// 消息列表添加数据类型定义
+export type addTotalMessageType = {
+  buddyAvatarSrc: string;
+  buddyId: string;
+  buddyName: string;
+  type: number;
+};
