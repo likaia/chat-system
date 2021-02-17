@@ -23,10 +23,7 @@ const messageListAPI = {
   },
   // 添加消息
   addMessage(params: addTotalMessageType) {
-    return services.post(
-      `${base.lk}/MessageManagement/addMessageInfo`,
-      params
-    );
+    return services.post(`${base.lk}/MessageManagement/addMessageInfo`, params);
   },
   // 添加消息内容
   addMessageText(params: paramsType) {
