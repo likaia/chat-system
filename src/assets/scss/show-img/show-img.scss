@@ -98,6 +98,8 @@ $rightWidth: 90%;
     img {
       width: 100%;
       height: 100%;
+      // 图片填充，让图片保持其宽高比，解决变形问题
+      object-fit: contain;
     }
   }
 }
