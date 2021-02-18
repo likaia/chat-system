@@ -49,9 +49,9 @@ $rightWidth: 90%;
 #photoPanel {
   width: 100px;
   height: 100px;
-  min-width: 260px;
-  min-height: 315px;
-  max-height: 940px;
+  min-width: 400px;
+  max-width: 1400px;
+  max-height: 900px;
   border-radius: 5px;
   overflow: hidden;
   border: solid 1px $topColor;
