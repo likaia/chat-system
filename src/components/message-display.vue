@@ -35,6 +35,7 @@
       <div
         class="row-panel"
         v-for="(item, index) in senderMessageList"
+        :style="{ visibility: msgShowStatus }"
         :key="item.id"
       >
         <!--消息发送时间:当前发送消息为第一条显示时间-->
@@ -358,6 +359,7 @@ export default defineComponent({
       messagesContainer: initData().messagesContainer,
       msgInputContainer: initData().msgInputContainer,
       selectImg: initData().selectImg,
+      msgShowStatus: initData().msgShowStatus,
       userID: userID,
       onlineUsers: onlineUsers,
       createDisEvent: createDisEvent,
