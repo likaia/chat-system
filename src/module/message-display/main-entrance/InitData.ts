@@ -80,6 +80,7 @@ let screenshortStatus = ref<boolean>(false);
 let showImgStatus = ref<boolean>(false);
 let imgSrc = ref<string>("");
 let isSendMessages = ref<boolean>(false);
+let msgShowStatus = ref<string>("");
 
 // 事件处理
 let emit: (event: string, ...args: any[]) => void = () => {
@@ -160,6 +161,7 @@ export default function initData(): messageDisplayDataType {
     showImgStatus = ref<boolean>(false);
     imgSrc = ref<string>("");
     isSendMessages = ref<boolean>(false);
+    msgShowStatus = ref<string>("");
   };
 
   // 返回组件需要的Data
@@ -201,6 +203,7 @@ export default function initData(): messageDisplayDataType {
     $store,
     currentInstance,
     setProperty,
-    clearData
+    clearData,
+    msgShowStatus
   };
 }

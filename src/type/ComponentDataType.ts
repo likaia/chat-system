@@ -76,6 +76,7 @@ export type messageDisplayDataType = {
   messagesContainer: Ref<HTMLDivElement | null>;
   msgInputContainer: Ref<HTMLDivElement | null>;
   selectImg: Ref<HTMLImageElement | null>;
+  msgShowStatus: Ref<string>; // 消息内容展示状态
   listId: Ref<string>; // 消息id
   messageStatus: Ref<number>; // 消息类型
   buddyId: Ref<string>; // 好友id
