@@ -19,7 +19,7 @@
             @mouseleave="createDisEvent('leave')"
             @click="createDisEvent('click')"
           >
-            <img :src="createDisSrc" alt="" />
+            <img :src="createDisSrc" alt="" draggable="false" />
           </div>
         </div>
       </div>
@@ -30,6 +30,7 @@
         <img
           src="../assets/img/messageDisplay/Translate_AIO_Loading@2x.png"
           alt="加载消息"
+          draggable="false"
         />
       </div>
       <div
@@ -99,14 +100,14 @@
           </div>
           <!--头像-->
           <div class="avatar-panel">
-            <img :src="item.avatarSrc" alt="" />
+            <img :src="item.avatarSrc" alt="" draggable="false" />
           </div>
         </div>
         <!--对方消息样式-->
         <div class="otherSide-panel" v-else :data-createTime="item.createTime">
           <!--头像-->
           <div class="avatar-panel">
-            <img :src="item.avatarSrc" alt="" />
+            <img :src="item.avatarSrc" alt="" draggable="false" />
           </div>
           <!--昵称展示-->
           <div class="user-name-panel sender">
@@ -136,6 +137,7 @@
               ref="selectImg"
               :src="require(`../assets/img/${item.src}`)"
               :alt="item.info"
+              draggable="false"
             />
             <input
               class="file"
@@ -189,6 +191,7 @@
             v-else
             class="emoticon"
             :src="require(`../assets/img/${item.src}`)"
+            draggable="false"
             @mouseenter="
               toolbarSwitch(
                 'hover',
@@ -252,6 +255,7 @@
             <img
               :src="require(`../assets/img/emoji/${item.src}`)"
               :alt="item.info"
+              draggable="false"
               @mouseover="
                 emojiConversion($event, 'over', item.src, item.hover, item.info)
               "
