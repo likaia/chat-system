@@ -102,7 +102,7 @@ export default async function messageParsing(
         // 生成正则表达式条件，添加\\用于对？的转义
         const regularItem = insertStr(item, charIndex, "\\");
         // 解析为img标签
-        const imgTag = `<img class="previewable" style="display: block; max-height: 300px; object-fit: contain" width="${thisImgWidth}px" draggable="false" height="${thisImgHeight}px" src="${imgSrc}" alt="聊天图片">`;
+        const imgTag = `<img class="previewable" style="display: block; cursor: pointer; max-height: 300px; object-fit: contain" width="${thisImgWidth}px" draggable="false" height="${thisImgHeight}px" src="${imgSrc}" alt="聊天图片">`;
         // 替换匹配的字符串为img标签:全局替换
         msgText = msgText.replace(new RegExp(`/${regularItem}/`, "g"), imgTag);
       }
