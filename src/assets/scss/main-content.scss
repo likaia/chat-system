@@ -193,9 +193,11 @@ $rightWidth: 85%;
     }
   }
 
-  /*主题内容样式*/
+  /*主体内容样式*/
   .main-content-view {
     width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
     height: calc(100% - 55px);
   }
 
