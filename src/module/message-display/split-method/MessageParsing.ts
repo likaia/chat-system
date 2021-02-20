@@ -121,6 +121,10 @@ export default async function messageParsing(
   } else {
     finalMsgText = msgText;
   }
+  // 消息内容包含链接时，则用a标签拼接
+  if (finalMsgText.includes("http")) {
+    finalMsgText = `<a href="${finalMsgText}" target="_blank">${finalMsgText}</a>`;
+  }
   msgObj.msgText = finalMsgText;
   // 渲染页面
   if (insertStart) {
