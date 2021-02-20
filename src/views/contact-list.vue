@@ -168,7 +168,7 @@
                 v-if="list.userId !== undefined"
               >
                 <div
-                  v-right-click:[{childrenId:item.childrenId,userId:list.userId,userName:list.userName}]="
+                  v-right-click:[{childrenId:item.childrenId,avatarSrc:list.avatarSrc,userId:list.userId,userName:list.userName}]="
                     rightMenuFriend
                   "
                   @dblclick.stop="
@@ -705,13 +705,23 @@ export default defineComponent({
         ],
         handler: {
           sendInfo(parameter: any) {
-            console.log("发送即时消息事件", parameter);
+            obj.this.singleChat({
+              buddyAvatarSrc: parameter.avatarSrc,
+              type: 0,
+              buddyId: parameter.userId,
+              buddyName: parameter.userName
+            });
           },
           baseInfoFriend(parameter: any) {
             console.log("查看聊天记录事件", parameter);
           },
           singleChat(parameter: any) {
-            console.log("在单聊窗口打开事件", parameter);
+            obj.this.singleChat({
+              buddyAvatarSrc: parameter.avatarSrc,
+              type: 0,
+              buddyId: parameter.userId,
+              buddyName: parameter.userName
+            });
           },
           removeFriend(parameter: any) {
             console.log("移动联系人至事件", parameter);
