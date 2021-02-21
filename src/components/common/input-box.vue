@@ -47,8 +47,6 @@ export default defineComponent({
     // 保存内容
     save() {
       if (this.inputVal.length <= this.maxLength) {
-        console.log(123);
-
         this.isShowBtn = false;
         this.$emit("save-info", this.inputVal, this.keyNum);
         this.isShowBtn = true;
