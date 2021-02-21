@@ -103,7 +103,7 @@ export default defineComponent({
         word: require("@/assets/img/more/large_word@2x.png"),
         txt: require("@/assets/img/more/large_txt@2x.png"),
         ai: require("@/assets/img/more/large_ai@2x.png"),
-        other: require("@/assets/img/more/large_txt@2x.png")
+        other: require("@/assets/img/more/large_other@2x.png")
       },
       dataInfoList: {},
       loadMore: {
@@ -304,14 +304,13 @@ export default defineComponent({
           parseInt(this.$refs.bScroll.$refs.wrapper.style.height)
         ) {
           if (this.typeShape.searchList.length == 0) {
-            setTimeout(() => {
-              this.$refs.nowLoad.innerHTML = "没有该类型的文件";
-            }, 500);
+            this.$refs.nowLoad.innerHTML = "没有该类型的文件";
+          }
+          if (this.typeShape.searchList.length > 0) {
+            this.$refs.nowLoad.innerHTML = "没有更多数据了";
           }
         } else {
-          setTimeout(() => {
-            this.$refs.nowLoad.innerHTML = "没有更多数据了";
-          }, 500);
+          this.$refs.nowLoad.innerHTML = "没有更多数据了";
         }
       } else {
         // 不做请求时上拉加载效果

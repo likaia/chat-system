@@ -662,10 +662,17 @@ export default defineComponent({
         ],
         handler: {
           addGroup(parameter: any) {
+            console.log(obj.this);
             obj.this.manageGroupsArgs = {};
             obj.this.$store.commit("updateManageGroupsStatus", true);
             if (parameter.childrenId > 0) {
               obj.this.manageGroupsArgs = parameter;
+              obj.this.manageGroupsArgs.verifySameName = [];
+              obj.this.friendsList.forEach((element: any) => {
+                obj.this.manageGroupsArgs.verifySameName.push(
+                  element.groupName
+                );
+              });
               obj.this.manageGroupsArgs.typeName = "addGroup";
             }
             console.log("添加分组事件", parameter);
@@ -675,6 +682,7 @@ export default defineComponent({
             obj.this.$store.commit("updateManageGroupsStatus", true);
             if (parameter.childrenId > 0) {
               obj.this.manageGroupsArgs = parameter;
+
               obj.this.manageGroupsArgs.typeName = "delGroup";
             }
             console.log("删除分组事件", parameter);
@@ -684,6 +692,12 @@ export default defineComponent({
             obj.this.$store.commit("updateManageGroupsStatus", true);
             if (parameter.childrenId > 0) {
               obj.this.manageGroupsArgs = parameter;
+              obj.this.manageGroupsArgs.verifySameName = [];
+              obj.this.friendsList.forEach((element: any) => {
+                obj.this.manageGroupsArgs.verifySameName.push(
+                  element.groupName
+                );
+              });
               obj.this.manageGroupsArgs.typeName = "renameGroup";
             }
             console.log("分组重命名事件", parameter);

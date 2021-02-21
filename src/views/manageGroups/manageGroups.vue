@@ -99,7 +99,8 @@ export default defineComponent({
         massage: "",
         state: false
       },
-      sendInputState: false
+      sendInputState: false,
+      initGroupName: this.manageGroupsArgs.groupName
     };
   },
   mounted() {
@@ -143,6 +144,7 @@ export default defineComponent({
             ""
           );
         }
+
         if (this.manageGroupData.groupName.length > 0) {
           this.sendInputState = true;
           this.$refs.sendRequest.style.backgroundColor = "#EEE";
@@ -190,8 +192,32 @@ export default defineComponent({
         this.removeManageGroupsAlert();
       }, time);
     },
+    // 还原请求按钮初始样式
+    styleInitButton(content: string) {
+      this.promptAlert.state = true;
+      this.promptAlert.massage = content;
+      setTimeout(() => {
+        this.promptAlert.state = false;
+        this.$refs.sendRequest.style.backgroundColor = "#10baf3";
+        this.$refs.sendRequest.style.color = "white";
+        this.$refs.sendRequest.style.border = "#10baf3 solid 2px";
+        this.sendInputState = false;
+      }, 3000);
+    },
     // 添加分组请求
     addGroup() {
+      if (this.manageGroupData.groupName.length > 15) {
+        this.styleInitButton("分组字段长度不能超过15个字");
+        return;
+      }
+      if (
+        this.manageGroupsArgs.verifySameName.includes(
+          this.manageGroupData.groupName
+        )
+      ) {
+        this.styleInitButton("该分组已有,请重新输入添加名");
+        return;
+      }
       this.requesetArg.groupName = this.manageGroupData.groupName;
       this.requesetArg.userId = this.$store.state.userID;
       this.$api.websiteManageAPI
@@ -212,6 +238,19 @@ export default defineComponent({
     },
     // 分组重命名请求
     renameGroup() {
+      if (this.manageGroupData.groupName.length > 15) {
+        this.styleInitButton("分组字段长度不能超过15个字");
+        this.manageGroupData.groupName = this.initGroupName;
+        return;
+      }
+      if (
+        this.manageGroupsArgs.verifySameName.includes(
+          this.manageGroupData.groupName
+        )
+      ) {
+        this.styleInitButton("该分组已有，请重新输入修改名");
+        return;
+      }
       this.requesetArg.groupId = this.manageGroupData.childrenId;
       this.requesetArg.groupName = this.manageGroupData.groupName;
       this.$api.websiteManageAPI
