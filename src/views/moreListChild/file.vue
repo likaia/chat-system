@@ -320,7 +320,6 @@ export default defineComponent({
         // 没有加载更多文件列表数据展示时上拉加载效果
         setTimeout(() => {
           this.$refs.nowLoad.innerHTML = "";
-          console.log(123);
         }, 500);
       }
     }

@@ -57,7 +57,7 @@ export default defineComponent({
       this.scroll && this.scroll.refresh();
     },
     pullingUp() {
-      console.log(this.scroll);
+      // console.log(this.scroll);
       // this.scroll &&
       //   this.scroll.on("scroll", (pos: any) => {
       //     console.log(123, pos);
