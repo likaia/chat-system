@@ -102,7 +102,8 @@ export default defineComponent({
         ppt: require("@/assets/img/more/large_ppt@2x.png"),
         word: require("@/assets/img/more/large_word@2x.png"),
         txt: require("@/assets/img/more/large_txt@2x.png"),
-        ai: require("@/assets/img/more/large_ai@2x.png")
+        ai: require("@/assets/img/more/large_ai@2x.png"),
+        other: require("@/assets/img/more/large_txt@2x.png")
       },
       dataInfoList: {},
       loadMore: {
@@ -124,11 +125,11 @@ export default defineComponent({
     // 伪造文件列表数据
     async getAddFileInfo() {
       const a = {
-        createTime: "2020-12-17 22:59:12",
-        fileName: "xxx.doc",
+        createTime: "2020-12-17 12:59:12",
+        fileName: "index.js",
         fileSize: 0.1,
         fileSource: "admin",
-        fileType: "doc",
+        fileType: "js",
         userId: this.$store.state.userID
       };
       await this.$api.fileManageAPI.getAddFileInfo(a);
@@ -241,6 +242,12 @@ export default defineComponent({
       }
       if (/(mp3|wav|ra|aac|cda|wma|midi|ogg|ape|flac)/.test(type)) {
         return "music";
+      }
+      if (/(docx)/.test(type)) {
+        return "word";
+      }
+      if (!/(zip|doc|psd|pdf|ppt|txt|ai)/.test(type)) {
+        return "other";
       }
       return "";
     },
