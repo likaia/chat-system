@@ -38,6 +38,8 @@
               :value="userInfo.userName"
               placeholder="填写用户名"
               @save-info="saveInfo"
+              :maxLength="20"
+              contentValue="用户名"
             />
           </td>
           <td>
@@ -78,6 +80,8 @@
               :keyNum="2"
               placeholder="填写你的职业"
               @save-info="saveInfo"
+              :maxLength="10"
+              contentValue="职业"
             />
           </td>
           <td>
@@ -100,6 +104,8 @@
               :keyNum="3"
               :value="userInfo.signature"
               @save-info="saveInfo"
+              :maxLength="20"
+              contentValue="个性签名"
             />
           </td>
           <td>
@@ -121,6 +127,8 @@
               :keyNum="4"
               :value="userInfo.emailAddress"
               @save-info="saveInfo"
+              :maxLength="50"
+              contentValue="邮箱地址"
             />
           </td>
           <td>
@@ -130,6 +138,8 @@
               :keyNum="7"
               :value="userInfo.contactNumber"
               @save-info="saveInfo"
+              :maxLength="20"
+              contentValue="联系电话"
             />
           </td>
         </tr>
@@ -141,6 +151,8 @@
               :keyNum="5"
               :value="userInfo.schoolName"
               @save-info="saveInfo"
+              :maxLength="30"
+              contentValue="学校"
             />
           </td>
           <td>
@@ -150,6 +162,8 @@
               :keyNum="8"
               :value="userInfo.address"
               @save-info="saveInfo"
+              :maxLength="30"
+              contentValue="详细地址"
             />
           </td>
         </tr>
@@ -161,6 +175,8 @@
               :keyNum="6"
               :value="userInfo.corporationName"
               @save-info="saveInfo"
+              :maxLength="30"
+              contentValue="公司"
             />
           </td>
           <td>
@@ -275,6 +291,9 @@ export default defineComponent({
     getProvinces() {
       setTimeout(() => {
         const optionIndex = this.$refs.provinces.selectedIndex;
+        if (optionIndex === -1) {
+          return;
+        }
         this.city = this.list[optionIndex].children;
       }, 0);
     },
