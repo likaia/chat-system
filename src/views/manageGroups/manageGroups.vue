@@ -208,6 +208,8 @@ export default defineComponent({
     addGroup() {
       if (this.manageGroupData.groupName.length > 15) {
         this.styleInitButton("分组字段长度不能超过15个字");
+        console.log(1234);
+
         return;
       }
       if (

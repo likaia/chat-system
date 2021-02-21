@@ -292,6 +292,7 @@ export default defineComponent({
       setTimeout(() => {
         const optionIndex = this.$refs.provinces.selectedIndex;
         if (optionIndex === -1) {
+          console.log(123);
           return;
         }
         this.city = this.list[optionIndex].children;
