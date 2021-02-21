@@ -18,7 +18,17 @@
         <!--底部图标-->
         <div class="bottomIcon-panel">
           <div class="main-content">
-            <div class="item-panel">
+            <div
+              class="item-panel"
+              @click="
+                singleChat({
+                  buddyAvatarSrc: userInfo.avatarSrc,
+                  type: 0,
+                  buddyId: userInfo.userId,
+                  buddyName: userInfo.userName
+                })
+              "
+            >
               <img :src="message" alt="消息图标" />
             </div>
             <div class="item-panel">
@@ -200,7 +210,10 @@
 <script lang="ts">
 import _ from "lodash";
 import { defineComponent } from "vue";
-import { responseDataType } from "@/type/ComponentDataType";
+import {
+  addTotalMessageType,
+  responseDataType
+} from "@/type/ComponentDataType";
 export default defineComponent({
   name: "data-panel",
   props: {
@@ -380,6 +393,19 @@ export default defineComponent({
             this.manageBrithdayDay(Number(this.dateOfBirth[2]));
             // 显示血型
             this.manageBlood(this.userInfo.blood);
+          }
+        });
+    },
+    // 跳转到单聊
+    singleChat(params: addTotalMessageType) {
+      this.$api.messageListAPI
+        .addMessage(params)
+        .then((res: responseDataType) => {
+          if (res.code == 0) {
+            this.$router.push({
+              name: "message",
+              params: { userId: params.buddyId }
+            });
           }
         });
     },

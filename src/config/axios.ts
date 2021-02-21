@@ -78,7 +78,7 @@ _axios.interceptors.response.use(
         return websiteManageAPI
           .tokenRenew({
             userId: store.state.userID,
-            token: store.state.token
+            token: store.state.refreshToken
           })
           .then((res: responseDataType) => {
             if (res.code === 0) {

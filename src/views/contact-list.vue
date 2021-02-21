@@ -168,15 +168,15 @@
                 v-if="list.userId !== undefined"
               >
                 <div
-                  v-right-click:[{childrenId:item.childrenId,userId:list.userId,userName:list.userName}]="
+                  v-right-click:[{childrenId:item.childrenId,avatarSrc:list.avatarSrc,userId:list.userId,userName:list.userName}]="
                     rightMenuFriend
                   "
                   @dblclick.stop="
                     singleChat({
-                      avatarSrc: list.avatarSrc,
+                      buddyAvatarSrc: list.avatarSrc,
                       type: 0,
-                      userId: list.userId,
-                      userName: list.userName
+                      buddyId: list.userId,
+                      buddyName: list.userName
                     })
                   "
                   class="main-panel"
@@ -256,7 +256,8 @@ import {
   contactListDataType,
   friendsListType,
   friendsDataType,
-  responseDataType
+  responseDataType,
+  addTotalMessageType
 } from "@/type/ComponentDataType";
 import { rightMenuType } from "vue-right-click-menu-next/dist/lib/type/pluginsType";
 export default defineComponent({
@@ -599,12 +600,15 @@ export default defineComponent({
       this.showCheckedAlert = noShow;
     },
     // 跳转到单聊
-    singleChat(params: object) {
+    singleChat(params: addTotalMessageType) {
       this.$api.messageListAPI
         .addMessage(params)
         .then((res: responseDataType) => {
           if (res.code == 0) {
-            this.$router.replace("/");
+            this.$router.push({
+              name: "message",
+              params: { userId: params.buddyId }
+            });
           }
         });
     }
@@ -615,7 +619,6 @@ export default defineComponent({
     this.getFriendsList();
     this.$options.sockets.onmessage = (res: any) => {
       const obj = JSON.parse(res.data);
-      console.log(res);
 
       if (obj.code == 1) {
         this.$router.go(0);
@@ -626,6 +629,10 @@ export default defineComponent({
   beforeUpdate() {
     this.groupArrow = [];
     this.groupList = [];
+  },
+  unmounted() {
+    // 移除监听
+    this.$options.sockets.onmessage = null;
   },
   // 更新最新添加好友弹窗和验证弹窗状态
   computed: {
@@ -698,13 +705,23 @@ export default defineComponent({
         ],
         handler: {
           sendInfo(parameter: any) {
-            console.log("发送即时消息事件", parameter);
+            obj.this.singleChat({
+              buddyAvatarSrc: parameter.avatarSrc,
+              type: 0,
+              buddyId: parameter.userId,
+              buddyName: parameter.userName
+            });
           },
           baseInfoFriend(parameter: any) {
             console.log("查看聊天记录事件", parameter);
           },
           singleChat(parameter: any) {
-            console.log("在单聊窗口打开事件", parameter);
+            obj.this.singleChat({
+              buddyAvatarSrc: parameter.avatarSrc,
+              type: 0,
+              buddyId: parameter.userId,
+              buddyName: parameter.userName
+            });
           },
           removeFriend(parameter: any) {
             console.log("移动联系人至事件", parameter);

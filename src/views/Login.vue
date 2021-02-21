@@ -151,25 +151,37 @@
         </div>
       </div>
     </div>
-    <!--注册区域-->
+    <!--第三方登录-->
     <div
-      class="registration-area-panel"
-      v-if="isLoginStatus !== loginStatusEnum.LOGGING_IN"
+      class="auth-panel"
+      v-if="isLoginStatus === loginStatusEnum.NOT_LOGGED_IN"
     >
-      <p
-        v-if="isLoginStatus === loginStatusEnum.NOT_LOGGED_IN"
-        @click="registered(true)"
-      >
-        注册账号
-      </p>
-      <p v-else @click="registered(false)">返回登录</p>
+      <div class="item-panel" @click.once="getAuthorize('github')">
+        <img src="@/assets/img/auth/github.png" alt="github登录" />
+      </div>
+      <div class="item-panel" @click.once="getAuthorize('gitee')">
+        <img src="@/assets/img/auth/gitee.png" alt="gitee登录" />
+      </div>
+      <div class="item-panel" @click.once="getAuthorize('baidu')">
+        <img src="@/assets/img/auth/baidu.png" alt="百度登录" />
+      </div>
+      <div class="item-panel" @click.once="getAuthorize('oschina')">
+        <img src="@/assets/img/auth/oschina.png" alt="开源中国登录" />
+      </div>
+      <div class="item-panel" @click.once="getAuthorize('coding')">
+        <img src="@/assets/img/auth/coding.png" alt="腾讯云登录" />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { loginDataType, responseDataType } from "@/type/ComponentDataType";
+import {
+  getAuthorizeDataType,
+  loginDataType,
+  responseDataType
+} from "@/type/ComponentDataType";
 import { loginStatusEnum } from "@/enum/ComponentEnum";
 import base from "../api/base";
 import _ from "lodash";
@@ -185,6 +197,8 @@ export default defineComponent({
       userName: "",
       password: "",
       confirmPassword: "",
+      state: "",
+      platform: "",
       isLoginStatus: 0,
       loginStatusEnum: loginStatusEnum,
       isDefaultAvatar: true,
@@ -246,6 +260,7 @@ export default defineComponent({
                 if (res.code === 0) {
                   // 存储当前用户信息
                   localStorage.setItem("token", res.data.token);
+                  localStorage.setItem("refreshToken", res.data.refreshToken);
                   localStorage.setItem("profilePicture", res.data.avatarSrc);
                   localStorage.setItem("userID", res.data.userID);
                   localStorage.setItem("username", res.data.username);
@@ -334,27 +349,75 @@ export default defineComponent({
           break;
       }
     },
+    getAuthorize: function(name: string) {
+      // 获取授权链接
+      this.$api.authLoginAPI
+        .getAuthorize({ platform: name })
+        .then((res: responseDataType<getAuthorizeDataType>) => {
+          if (!res.data.state || !res.data.authorizeUrl)
+            throw "服务器错误: 授权链接获取失败";
+          const authorizeUrlres = res.data.authorizeUrl;
+          // 更新状态码与登录平台名称
+          this.state = res.data.state;
+          this.platform = name;
+          // 打开授权窗口
+          window.open(
+            authorizeUrlres,
+            "_blank",
+            "toolbar=no,width=800, height=600"
+          );
+          // 开始监听localStorage,获取授权码
+          window.addEventListener("storage", this.getAuthCode);
+        });
+    },
+    getAuthCode: function() {
+      // 获取授权码
+      const code = localStorage.getItem("authCode");
+      localStorage.removeItem("authCode");
+      // 移除localStorage监听
+      this.removeStorageListener();
+      if (code) {
+        // 状态改为正在登录
+        this.isLoginStatus = loginStatusEnum.LOGGING_IN;
+        this.authLogin(this.state, code, this.platform);
+        return;
+      }
+      throw this.platform + "授权码获取失败";
+    },
+    authLogin: function(state: string, code: string, platform: string) {
+      this.$api.authLoginAPI
+        .authorizeLogin({
+          state: state,
+          code: code,
+          platform: platform
+        })
+        .then((res: responseDataType) => {
+          if (res.code == 0) {
+            // 存储当前用户信息
+            localStorage.setItem("token", res.data.token);
+            localStorage.setItem("refreshToken", res.data.refreshToken);
+            localStorage.setItem("profilePicture", res.data.avatarSrc);
+            localStorage.setItem("userID", res.data.userID);
+            localStorage.setItem("username", res.data.username);
+            // 跳转消息组件
+            this.$router.push({
+              name: "message"
+            });
+            return;
+          }
+          // 切回登录界面
+          this.isLoginStatus = loginStatusEnum.NOT_LOGGED_IN;
+          alert(res.msg);
+        });
+    },
+    removeStorageListener: function() {
+      // 移除localStorage监听
+      window.removeEventListener("storage", this.getAuthCode);
+    },
     isMobile: () => {
       return !!navigator.userAgent.match(
         /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
       );
-    },
-    registered: function(status: boolean) {
-      // 登录与注册之间的切换
-      let degreeOfRotation = 0;
-      const timer = setInterval(() => {
-        degreeOfRotation += 30;
-        if (degreeOfRotation >= 360) {
-          // 显示登录或注册
-          if (!status) {
-            this.isLoginStatus = loginStatusEnum.NOT_LOGGED_IN;
-          } else {
-            this.isLoginStatus = loginStatusEnum.REGISTERED;
-          }
-          clearInterval(timer);
-        }
-        this.$refs.loginPanel.style.transform = `rotateY(${degreeOfRotation}deg)`;
-      }, 40);
     },
     getUserAvatar: function() {
       // 获取用户头像

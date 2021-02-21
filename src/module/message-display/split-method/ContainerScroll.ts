@@ -1,4 +1,3 @@
-import { Ref } from "vue";
 import readSessionData from "@/module/message-display/split-method/ReadSessionData";
 
 import initData from "@/module/message-display/main-entrance/InitData";
@@ -7,7 +6,10 @@ import initData from "@/module/message-display/main-entrance/InitData";
 export default function containerScroll() {
   // 获取data中的数据
   const data = initData();
-  const messagesContainer = data.messagesContainer as Ref<HTMLDivElement>;
+  const messagesContainer = data.messagesContainer;
+  if (messagesContainer.value == null) {
+    return;
+  }
   const isLoading = data.isLoading;
   const isFirstLoading = data.isFirstLoading;
   const pageStart = data.pageStart;
@@ -20,10 +22,16 @@ export default function containerScroll() {
   let levelPosition = messagesContainer.value.scrollLeft;
   // 监听messagesContainer容器滚动
   messagesContainer.value.onscroll = () => {
+    if (messagesContainer.value == null) {
+      return;
+    }
     // 显示滚动条
     messagesContainer.value.classList.remove("transparent-scroll-bar");
     clearTimeout(scrollTimer);
     scrollTimer = setTimeout(() => {
+      if (messagesContainer.value == null) {
+        return;
+      }
       // 隐藏滚动条
       messagesContainer.value.classList.add("transparent-scroll-bar");
     }, 500);

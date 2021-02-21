@@ -154,6 +154,7 @@ export default defineComponent({
   created() {
     // 从本地存储中获取token
     const token = localStorage.getItem("token");
+    const refreshToken = localStorage.getItem("refreshToken");
     const username = localStorage.getItem("username");
     if (this.isMobile()) {
       if (!window.location.href.includes("8020")) {
@@ -164,7 +165,7 @@ export default defineComponent({
         window.location.href = "/404-page/index.html";
       }
     }
-    if (_.isEmpty(token) || _.isEmpty(username)) {
+    if (_.isEmpty(token) || _.isEmpty(username) || _.isEmpty(refreshToken)) {
       // 跳转登录路由
       localStorage.removeItem("msgArray");
       this.$router.push({ name: "login" });
@@ -172,6 +173,7 @@ export default defineComponent({
       // 更新vuex中的token
       this.$store.commit("updateUserInfo", {
         token: token,
+        refreshToken: refreshToken,
         profilePicture: localStorage.getItem("profilePicture"),
         userID: localStorage.getItem("userID"),
         username: localStorage.getItem("username")

@@ -12,7 +12,6 @@ export default defineComponent({
   data() {
     return {
       appStyleObj: {
-        height: window.innerHeight + "px",
         background: "#0C9A9A"
       },
       getCurrentComponentName: ""
@@ -126,7 +125,7 @@ body {
 }
 #app {
   width: 100%;
-  height: 100%;
+  height: 100vh;
 }
 .icon {
   width: 1em;

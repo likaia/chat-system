@@ -36,7 +36,7 @@ export default function sendImage(e: { target: { files: FileList } }) {
       // 后台取值字段 | blob文件数据 | 文件名称
       formData.append("file", file, "chatImg" + file.name);
       // 调用上传api
-      internalInstance?.appContext.config.globalProperties.$api.fileManageAPI
+      internalInstance?.proxy.$api.fileManageAPI
         .upload(formData)
         .then((res: responseDataType) => {
           // 文件上传失败
@@ -46,13 +46,13 @@ export default function sendImage(e: { target: { files: FileList } }) {
           }
           const fileName = `/${res.fileName}?width=${imgWidth}&height=${imgHeight}/`;
           // 消息发送: 发送图片
-          internalInstance?.appContext.config.globalProperties.$socket.sendObj({
+          internalInstance?.proxy.$socket.sendObj({
             msg: fileName,
             buddyId: buddyId.value,
             messageStatus: messageStatus.value,
             code: 0,
             avatarSrc: $store.state.profilePicture,
-            token: $store.state.token,
+            token: $store.state.refreshToken,
             msgId: listId.value
           });
         });

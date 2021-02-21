@@ -5,8 +5,34 @@ import isImg from "@/module/message-display/common-methords/IsImg";
 import getQueryVariable from "@/module/message-display/common-methords/GetQueryVariable";
 import insertStr from "@/module/message-display/common-methords/InsertStr";
 import getImageInfo from "@/module/message-display/common-methords/GetImageInfo";
-import { nextTick } from "vue";
+import { nextTick, Ref } from "vue";
 import initData from "@/module/message-display/main-entrance/InitData";
+import { showImg } from "@/module/message-display/components-metords/ShowImg";
+
+const bottomScrollBar = (
+  scrollHeight: number,
+  messagesContainer: Ref<HTMLDivElement>,
+  isBottomOut: Ref<boolean>,
+  msgListPanelHeight: Ref<number>,
+  isFirstLoading: Ref<boolean>
+) => {
+  const data = initData();
+  // 显示消息内容
+  data.msgShowStatus.value = "";
+  // 获取容器高度
+  scrollHeight = messagesContainer.value.scrollHeight;
+  // 当前滚动条在底部或者当前消息为发送端所发送的则修改滚动条位置
+  if (isBottomOut.value || data.isSendMessages.value) {
+    // 新消息渲染完成，修改滚动条位置
+    messagesContainer.value.scrollTop = scrollHeight;
+    // 更新消息记录容器高度
+    msgListPanelHeight.value = scrollHeight;
+    // 修改组件第一次加载状态为false
+    isFirstLoading.value = false;
+    // 修改消息发送端状态为false
+    data.isSendMessages.value = false;
+  }
+};
 
 export default async function messageParsing(
   msgObj: msgListType,
@@ -76,7 +102,7 @@ export default async function messageParsing(
         // 生成正则表达式条件，添加\\用于对？的转义
         const regularItem = insertStr(item, charIndex, "\\");
         // 解析为img标签
-        const imgTag = `<img style="display: block" width="${thisImgWidth}px" height="${thisImgHeight}px" src="${imgSrc}" alt="聊天图片">`;
+        const imgTag = `<img class="previewable" style="display: block; cursor: pointer; max-height: 300px; object-fit: contain" width="${thisImgWidth}px" draggable="false" height="${thisImgHeight}px" src="${imgSrc}" alt="聊天图片">`;
         // 替换匹配的字符串为img标签:全局替换
         msgText = msgText.replace(new RegExp(`/${regularItem}/`, "g"), imgTag);
       }
@@ -95,27 +121,57 @@ export default async function messageParsing(
   } else {
     finalMsgText = msgText;
   }
+  // 消息内容包含链接时，则用a标签拼接
+  if (finalMsgText.includes("http") && !finalMsgText.includes("img")) {
+    finalMsgText = `<a href="${finalMsgText}" target="_blank">${finalMsgText}</a>`;
+  }
   msgObj.msgText = finalMsgText;
   // 渲染页面
   if (insertStart) {
+    let scrollHeight = 0;
+    let loadingTime = 150;
     // 向数组头部添加消息对象
     senderMessageList.unshift(msgObj);
-    // 修改滚动条位置
-    await nextTick(() => {
-      if (messagesContainer.value?.scrollHeight) {
+
+    nextTick().then(() => {
+      // 隐藏消息内容
+      data.msgShowStatus.value = "hidden";
+      const previewablePanel = document.getElementsByClassName("previewable");
+      for (let i = 0; i < previewablePanel.length; i++) {
+        const item = previewablePanel.item(i) as HTMLImageElement;
+        if (!item.getAttribute("hasClickEvent")) {
+          // 为可预览图片添加点击事件监听
+          item.addEventListener("click", () => {
+            showImg(item.src);
+          });
+          // 添加标识
+          item.setAttribute("hasClickEvent", "true");
+        }
+      }
+
+      if (data.pageNo.value > 20) {
+        // 数据加载超过20条，加载时间改为400ms
+        loadingTime = 400;
+      }
+
+      setTimeout(() => {
+        if (messagesContainer.value == null) return;
+        scrollHeight = messagesContainer.value.scrollHeight;
         // 加载历史消息，修改滚动条位置：当前消息记录容器高度 - 消息记录容器高度
         messagesContainer.value.scrollTop =
-          messagesContainer.value.scrollHeight - msgListPanelHeight.value;
+          scrollHeight - msgListPanelHeight.value;
         // 一条消息渲染完成，待渲染消息总条数自减
         msgTotals.value--;
         // 判断消息是否渲染完成
         if (msgTotals.value === 0) {
+          // 显示消息内容
+          data.msgShowStatus.value = "";
           // 关闭加载动画
           isLoading.value = false;
           // 加载历史消息完成，更新消息记录容器高度
-          msgListPanelHeight.value = messagesContainer.value.scrollHeight;
+          msgListPanelHeight.value = scrollHeight;
         }
-      }
+      }, loadingTime);
     });
   } else {
     let senderName = "";
@@ -143,17 +199,45 @@ export default async function messageParsing(
     // 向数组尾部添加消息对象
     senderMessageList.push(msgObj);
     // 修改滚动条位置
-    await nextTick(() => {
-      // scrollHeight存在且滚动条在底部则更新滚动条位置
-      if (messagesContainer.value?.scrollHeight && isBottomOut.value) {
-        // 新消息渲染完成，修改滚动条位置
-        messagesContainer.value.scrollTop =
-          messagesContainer.value.scrollHeight;
-        // 更新消息记录容器高度
-        msgListPanelHeight.value = messagesContainer.value.scrollHeight;
-        // 修改组件第一次加载状态为false
-        isFirstLoading.value = false;
+    nextTick().then(() => {
+      // 隐藏消息内容
+      data.msgShowStatus.value = "hidden";
+      const scrollHeight = 0;
+      const previewablePanel = document.getElementsByClassName("previewable");
+      if (messagesContainer.value == null) return;
+      for (let i = 0; i < previewablePanel.length; i++) {
+        const item = previewablePanel.item(i) as HTMLImageElement;
+
+        if (!item.getAttribute("hasClickEvent")) {
+          item.onload = () => {
+            if (messagesContainer.value == null) return;
+            // 置底滚动条
+            bottomScrollBar(
+              scrollHeight,
+              messagesContainer as Ref<HTMLDivElement>,
+              isBottomOut,
+              msgListPanelHeight,
+              isFirstLoading
+            );
+          };
+
+          // 为可预览图片添加点击事件监听
+          item.addEventListener("click", () => {
+            showImg(item.src);
+          });
+          // 添加标识
+          item.setAttribute("hasClickEvent", "true");
+        }
       }
+
+      // 置底滚动条
+      bottomScrollBar(
+        scrollHeight,
+        messagesContainer as Ref<HTMLDivElement>,
+        isBottomOut,
+        msgListPanelHeight,
+        isFirstLoading
+      );
     });
   }
 }

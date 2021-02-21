@@ -1,0 +1,105 @@
+$topColor: #E1E3E5;
+$leftWidth: 10%;
+$rightWidth: 90%;
+
+/*图标样式*/
+.fillet-ico-panel {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  margin-right: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    width: 9px;
+    height: 9px;
+  }
+}
+
+.close-ico {
+  background: #F06C5A;
+}
+
+.mini-ico {
+  background: #F9BE45;
+
+  img {
+    width: 11px;
+    height: 11px;
+  }
+}
+
+.max-ico {
+  background: #61C350;
+
+  img {
+    width: 11px;
+    height: 11px;
+  }
+}
+.center {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+#photoPanel {
+  width: 100px;
+  height: 100px;
+  min-width: 400px;
+  max-width: 1400px;
+  max-height: 900px;
+  border-radius: 5px;
+  overflow: hidden;
+  border: solid 1px $topColor;
+  position: absolute;
+
+  /*顶部菜单栏样式*/
+  .top-panel {
+    width: 100%;
+    height: 55px;
+    background: rgba(0,0,0,.8);
+    display: flex;
+    align-items: center;
+
+    .left-panel {
+      min-width: 214px;
+      width: $leftWidth;
+      height: 100%;
+      display: flex;
+      align-items: center;
+
+      .icon-panel {
+        width: 30%;
+        height: 30px;
+        margin-left: 20px;
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .right-panel {
+      width: $rightWidth;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  /*内容展示区域*/
+  .content-panel {
+    width: 100%;
+    background: rgba(0,0,0,.6);
+    height: calc(100% - 55px);
+
+    img {
+      width: 100%;
+      height: 100%;
+      // 图片填充，让图片保持其宽高比，解决变形问题
+      object-fit: contain;
+    }
+  }
+}
