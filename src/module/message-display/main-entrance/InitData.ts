@@ -76,6 +76,11 @@ let messageStatus = ref<number>(0);
 let buddyId = ref<string>("");
 let buddyName = ref<string>("");
 let serverTime = ref<string>("");
+let screenshortStatus = ref<boolean>(false);
+let showImgStatus = ref<boolean>(false);
+let imgSrc = ref<string>("");
+let isSendMessages = ref<boolean>(false);
+let msgShowStatus = ref<string>("");
 
 // 事件处理
 let emit: (event: string, ...args: any[]) => void = () => {
@@ -152,6 +157,11 @@ export default function initData(): messageDisplayDataType {
     buddyId = ref<string>("");
     buddyName = ref<string>("");
     serverTime = ref<string>("");
+    screenshortStatus = ref<boolean>(false);
+    showImgStatus = ref<boolean>(false);
+    imgSrc = ref<string>("");
+    isSendMessages = ref<boolean>(false);
+    msgShowStatus = ref<string>("");
   };
 
   // 返回组件需要的Data
@@ -184,11 +194,16 @@ export default function initData(): messageDisplayDataType {
     buddyId,
     buddyName,
     serverTime,
+    screenshortStatus,
+    showImgStatus,
+    imgSrc,
+    isSendMessages,
     setData,
     emit,
     $store,
     currentInstance,
     setProperty,
-    clearData
+    clearData,
+    msgShowStatus
   };
 }

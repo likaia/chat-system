@@ -5,7 +5,8 @@ import {
   onUnmounted,
   watch,
   getCurrentInstance,
-  toRefs
+  toRefs,
+  ComponentInternalInstance
 } from "vue";
 import { useStore } from "vuex";
 import getMessageTextList from "@/module/message-display/split-method/GetMessageTextList";
@@ -45,7 +46,8 @@ export default function eventMonitoring(
   data.setProperty($store, currentInstance);
 
   onMounted(() => {
-    currentInstance?.appContext.config.globalProperties.$socket.sendObj({
+    const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+    proxy.$socket.sendObj({
       code: 200,
       token: $store.state.token,
       userID: $store.state.userID,

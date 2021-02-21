@@ -67,14 +67,16 @@ export default async function sendMessage(event?: KeyboardEvent) {
   }
   // 消息发送: 发送文字，为空则不发送
   if (msgText.trim().length > 0) {
+    // 标识当前消息为发送端
+    data.isSendMessages.value = true;
     // 获取$socket
-    internalInstance?.appContext.config.globalProperties.$socket.sendObj({
+    internalInstance?.proxy.$socket.sendObj({
       msg: msgText,
       buddyId: buddyId.value,
       messageStatus: messageStatus.value,
       code: 0,
       avatarSrc: $store.state.profilePicture,
-      token: $store.state.token,
+      token: $store.state.refreshToken,
       msgId: listId.value
     });
     // 清空输入框中的内容

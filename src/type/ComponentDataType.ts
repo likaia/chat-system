@@ -10,6 +10,8 @@ export type loginDataType<T> = {
   userName: string; // 用户名
   password: string; // 密码
   confirmPassword: string; // 注册时的确认登录密码
+  state: string; // 第三方登录时服务端返回的状态码
+  platform: string; // 第三方登录时的平台名称
   isLoginStatus: number; // 登录状态：0.未登录 1.登录中 2.注册
   loginStatusEnum: Record<string, any>; // 登录状态枚举
   isDefaultAvatar: boolean; // 头像是否为默认头像
@@ -29,6 +31,7 @@ export type responseDataType<T = any> = {
 // 用户个人信息类型
 export type userInfoType = {
   token: string;
+  refreshToken: string;
   userID: string;
   profilePicture: string;
   username: string;
@@ -73,11 +76,16 @@ export type messageDisplayDataType = {
   messagesContainer: Ref<HTMLDivElement | null>;
   msgInputContainer: Ref<HTMLDivElement | null>;
   selectImg: Ref<HTMLImageElement | null>;
+  msgShowStatus: Ref<string>; // 消息内容展示状态
   listId: Ref<string>; // 消息id
   messageStatus: Ref<number>; // 消息类型
   buddyId: Ref<string>; // 好友id
   buddyName: Ref<string>; // 好友昵称
   serverTime: Ref<string>; // 服务器时间
+  screenshortStatus: Ref<boolean>; // 截图组件展示状态
+  showImgStatus: Ref<boolean>; // 预览图片组件展示状态
+  imgSrc: Ref<string>; // 当前预览的图片
+  isSendMessages: Ref<boolean>; // 是否为发送端发送的消息
   setData: (
     listIdParam: Ref<string>,
     messageStatusParam: Ref<number>,
@@ -273,4 +281,18 @@ export type messageDisplayPropsType = {
   buddyId: string; // 好友id
   buddyName: string; // 好友昵称
   serverTime: string; // 服务器时间
+};
+
+// 获取第三方授权链接服务端返回data类型定义
+export type getAuthorizeDataType = {
+  authorizeUrl: string; // 授权链接
+  state: string; // 状态码
+};
+
+// 消息列表添加数据类型定义
+export type addTotalMessageType = {
+  buddyAvatarSrc: string;
+  buddyId: string;
+  buddyName: string;
+  type: number;
 };

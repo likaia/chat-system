@@ -32,7 +32,7 @@
   /*头像区域*/
   .headPortrait-panel{
     width: 100%;
-    height: 200px;
+    height: 150px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -62,8 +62,8 @@
 
       /*头像显示层*/
       .headPortrait-img-panel{
-        width: 200px;
-        height: 200px;
+        width: 150px;
+        height: 150px;
         border-radius: 50%;
         overflow: hidden;
         border: solid 1px #ebeced;
@@ -77,8 +77,8 @@
 
     /*头像显示层*/
     .headPortrait-img-panel{
-      width: 200px;
-      height: 200px;
+      width: 150px;
+      height: 150px;
       border-radius: 50%;
       overflow: hidden;
       border: solid 1px #ebeced;
@@ -89,8 +89,8 @@
       }
 
       .cover-panel{
-        width: 200px;
-        height: 200px;
+        width: 150px;
+        height: 150px;
         background: rgba(0,0,0,.6);
         position: absolute;
         top: 0;
@@ -100,8 +100,8 @@
         cursor: pointer;
 
         input[type="file"]{
-          width: 200px;
-          height: 200px;
+          width: 150px;
+          height: 150px;
           opacity: 0;
           position: absolute;
           top: 0;
@@ -184,7 +184,7 @@
 
     /*登录中:取消登录按钮*/
     .cancel-btn-panel{
-      width: 200px;
+      width: 150px;
       height: 60px;
       border: solid 1px #d7d8d8;
       border-radius: 7px;
@@ -218,10 +218,31 @@
     }
   }
 
+  /*第三方登录*/
+  .auth-panel {
+    width: 85%;
+    height: 40px;
+    margin: 40px auto auto auto;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    .item-panel {
+      width: 40px;
+      height: 40px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+      }
+    }
+  }
+
   // 加载层动画
   .loading-box{
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     box-sizing: border-box;
     border-radius: 50%;
     border-top: 10px solid #3888fa;
@@ -231,8 +252,8 @@
   }
   .loading-box:before,.loading-box:after{
     content: '';
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     position: absolute;
     left: 0;
     top: -10px;   //反复调节得到的数值
@@ -250,12 +271,12 @@
   }
   .loading-box span{
     position: absolute;
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     color: #000;
     font-size: 15px;
     text-align: center;
-    line-height: 200px;
+    line-height: 150px;
     animation: a2 2s linear infinite;
     //给文字也定义一个动画
   }

@@ -19,7 +19,7 @@
             @mouseleave="createDisEvent('leave')"
             @click="createDisEvent('click')"
           >
-            <img :src="createDisSrc" alt="" />
+            <img :src="createDisSrc" alt="" draggable="false" />
           </div>
         </div>
       </div>
@@ -30,11 +30,13 @@
         <img
           src="../assets/img/messageDisplay/Translate_AIO_Loading@2x.png"
           alt="加载消息"
+          draggable="false"
         />
       </div>
       <div
         class="row-panel"
         v-for="(item, index) in senderMessageList"
+        :style="{ visibility: msgShowStatus }"
         :key="item.id"
       >
         <!--消息发送时间:当前发送消息为第一条显示时间-->
@@ -98,14 +100,14 @@
           </div>
           <!--头像-->
           <div class="avatar-panel">
-            <img :src="item.avatarSrc" alt="" />
+            <img :src="item.avatarSrc" alt="" draggable="false" />
           </div>
         </div>
         <!--对方消息样式-->
         <div class="otherSide-panel" v-else :data-createTime="item.createTime">
           <!--头像-->
           <div class="avatar-panel">
-            <img :src="item.avatarSrc" alt="" />
+            <img :src="item.avatarSrc" alt="" draggable="false" />
           </div>
           <!--昵称展示-->
           <div class="user-name-panel sender">
@@ -135,6 +137,7 @@
               ref="selectImg"
               :src="require(`../assets/img/${item.src}`)"
               :alt="item.info"
+              draggable="false"
             />
             <input
               class="file"
@@ -188,6 +191,7 @@
             v-else
             class="emoticon"
             :src="require(`../assets/img/${item.src}`)"
+            draggable="false"
             @mouseenter="
               toolbarSwitch(
                 'hover',
@@ -251,6 +255,7 @@
             <img
               :src="require(`../assets/img/emoji/${item.src}`)"
               :alt="item.info"
+              draggable="false"
               @mouseover="
                 emojiConversion($event, 'over', item.src, item.hover, item.info)
               "
@@ -278,6 +283,18 @@
         <div class="ico-panel"></div>
       </div>
     </div>
+    <!--截图组件-->
+    <screen-short
+      v-if="screenshortStatus"
+      @destroy-component="destroyComponent"
+      @get-image-data="getImg"
+    ></screen-short>
+    <!--查看大图组件-->
+    <show-img
+      v-if="showImgStatus"
+      :src="imgSrc"
+      @destroy-component="destroyShowImg"
+    ></show-img>
   </div>
 </template>
 
@@ -294,9 +311,13 @@ import toolbarSwitch from "@/module/message-display/components-metords/ToolbarSw
 import sendImage from "@/module/message-display/components-metords/SendImage";
 import sendMessage from "@/module/message-display/components-metords/SendMessage";
 import emojiConversion from "@/module/message-display/components-metords/EmojiConversion";
-
+import destroyComponent from "@/module/message-display/components-metords/DestroyComponent";
+import getImg from "@/module/message-display/split-method/GetImg";
+import ShowImg from "@/views/teleport/show-img.vue";
+import { destroyShowImg } from "@/module/message-display/components-metords/DestroyShowImg";
 export default defineComponent({
   name: "message-display",
+  components: { ShowImg },
   props: {
     listId: String, // 消息id
     messageStatus: Number, // 消息类型
@@ -305,32 +326,6 @@ export default defineComponent({
     serverTime: String // 服务器时间
   },
   setup(props, context) {
-    // 初始化组件需要的data数据
-    const {
-      createDisSrc,
-      resourceObj,
-      messageContent,
-      emoticonShowStatus,
-      emojiList,
-      toolbarList,
-      senderMessageList,
-      isBottomOut,
-      audioCtx,
-      arrFrequency,
-      pageStart,
-      pageEnd,
-      pageNo,
-      pageSize,
-      sessionMessageData,
-      msgListPanelHeight,
-      isLoading,
-      isLastPage,
-      msgTotals,
-      isFirstLoading,
-      messagesContainer,
-      msgInputContainer,
-      selectImg
-    } = initData();
     // 事件监听函数
     const { userID, onlineUsers } = eventMonitoring(
       props as messageDisplayPropsType,
@@ -342,37 +337,44 @@ export default defineComponent({
 
     // 返回组件需要用到的方法
     return {
-      createDisSrc,
-      resourceObj,
-      messageContent,
-      emoticonShowStatus,
-      emojiList,
-      toolbarList,
-      senderMessageList,
-      isBottomOut,
-      audioCtx,
-      arrFrequency,
-      pageStart,
-      pageEnd,
-      pageNo,
-      pageSize,
-      sessionMessageData,
-      msgListPanelHeight,
-      isLoading,
-      isLastPage,
-      msgTotals,
-      isFirstLoading,
-      messagesContainer,
-      msgInputContainer,
-      selectImg,
-      createDisEvent,
-      userID,
-      onlineUsers,
-      getEditableDivFocus,
-      toolbarSwitch,
-      sendImage,
-      sendMessage,
-      emojiConversion
+      createDisSrc: initData().createDisSrc,
+      resourceObj: initData().resourceObj,
+      messageContent: initData().messageContent,
+      emoticonShowStatus: initData().emoticonShowStatus,
+      emojiList: initData().emojiList,
+      toolbarList: initData().toolbarList,
+      senderMessageList: initData().senderMessageList,
+      isBottomOut: initData().isBottomOut,
+      audioCtx: initData().audioCtx,
+      arrFrequency: initData().arrFrequency,
+      pageStart: initData().pageStart,
+      pageEnd: initData().pageEnd,
+      pageNo: initData().pageNo,
+      pageSize: initData().pageSize,
+      sessionMessageData: initData().sessionMessageData,
+      msgListPanelHeight: initData().msgListPanelHeight,
+      isLoading: initData().isLoading,
+      isLastPage: initData().isLastPage,
+      msgTotals: initData().msgTotals,
+      isFirstLoading: initData().isFirstLoading,
+      screenshortStatus: initData().screenshortStatus,
+      showImgStatus: initData().showImgStatus,
+      imgSrc: initData().imgSrc,
+      messagesContainer: initData().messagesContainer,
+      msgInputContainer: initData().msgInputContainer,
+      selectImg: initData().selectImg,
+      msgShowStatus: initData().msgShowStatus,
+      userID: userID,
+      onlineUsers: onlineUsers,
+      createDisEvent: createDisEvent,
+      getEditableDivFocus: getEditableDivFocus,
+      toolbarSwitch: toolbarSwitch,
+      sendImage: sendImage,
+      sendMessage: sendMessage,
+      emojiConversion: emojiConversion,
+      destroyComponent: destroyComponent,
+      getImg: getImg,
+      destroyShowImg: destroyShowImg
     };
   },
   emits: {
