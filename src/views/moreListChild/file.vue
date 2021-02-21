@@ -2,31 +2,74 @@
   <scroll
     :pullUp="true"
     :load-more="loadMore"
+    :probeType="0"
     @pulling-up="getUserFileList(loadMore)"
     ref="bScroll"
   >
     <div class="file-content" ref="fileContent">
-      <div class="top-panel"></div>
       <div v-if="dataInfoList.count == 0" class="noFile">没有文件数据</div>
       <div v-if="dataInfoList.count > 0" class="contentInfo-panel">
-        <div
-          v-for="(item, index) in dataInfoList.fileList"
-          :key="index"
-          class="item-panel"
-          ref="itemPanel"
-          :style="{ height: itemHeight }"
-        >
-          <div class="picture">
-            <img :src="item.imgSrc" alt="" />
+        <template v-if="showFileData == 'dataInfoList'">
+          <div
+            v-for="(item, index) in dataInfoList.fileList"
+            :key="index"
+            class="item-panel"
+            ref="itemPanel"
+            :style="{ height: itemHeight }"
+          >
+            <div class="picture">
+              <img :src="item.imgSrc" alt="" />
+            </div>
+            <div class="detailInfo">
+              <p>{{ item.fileName }} ({{ item.fileSize }})</p>
+              <p>
+                <span>{{ item.createTime }}</span
+                ><span>发给：你大爷</span><span>已发送</span>
+              </p>
+            </div>
           </div>
-          <div class="detailInfo">
-            <p>{{ item.fileName }} ({{ item.fileSize }})</p>
-            <p>
-              <span>{{ item.createTime }}</span
-              ><span>发给：你大爷</span><span>已发送</span>
-            </p>
+        </template>
+        <template v-if="showFileData == 'selectList'">
+          1
+          <div
+            v-for="(item, index) in typeShape.selectList"
+            :key="index"
+            class="item-panel"
+            ref="itemPanel"
+            :style="{ height: itemHeight }"
+          >
+            <div class="picture">
+              <img :src="item.imgSrc" alt="" />
+            </div>
+            <div class="detailInfo">
+              <p>{{ item.fileName }} ({{ item.fileSize }})</p>
+              <p>
+                <span>{{ item.createTime }}</span
+                ><span>发给：你大爷</span><span>已发送</span>
+              </p>
+            </div>
           </div>
-        </div>
+        </template>
+        <template v-if="showFileData == 'searchList'">
+          <div
+            v-for="(item, index) in typeShape.searchList"
+            :key="index"
+            class="item-panel"
+            ref="itemPanel"
+            :style="{ height: itemHeight }"
+          >
+            <div class="picture">
+              <img :src="item.imgSrc" alt="" />
+            </div>
+            <div class="detailInfo">
+              <p>{{ item.fileName }} ({{ item.fileSize }})</p>
+              <p>
+                <span>{{ item.createTime }}</span
+                ><span>发给：你大爷</span><span>已发送</span>
+              </p>
+            </div>
+          </div>
+        </template>
       </div>
       <div class="bottom-panel">
         <div ref="nowLoad" class="loading"></div>
@@ -59,7 +102,8 @@ export default defineComponent({
         ppt: require("@/assets/img/more/large_ppt@2x.png"),
         word: require("@/assets/img/more/large_word@2x.png"),
         txt: require("@/assets/img/more/large_txt@2x.png"),
-        ai: require("@/assets/img/more/large_ai@2x.png")
+        ai: require("@/assets/img/more/large_ai@2x.png"),
+        other: require("@/assets/img/more/large_other@2x.png")
       },
       dataInfoList: {},
       loadMore: {
@@ -69,18 +113,23 @@ export default defineComponent({
       },
       closeRequestFileList: false,
       itemHeight: 62,
-      loading: require("@/assets/img/more/loading.gif")
+      loading: require("@/assets/img/more/loading.gif"),
+      typeShape: {
+        searchList: [],
+        selectList: [],
+        showData: "dataInfoList"
+      }
     };
   },
   methods: {
     // 伪造文件列表数据
     async getAddFileInfo() {
       const a = {
-        createTime: "2020-12-17 22:59:12",
-        fileName: "xxx.doc",
+        createTime: "2020-12-17 12:59:12",
+        fileName: "index.js",
         fileSize: 0.1,
         fileSource: "admin",
-        fileType: "doc",
+        fileType: "js",
         userId: this.$store.state.userID
       };
       await this.$api.fileManageAPI.getAddFileInfo(a);
@@ -89,91 +138,101 @@ export default defineComponent({
       // 上拉加载效果
       if (page.isActionPullup) {
         this.$refs.nowLoad.innerHTML = `<img src="${this.loading}" alt="" style=" width: 18px;height: 18px;transform: translate(-5px,3px);"/><p>加载中...</p>`;
+        if (this.showFileData == "dataInfoList") {
+          page.pageNo = this.loadMore.pageNo + 1;
+        }
       }
-      // 文件列表数据请求
-      if (!this.closeRequestFileList) {
-        this.$api.fileManageAPI
-          .getUserFileList({
-            userId: this.$store.state.userID,
-            pageNo: page.pageNo,
-            pageSize: page.pageSize
-          })
-          .then((res: responseDataType) => {
-            // 请求成功
-            if (res.code == 0) {
-              if (res.count == 0) {
-                return;
-              }
-              // 首次请求赋值
-              if (Object.keys(this.dataInfoList).length == 0) {
-                this.dataInfoList = res.data;
-              } else {
-                if (
-                  (res.data.count % this.loadMore.pageSize == 0
-                    ? this.loadMore.pageNo
-                    : this.loadMore.pageNo - 1) *
-                    this.loadMore.pageSize <=
-                  res.data.count
-                ) {
-                  // 当文件列表数据数小于指定分页数
-                  if (res.data.fileList.length < this.loadMore.pageSize) {
-                    res.data.fileList.forEach((item: responseDataType) => {
-                      this.dataInfoList.fileList.push(item);
-                    });
+      if (this.showFileData == "dataInfoList") {
+        // 文件列表数据请求
+        if (!this.closeRequestFileList) {
+          this.$api.fileManageAPI
+            .getUserFileList({
+              userId: this.$store.state.userID,
+              pageNo: page.pageNo,
+              pageSize: page.pageSize
+            })
+            .then((res: responseDataType) => {
+              // 请求成功
+              if (res.code == 0) {
+                if (res.count == 0) {
+                  return;
+                }
+                // 首次请求赋值
+                if (Object.keys(this.dataInfoList).length == 0) {
+                  this.dataInfoList = res.data;
+                } else {
+                  if (
+                    (res.data.count % this.loadMore.pageSize == 0
+                      ? this.loadMore.pageNo
+                      : this.loadMore.pageNo - 1) *
+                      this.loadMore.pageSize <=
+                    res.data.count
+                  ) {
+                    // 当文件列表数据数小于指定分页数
+                    if (res.data.fileList.length < this.loadMore.pageSize) {
+                      res.data.fileList.forEach((item: responseDataType) => {
+                        this.dataInfoList.fileList.push(item);
+                      });
+                      // 关闭请求开关
+                      this.closeRequestFileList = true;
+                    } else {
+                      // 增加文件列表数据
+                      res.data.fileList.forEach((item: responseDataType) => {
+                        this.dataInfoList.fileList.push(item);
+                      });
+                    }
+                  } else {
                     // 关闭请求开关
                     this.closeRequestFileList = true;
-                  } else {
-                    // 增加文件列表数据
-                    res.data.fileList.forEach((item: responseDataType) => {
-                      this.dataInfoList.fileList.push(item);
-                    });
+                    // 不做请求时上拉加载效果
+                    this.$refs.fileContent.style.height =
+                      this.itemHeight *
+                        (this.dataInfoList.fileList.length + 0.75) +
+                      "px";
+                    this.$refs.bScroll.refresh();
+                    // 没有加载更多文件列表数据展示时上拉加载效果
+                    setTimeout(() => {
+                      this.$refs.nowLoad.innerHTML = "没有更多数据了";
+                    }, 500);
                   }
-                } else {
-                  // 关闭请求开关
-                  this.closeRequestFileList = true;
-                  // 不做请求时上拉加载效果
-                  this.$refs.fileContent.style.height =
-                    this.itemHeight *
-                      (this.dataInfoList.fileList.length + 0.75) +
-                    "px";
-                  // 没有加载更多文件列表数据展示时上拉加载效果
-                  setTimeout(() => {
-                    this.$refs.nowLoad.innerHTML = "没有更多数据了";
-                  }, 500);
                 }
-              }
-              // 处理文件列表数据
-              if (this.dataInfoList.count > 0) {
-                this.dataInfoList.fileList.forEach((item: any) => {
-                  item.suffixName = item.fileType;
-                  if (this.checkSuffix(item.fileType) != "") {
-                    item.suffixName = this.checkSuffix(item.fileType);
-                  }
-                  for (const key in this.suffix) {
-                    if (item.suffixName == key) {
-                      item.imgSrc = this.suffix[key];
+                // 处理文件列表数据
+                if (this.dataInfoList.count > 0) {
+                  this.dataInfoList.fileList.forEach((item: any) => {
+                    item.suffixName = item.fileType;
+                    if (this.checkSuffix(item.fileType) != "") {
+                      item.suffixName = this.checkSuffix(item.fileType);
                     }
-                  }
-                  item.fileSize = this.selectType(item.fileSize);
-                });
+                    for (const key in this.suffix) {
+                      if (item.suffixName == key) {
+                        item.imgSrc = this.suffix[key];
+                      }
+                    }
+                    item.fileSize = this.selectType(item.fileSize);
+                  });
+                }
+                // 动态赋值可滚动元素高度
+                this.$refs.fileContent.style.height =
+                  this.itemHeight * (this.dataInfoList.fileList.length + 0.75) +
+                  "px";
+                // 清空上拉加载效果并刷新
+                this.$refs.nowLoad.innerHTML = "";
+
+                this.$refs.bScroll.refresh();
               }
-              // 动态赋值可滚动元素高度
-              this.$refs.fileContent.style.height =
-                this.itemHeight * (this.dataInfoList.fileList.length + 0.75) +
-                "px";
-              // 清空上拉加载效果并刷新
-              this.$refs.nowLoad.innerHTML = "";
-              this.$refs.bScroll.refresh();
-            }
-          });
+            });
+        } else {
+          // 不做请求时上拉加载效果
+          this.$refs.fileContent.style.height =
+            this.itemHeight * (this.dataInfoList.fileList.length + 0.75) + "px";
+          this.$refs.bScroll.refresh();
+          // 没有加载更多文件列表数据展示时上拉加载效果
+          setTimeout(() => {
+            this.$refs.nowLoad.innerHTML = "没有更多数据了";
+          }, 500);
+        }
       } else {
-        // 不做请求时上拉加载效果
-        this.$refs.fileContent.style.height =
-          this.itemHeight * (this.dataInfoList.fileList.length + 0.75) + "px";
-        // 没有加载更多文件列表数据展示时上拉加载效果
-        setTimeout(() => {
-          this.$refs.nowLoad.innerHTML = "没有更多数据了";
-        }, 500);
+        this.setHeight();
       }
     },
     // 验证文件后缀
@@ -183,6 +242,12 @@ export default defineComponent({
       }
       if (/(mp3|wav|ra|aac|cda|wma|midi|ogg|ape|flac)/.test(type)) {
         return "music";
+      }
+      if (/(docx)/.test(type)) {
+        return "word";
+      }
+      if (!/(zip|doc|psd|pdf|ppt|txt|ai)/.test(type)) {
+        return "other";
       }
       return "";
     },
@@ -208,11 +273,65 @@ export default defineComponent({
           break;
       }
       return size;
+    },
+    manageList(arr: any, val: string) {
+      this.typeShape.searchList = [];
+      arr.forEach((element: Record<string, any>) => {
+        if (
+          element.fileName.indexOf(val) !== -1 ||
+          element.fileType.indexOf(val) !== -1 ||
+          element.suffixName.indexOf(val) !== -1
+        ) {
+          this.typeShape.searchList.push(element);
+        }
+      });
+      if (val) {
+        this.typeShape.showData = "searchList";
+      } else {
+        this.typeShape.showData = "dataInfoList";
+      }
+      this.setHeight();
+    },
+    setHeight() {
+      if (this.showFileData == "searchList") {
+        // 不做请求时上拉加载效果
+        this.$refs.fileContent.style.height =
+          this.itemHeight * (this.typeShape.searchList.length + 0.75) + "px";
+        this.$refs.bScroll.refresh();
+        // 没有加载更多文件列表数据展示时上拉加载效果
+        if (
+          parseInt(this.$refs.fileContent.style.height) <
+          parseInt(this.$refs.bScroll.$refs.wrapper.style.height)
+        ) {
+          if (this.typeShape.searchList.length == 0) {
+            this.$refs.nowLoad.innerHTML = "没有该类型的文件";
+          }
+          if (this.typeShape.searchList.length > 0) {
+            this.$refs.nowLoad.innerHTML = "没有更多数据了";
+          }
+        } else {
+          this.$refs.nowLoad.innerHTML = "没有更多数据了";
+        }
+      } else {
+        // 不做请求时上拉加载效果
+        this.$refs.fileContent.style.height =
+          this.itemHeight * (this.dataInfoList.fileList.length + 0.75) + "px";
+        this.$refs.bScroll.refresh();
+        // 没有加载更多文件列表数据展示时上拉加载效果
+        setTimeout(() => {
+          this.$refs.nowLoad.innerHTML = "";
+        }, 500);
+      }
     }
   },
   mounted() {
     // this.getAddFileInfo();
     this.getUserFileList(this.loadMore);
+  },
+  computed: {
+    showFileData() {
+      return this.typeShape.showData;
+    }
   }
 });
 </script>

@@ -23,8 +23,42 @@
       <h2>默认显示模块</h2>
     </div>
     <!-- 选项卡内容 -->
-    <div v-if="tabIndex == 0">
-      <file />
+    <div v-if="tabIndex == 0" class="file-panel">
+      <div class="fixed-panel">
+        <div class="select">
+          <div @click="showSelectFile" class="default-value">
+            {{ fileContentData.defaultValue }}
+          </div>
+          <div
+            class="selectContent"
+            v-if="fileContentData.showSelectValue"
+            @mouseleave="closeSelectFile"
+          >
+            <div
+              class="val"
+              v-for="(item, index) in fileContentData.fileType"
+              :key="index"
+              @click="fileSelectedValue(item, index)"
+            >
+              <img
+                src="@/assets/img/more/confirm.png"
+                v-if="index === fileContentData.confirmIconIndex"
+                alt=""
+              />
+              {{ item }}
+            </div>
+          </div>
+        </div>
+        <div class="serach">
+          <input
+            type="text"
+            placeholder="文件名/文件类型"
+            @input="searchFile"
+            v-model="searchValue"
+          />
+        </div>
+      </div>
+      <file ref="file" />
     </div>
     <div v-if="tabIndex == 1">
       <feed-back />
@@ -60,7 +94,14 @@ export default defineComponent({
       currentDate: "", // 当前时间
       tabIndex: -1,
       serverTime: "",
-      lunarObj: {}
+      lunarObj: {},
+      fileContentData: {
+        fileType: ["全部文件", "发送文件", "接收文件"],
+        showSelectValue: false,
+        defaultValue: "全部文件",
+        confirmIconIndex: 0
+      },
+      searchValue: ""
     };
   },
   methods: {
@@ -83,6 +124,34 @@ export default defineComponent({
     tabClick(index: string) {
       this.tabIndex = index;
       // this.$refs.tabControl.img.style.height = "180px";
+    },
+    showSelectFile() {
+      this.fileContentData.showSelectValue = !this.fileContentData
+        .showSelectValue;
+    },
+    closeSelectFile() {
+      this.fileContentData.showSelectValue = false;
+    },
+    fileSelectedValue(val: string, index: number) {
+      this.fileContentData.defaultValue = val;
+      this.fileContentData.confirmIconIndex = index;
+
+      this.closeSelectFile();
+    },
+    searchFile() {
+      if (this.serachValue) {
+        return;
+      }
+      if (this.$refs.file.dataInfoList.fileList.length == 0) {
+        return;
+      } else {
+        setTimeout(() => {
+          this.$refs.file.manageList(
+            this.$refs.file.dataInfoList.fileList,
+            this.searchValue
+          );
+        }, 1000);
+      }
     }
   },
   computed: {},

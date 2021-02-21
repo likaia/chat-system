@@ -87,7 +87,7 @@ export default defineComponent({
     };
   },
   mounted() {
-    console.log(this.manageFriendArgs);
+    // console.log(this.manageFriendArgs);
 
     this.manageFriendData = this.manageFriendArgs;
   },

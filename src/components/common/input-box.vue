@@ -22,7 +22,6 @@
 <script lang="ts">
 import _ from "lodash";
 import { defineComponent } from "vue";
-
 export default defineComponent({
   name: "input-box",
   props: {
@@ -32,21 +31,31 @@ export default defineComponent({
     value: {
       type: String,
       default: () => ""
-    }
+    },
+    maxLength: Number,
+    contentValue: String
   },
   data() {
     return {
       currentIndex: 0,
       isShowBtn: true,
-      inputVal: this.value
+      inputVal: this.value,
+      inputInitVal: this.value
     };
   },
   methods: {
     // 保存内容
     save() {
-      this.isShowBtn = false;
-      this.$emit("save-info", this.inputVal, this.keyNum);
-      this.isShowBtn = true;
+      if (this.inputVal.length <= this.maxLength) {
+        this.isShowBtn = false;
+        this.$emit("save-info", this.inputVal, this.keyNum);
+        this.isShowBtn = true;
+      } else {
+        this.isShowBtn = false;
+        this.isShowBtn = true;
+        this.inputVal = this.inputInitVal;
+        alert(this.contentValue + "的输入内容长度不能大于" + this.maxLength);
+      }
     },
     // 编辑内容
     edit() {
