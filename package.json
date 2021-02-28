@@ -41,7 +41,7 @@
     "vue-right-click-menu-next": "^1.1.0",
     "vue-router": "^4.0.0-0",
     "vue-solar-lunar": "^1.0.1",
-    "vue-web-screen-shot": "^1.1.5",
+    "vue-web-screen-shot": "^1.1.6",
     "vuex": "^4.0.0-0"
   },
   "devDependencies": {
