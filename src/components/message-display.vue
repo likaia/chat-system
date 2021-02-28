@@ -250,34 +250,42 @@
         :style="{ display: emoticonShowStatus }"
         ref="emoticonPanel"
       >
-        <div class="row-panel">
-          <div class="item-panel" v-for="item in emojiList" :key="item.info">
-            <img
-              :src="require(`../assets/img/emoji/${item.src}`)"
-              :alt="item.info"
-              draggable="false"
-              @mouseover="
-                emojiConversion($event, 'over', item.src, item.hover, item.info)
-              "
-              @mouseleave="
-                emojiConversion(
-                  $event,
-                  'leave',
-                  item.src,
-                  item.hover,
-                  item.info
-                )
-              "
-              @click="
-                emojiConversion(
-                  $event,
-                  'click',
-                  item.src,
-                  item.hover,
-                  item.info
-                )
-              "
-            />
+        <div class="container transparent-scroll-bar">
+          <div class="row-panel">
+            <div class="item-panel" v-for="item in emojiList" :key="item.info">
+              <img
+                :src="require(`../assets/img/emoji/${item.src}`)"
+                :alt="item.info"
+                draggable="false"
+                @mouseover="
+                  emojiConversion(
+                    $event,
+                    'over',
+                    item.src,
+                    item.hover,
+                    item.info
+                  )
+                "
+                @mouseleave="
+                  emojiConversion(
+                    $event,
+                    'leave',
+                    item.src,
+                    item.hover,
+                    item.info
+                  )
+                "
+                @click="
+                  emojiConversion(
+                    $event,
+                    'click',
+                    item.src,
+                    item.hover,
+                    item.info
+                  )
+                "
+              />
+            </div>
           </div>
         </div>
         <div class="ico-panel"></div>

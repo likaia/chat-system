@@ -406,5 +406,215 @@
     "src": "183fix@2x.png",
     "info": "我最美",
     "hover": "183@2x.gif"
+  },
+  {
+    "name": "watermelon",
+    "src": "89fix@2x.png",
+    "info": "西瓜",
+    "hover": "89@2x.gif"
+  },
+  {
+    "name": "knife",
+    "src": "112fix@2x.png",
+    "info": "刀",
+    "hover": "112@2x.gif"
+  },
+  {
+    "name": "beer",
+    "src": "113fix@2x.png",
+    "info": "啤酒",
+    "hover": "113@2x.gif"
+  },
+  {
+    "name": "alpaca",
+    "src": "185fix@2x.png",
+    "info": "羊驼",
+    "hover": "185@2x.gif"
+  },
+  {
+    "name": "chestnut",
+    "src": "186fix@2x.png",
+    "info": "栗子",
+    "hover": "186@2x.gif"
+  },
+  {
+    "name": "ghost",
+    "src": "187fix@2x.png",
+    "info": "幽灵",
+    "hover": "187@2x.gif"
+  },
+  {
+    "name": "egg",
+    "src": "188fix@2x.png",
+    "info": "蛋",
+    "hover": "188@2x.gif"
+  },
+  {
+    "name": "redEnvelope",
+    "src": "192fix@2x.png",
+    "info": "红包",
+    "hover": "192@2x.gif"
+  },
+  {
+    "name": "confound",
+    "src": "200fix@2x.png",
+    "info": "惊讶",
+    "hover": "200@2x.gif"
+  },
+  {
+    "name": "like",
+    "src": "201fix@2x.png",
+    "info": "点赞",
+    "hover": "201@2x.gif"
+  },
+  {
+    "name": "turnHead",
+    "src": "202fix@2x.png",
+    "info": "转头",
+    "hover": "202@2x.gif"
+  },
+  {
+    "name": "holdOneSCheek",
+    "src": "203fix@2x.png",
+    "info": "托腮",
+    "hover": "203@2x.gif"
+  },
+  {
+    "name": "eatGrass",
+    "src": "204fix@2x.png",
+    "info": "吃草",
+    "hover": "204@2x.gif"
+  },
+  {
+    "name": "showLove",
+    "src": "205fix@2x.png",
+    "info": "示爱",
+    "hover": "205@2x.gif"
+  },
+  {
+    "name": "perspire",
+    "src": "206fix@2x.png",
+    "info": "汗",
+    "hover": "206@2x.gif"
+  },
+  {
+    "name": "thanHeart",
+    "src": "207fix@2x.png",
+    "info": "比心",
+    "hover": "207@2x.gif"
+  },
+  {
+    "name": "littleWhiteFaceDear",
+    "src": "214fix@2x.png",
+    "info": "小白脸-亲",
+    "hover": "214@2x.gif"
+  },
+  {
+    "name": "littleWhiteFaceBuckleShit",
+    "src": "215fix@2x.png",
+    "info": "小白脸-扣屎",
+    "hover": "215@2x.gif"
+  },
+  {
+    "name": "littleWhiteFaceKnockYou",
+    "src": "216fix@2x.png",
+    "info": "小白脸-敲你",
+    "hover": "216@2x.gif"
+  },
+  {
+    "name": "littleWhiteFaceTickle",
+    "src": "217fix@2x.png",
+    "info": "小白脸-挠痒",
+    "hover": "217@2x.gif"
+  },
+  {
+    "name": "littleWhiteFaceLicking",
+    "src": "218fix@2x.png",
+    "info": "小白脸-舔",
+    "hover": "218@2x.gif"
+  },
+  {
+    "name": "littleWhiteFaceWorship",
+    "src": "219fix@2x.png",
+    "info": "小白脸-崇拜",
+    "hover": "219@2x.gif"
+  },
+  {
+    "name": "littleWhiteFaceCool",
+    "src": "220fix@2x.png",
+    "info": "小白脸-酷",
+    "hover": "220@2x.gif"
+  },
+  {
+    "name": "littleWhiteFaceLike",
+    "src": "221fix@2x.png",
+    "info": "小白脸-赞",
+    "hover": "221@2x.gif"
+  },
+  {
+    "name": "oil",
+    "src": "245fix@2x.png",
+    "info": "加油",
+    "hover": "245@2x.gif"
+  },
+  {
+    "name": "workHard",
+    "src": "261fix@2x.png",
+    "info": "努力工作",
+    "hover": "261@2x.gif"
+  },
+  {
+    "name": "speechless",
+    "src": "262fix@2x.png",
+    "info": "无语",
+    "hover": "262@2x.gif"
+  },
+  {
+    "name": "speechless",
+    "src": "263fix@2x.png",
+    "info": "拖脸",
+    "hover": "263@2x.gif"
+  },
+  {
+    "name": "coverFace",
+    "src": "264fix@2x.png",
+    "info": "捂脸",
+    "hover": "264@2x.gif"
+  },
+  {
+    "name": "questionMark",
+    "src": "268fix@2x.png",
+    "info": "问号",
+    "hover": "268@2x.gif"
+  },
+  {
+    "name": "peep",
+    "src": "269fix@2x.png",
+    "info": "偷看",
+    "hover": "269@2x.gif"
+  },
+  {
+    "name": "kink",
+    "src": "270fix@2x.png",
+    "info": "纠结",
+    "hover": "270@2x.gif"
+  },
+  {
+    "name": "eatMelon",
+    "src": "271fix@2x.png",
+    "info": "吃瓜",
+    "hover": "271@2x.gif"
+  },
+  {
+    "name": "faceOff",
+    "src": "272fix@2x.png",
+    "info": "滚脸",
+    "hover": "272@2x.gif"
+  },
+  {
+    "name": "lemon",
+    "src": "273fix@2x.png",
+    "info": "柠檬",
+    "hover": "273@2x.gif"
   }
 ]
