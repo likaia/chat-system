@@ -39,7 +39,9 @@ export default defineComponent({
   },
   mounted() {
     this.loadMoreData = this.loadMore;
-    this.$refs.wrapper.style.height = window.innerHeight * 0.62 + "px";
+    const wrapDom = document.getElementById("wrap");
+    if (wrapDom == null) return;
+    this.$refs.wrapper.style.height = wrapDom.offsetHeight - 65 + "px";
     // 1.创建BScroll对象
 
     setTimeout(() => {
@@ -57,17 +59,13 @@ export default defineComponent({
       this.scroll && this.scroll.refresh();
     },
     pullingUp() {
-      // console.log(this.scroll);
-      // this.scroll &&
-      //   this.scroll.on("scroll", (pos: any) => {
-      //     console.log(123, pos);
-      //   });
       this.scroll &&
         this.scroll.on("scrollEnd", () => {
           // 禁止上滑加载数据
           if (this.scroll.y <= this.y) {
             // 触底加载
             if (this.scroll.y == this.scroll.maxScrollY) {
+              this.loadMoreData.pageNo++;
               this.loadMoreData.isActionPullup = true;
               this.$emit("pulling-up", this.loadMoreData);
               this.y = this.scroll.y;
