@@ -5,7 +5,7 @@ $listFontColor: #777777;
 $hoverFontColor: #12b7f5;
 
 #wrap {
-  height: 750px;
+  height: calc(100% - 30px);
   position: relative;
 
   .tabbar {
