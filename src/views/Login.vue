@@ -254,7 +254,12 @@ export default defineComponent({
     const certificate = localStorage.getItem("certificate");
     // 如果touchId存在，则调用指纹登录
     if (touchId && certificate) {
-      this.touchIDLogin(certificate, touchId);
+      // 提示用户是否需要touchId登录
+      setTimeout(() => {
+        if (window.confirm("您已授权本网站通过指纹登录，是否立即登录？")) {
+          this.touchIDLogin(certificate, touchId);
+        }
+      }, 1000);
     }
   },
   methods: {
