@@ -254,7 +254,7 @@ export default defineComponent({
     const certificate = localStorage.getItem("certificate");
     // 如果touchId存在，则调用指纹登录
     if (touchId && certificate) {
-      this.touchIDLogin(touchId, certificate);
+      this.touchIDLogin(certificate, touchId);
     }
   },
   methods: {
@@ -435,10 +435,13 @@ export default defineComponent({
           if (res.code == 0) {
             const userId = res.data.userID;
             const username = res.data.username;
+            const token = res.data.token;
+            const refreshToken = res.data.refreshToken;
+            const profilePicture = res.data.avatarSrc;
             // 存储当前用户信息
-            localStorage.setItem("token", res.data.token);
-            localStorage.setItem("refreshToken", res.data.refreshToken);
-            localStorage.setItem("profilePicture", res.data.avatarSrc);
+            localStorage.setItem("token", token);
+            localStorage.setItem("refreshToken", refreshToken);
+            localStorage.setItem("profilePicture", profilePicture);
             localStorage.setItem("userID", userId);
             localStorage.setItem("username", username);
             // 保存用户凭证，用于指纹登录
@@ -447,21 +450,31 @@ export default defineComponent({
             // 校验设备是否支持touchID
             const hasTouchID = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
             if (hasTouchID) {
+              // 更新vuex中的数据
+              this.$store.commit("updateUserInfo", {
+                token: token,
+                refreshToken: refreshToken,
+                profilePicture: profilePicture,
+                userID: userId,
+                username: username
+              });
               this.$api.touchIdLogingAPI
                 .getTouchID({
                   userId: userId
                 })
-                .then((res: responseDataType) => {
+                .then(async (res: responseDataType) => {
                   if (res.code !== 0) {
                     // touchId不存在, 询问用户是否注册touchId
-                    this.touchIDRegistered(username, userId, certificate);
+                    await this.touchIDRegistered(username, userId, certificate);
                   }
+                  // 保存touchid
+                  localStorage.setItem("touchId", res.data);
+                  // 跳转消息组件
+                  await this.$router.push({
+                    name: "message"
+                  });
                 });
             }
-            // 跳转消息组件
-            this.$router.push({
-              name: "message"
-            });
             return;
           }
           // 切回登录界面
@@ -505,7 +518,7 @@ export default defineComponent({
           certificate
         );
         // 更新touchID
-        this.touchIDLoginOptions.publicKey.allowCredentials.id = this.base64ToArrayBuffer(
+        this.touchIDLoginOptions.publicKey.allowCredentials[0].id = this.base64ToArrayBuffer(
           touchId
         );
         // 开始校验指纹
