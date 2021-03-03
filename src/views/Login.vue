@@ -204,7 +204,7 @@ export default defineComponent({
       isDefaultAvatar: true,
       touchIDOptions: {
         publicKey: {
-          rp: { name: "chat-system", id: "kaisir.cn" }, // 网站信息
+          rp: { name: "chat-system" }, // 网站信息
           user: {
             name: "", // 用户名
             id: "", // 用户id(ArrayBuffer)
