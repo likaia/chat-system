@@ -202,6 +202,38 @@ export default defineComponent({
       isLoginStatus: 0,
       loginStatusEnum: loginStatusEnum,
       isDefaultAvatar: true,
+      touchIDOptions: {
+        publicKey: {
+          rp: { name: "chat-system", id: "localhost" }, // 网站信息
+          user: {
+            name: "", // 用户名
+            id: "", // 用户id(ArrayBuffer)
+            displayName: "" // 用户名
+          },
+          pubKeyCredParams: [
+            {
+              type: "public-key",
+              alg: -7 // 接受的算法
+            }
+          ],
+          challenge: "", // 凭证(ArrayBuffer)
+          authenticatorSelection: {
+            authenticatorAttachment: "platform"
+          }
+        }
+      },
+      touchIDLoginOptions: {
+        publicKey: {
+          challenge: "", // 凭证(ArrayBuffer)
+          allowCredentials: [
+            {
+              type: "public-key",
+              id: "", // 注册时的rawId(ArrayBuffer)
+              transports: ["internal"] // 使用内置指纹
+            }
+          ]
+        }
+      },
       avatarSrc: require("../assets/img/login/LoginWindow_BigDefaultHeadImage@2x.png"),
       loadText: "上传中"
     };
@@ -215,6 +247,14 @@ export default defineComponent({
         // 跳转至开发环境404页面
         window.location.href = "/404-page/index.html";
       }
+    }
+  },
+  mounted() {
+    const touchId = localStorage.getItem("touchId");
+    const certificate = localStorage.getItem("certificate");
+    // 如果touchId存在，则调用指纹登录
+    if (touchId && certificate) {
+      this.touchIDLogin(touchId, certificate);
     }
   },
   methods: {
@@ -391,14 +431,33 @@ export default defineComponent({
           code: code,
           platform: platform
         })
-        .then((res: responseDataType) => {
+        .then(async (res: responseDataType) => {
           if (res.code == 0) {
+            const userId = res.data.userID;
+            const username = res.data.username;
             // 存储当前用户信息
             localStorage.setItem("token", res.data.token);
             localStorage.setItem("refreshToken", res.data.refreshToken);
             localStorage.setItem("profilePicture", res.data.avatarSrc);
-            localStorage.setItem("userID", res.data.userID);
-            localStorage.setItem("username", res.data.username);
+            localStorage.setItem("userID", userId);
+            localStorage.setItem("username", username);
+            // 保存用户凭证，用于指纹登录
+            const certificate = res.data.certificate;
+            localStorage.setItem("certificate", certificate);
+            // 校验设备是否支持touchID
+            const hasTouchID = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+            if (hasTouchID) {
+              this.$api.touchIdLogingAPI
+                .getTouchID({
+                  userId: userId
+                })
+                .then((res: responseDataType) => {
+                  if (res.code !== 0) {
+                    // touchId不存在, 询问用户是否注册touchId
+                    this.touchIDRegistered(username, userId, certificate);
+                  }
+                });
+            }
             // 跳转消息组件
             this.$router.push({
               name: "message"
@@ -409,6 +468,126 @@ export default defineComponent({
           this.isLoginStatus = loginStatusEnum.NOT_LOGGED_IN;
           alert(res.msg);
         });
+    },
+    base64ToArrayBuffer: function(base64: string) {
+      const binaryString = window.atob(base64);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      return bytes.buffer;
+    },
+    arrayBufferToBase64: function(buffer: ArrayBuffer) {
+      let binary = "";
+      const bytes = new Uint8Array(buffer);
+      const len = bytes.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return window.btoa(binary);
+    },
+    arrayBufferToString: function(buffer: ArrayBuffer) {
+      let binary = "";
+      const bytes = new Uint8Array(buffer);
+      const len = bytes.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return binary;
+    },
+    touchIDLogin: async function(certificate: string, touchId: string) {
+      // 校验设备是否支持touchID
+      const hasTouchID = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      if (hasTouchID) {
+        // 更新登录凭证
+        this.touchIDLoginOptions.publicKey.challenge = this.base64ToArrayBuffer(
+          certificate
+        );
+        // 更新touchID
+        this.touchIDLoginOptions.publicKey.allowCredentials.id = this.base64ToArrayBuffer(
+          touchId
+        );
+        // 开始校验指纹
+        await navigator.credentials.get(this.touchIDLoginOptions);
+        // 调用指纹登录接口
+        this.$api.touchIdLogingAPI
+          .touchIdLogin({
+            touchId: touchId,
+            certificate: certificate
+          })
+          .then((res: responseDataType) => {
+            if (res.code == 0) {
+              // 存储当前用户信息
+              localStorage.setItem("token", res.data.token);
+              localStorage.setItem("refreshToken", res.data.refreshToken);
+              localStorage.setItem("profilePicture", res.data.avatarSrc);
+              localStorage.setItem("userID", res.data.userID);
+              localStorage.setItem("username", res.data.username);
+              const certificate = res.data.certificate;
+              localStorage.setItem("certificate", certificate);
+              // 跳转消息组件
+              this.$router.push({
+                name: "message"
+              });
+              return;
+            }
+            // 切回登录界面
+            this.isLoginStatus = loginStatusEnum.NOT_LOGGED_IN;
+            alert(res.msg);
+          });
+      }
+    },
+    touchIDRegistered: async function(
+      userName: string,
+      userId: string,
+      certificate: string
+    ) {
+      // 校验设备是否支持touchID
+      const hasTouchID = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      if (
+        hasTouchID &&
+        window.confirm("检测到您的设备支持指纹登录，是否启用？")
+      ) {
+        // 更新注册凭证
+        this.touchIDOptions.publicKey.challenge = this.base64ToArrayBuffer(
+          certificate
+        );
+        // 更新用户名、用户id
+        this.touchIDOptions.publicKey.user.name = userName;
+        this.touchIDOptions.publicKey.user.displayName = userName;
+        this.touchIDOptions.publicKey.user.id = this.base64ToArrayBuffer(
+          userId
+        );
+        // 调用指纹设备，创建指纹
+        const publicKeyCredential = await navigator.credentials.create(
+          this.touchIDOptions
+        );
+        if (publicKeyCredential && "rawId" in publicKeyCredential) {
+          // 将rowId转为base64
+          const rawId = publicKeyCredential["rawId"];
+          const touchId = this.arrayBufferToBase64(rawId);
+          const response = publicKeyCredential["response"];
+          // 获取客户端信息
+          const clientDataJSON = this.arrayBufferToString(
+            response["clientDataJSON"]
+          );
+          // 调用注册TouchID接口
+          this.$api.touchIdLogingAPI
+            .registeredTouchID({
+              touchId: touchId,
+              clientDataJson: clientDataJSON
+            })
+            .then((res: responseDataType<string>) => {
+              if (res.code === 0) {
+                // 保存touchId用于指纹登录
+                localStorage.setItem("touchId", touchId);
+                return;
+              }
+              alert(res.msg);
+            });
+        }
+      }
     },
     removeStorageListener: function() {
       // 移除localStorage监听

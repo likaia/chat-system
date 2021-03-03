@@ -13,11 +13,14 @@ import messageListAPI from "@/api/messageListAPI";
 import serverAPI from "@/api/serverAPI";
 // 第三方登录接口
 import authLoginAPI from "@/api/authLoginAPI";
+// 指纹登录接口
+import touchIdLogingAPI from "@/api/touchIdLogingAPI";
 // 导出接口
 export default {
   websiteManageAPI,
   fileManageAPI,
   messageListAPI,
   serverAPI,
-  authLoginAPI
+  authLoginAPI,
+  touchIdLogingAPI
 };
