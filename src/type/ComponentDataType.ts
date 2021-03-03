@@ -15,6 +15,8 @@ export type loginDataType<T> = {
   isLoginStatus: number; // 登录状态：0.未登录 1.登录中 2.注册
   loginStatusEnum: Record<string, any>; // 登录状态枚举
   isDefaultAvatar: boolean; // 头像是否为默认头像
+  touchIDOptions: Record<string, any>; // touchID注册所需信息
+  touchIDLoginOptions: Record<string, any>; // // touchID登录所需信息
   avatarSrc: T; // 头像地址
   loadText: string; // 加载层的文字
 };
