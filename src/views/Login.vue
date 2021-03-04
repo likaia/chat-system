@@ -480,6 +480,10 @@ export default defineComponent({
                   });
                 });
             }
+            // 跳转消息组件
+            await this.$router.push({
+              name: "message"
+            });
             return;
           }
           // 切回登录界面
