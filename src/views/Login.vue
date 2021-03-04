@@ -492,6 +492,7 @@ export default defineComponent({
                     name: "message"
                   });
                 });
+              return;
             }
             // 跳转消息组件
             await this.$router.push({
