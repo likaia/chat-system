@@ -211,15 +211,31 @@ export default defineComponent({
             displayName: "" // 用户名
           },
           pubKeyCredParams: [
+            { type: "public-key", alg: -7 },
             {
               type: "public-key",
-              alg: -7 // 接受的算法
-            }
-          ],
+              alg: -35
+            },
+            { type: "public-key", alg: -36 },
+            { type: "public-key", alg: -257 },
+            {
+              type: "public-key",
+              alg: -258
+            },
+            { type: "public-key", alg: -259 },
+            { type: "public-key", alg: -37 },
+            {
+              type: "public-key",
+              alg: -38
+            },
+            { type: "public-key", alg: -39 },
+            { type: "public-key", alg: -8 }
+          ], // 接受的加密算法
           challenge: "", // 凭证(ArrayBuffer)
+          timeout: 60000, // 授权超时时间
           authenticatorSelection: {
             authenticatorAttachment: "platform"
-          }
+          } // 只接受指纹登录或windows hello登录
         }
       },
       touchIDLoginOptions: {
@@ -252,16 +268,11 @@ export default defineComponent({
   mounted() {
     const touchId = localStorage.getItem("touchId");
     const certificate = localStorage.getItem("certificate");
-    // 当前操作系统不是macos则不允许指纹登录
-    if (!this.isMac()) {
-      localStorage.removeItem("touchId");
-      localStorage.removeItem("certificate");
-    }
     // 如果touchId存在，则调用指纹登录
     if (touchId && certificate) {
       // 提示用户是否需要touchId登录
       setTimeout(() => {
-        if (window.confirm("您已授权本网站通过指纹登录，是否立即登录？")) {
+        if (window.confirm("您已授权本网站通过TouchID登录，是否立即登录？")) {
           this.touchIDLogin(certificate, touchId);
         }
       }, 1000);
@@ -459,7 +470,7 @@ export default defineComponent({
             localStorage.setItem("certificate", certificate);
             // 校验设备是否支持touchID
             const hasTouchID = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-            if (hasTouchID && this.isMac()) {
+            if (hasTouchID) {
               // 更新vuex中的数据
               this.$store.commit("updateUserInfo", {
                 token: token,
@@ -527,7 +538,7 @@ export default defineComponent({
     touchIDLogin: async function(certificate: string, touchId: string) {
       // 校验设备是否支持touchID
       const hasTouchID = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-      if (hasTouchID && this.isMac()) {
+      if (hasTouchID) {
         // 更新登录凭证
         this.touchIDLoginOptions.publicKey.challenge = this.base64ToArrayBuffer(
           certificate
@@ -575,8 +586,7 @@ export default defineComponent({
       const hasTouchID = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
       if (
         hasTouchID &&
-        this.isMac() &&
-        window.confirm("检测到您的设备支持指纹登录，是否启用？")
+        window.confirm("检测到您的设备支持TouchID登录，是否启用？")
       ) {
         // 更新注册凭证
         this.touchIDOptions.publicKey.challenge = this.base64ToArrayBuffer(
