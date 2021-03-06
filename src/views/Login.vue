@@ -1,6 +1,7 @@
 <!--登录页面-->
 <template>
   <div id="login-panel" ref="loginPanel">
+    <toast class="toast" v-if="isShow" :info="toastMsg" />
     <div class="top-panel">
       <div class="qrCode-panel">
         <img src="../assets/img/login/code_normal@2x.png" alt="" />
@@ -185,6 +186,7 @@ import {
 import { loginStatusEnum } from "@/enum/ComponentEnum";
 import base from "../api/base";
 import _ from "lodash";
+import toast from "@/components/common/toast.vue";
 
 export default defineComponent({
   name: "login",
@@ -199,6 +201,8 @@ export default defineComponent({
       confirmPassword: "",
       state: "",
       platform: "",
+      isShow: false,
+      toastMsg: "",
       isLoginStatus: 0,
       loginStatusEnum: loginStatusEnum,
       isDefaultAvatar: true,
@@ -264,6 +268,9 @@ export default defineComponent({
         window.location.href = "/404-page/index.html";
       }
     }
+  },
+  components: {
+    toast
   },
   mounted() {
     const touchId = localStorage.getItem("touchId");
@@ -459,12 +466,18 @@ export default defineComponent({
             const token = res.data.token;
             const refreshToken = res.data.refreshToken;
             const profilePicture = res.data.avatarSrc;
+            const isInitedPassword = res.data.isInitedPassword;
             // 存储当前用户信息
             localStorage.setItem("token", token);
             localStorage.setItem("refreshToken", refreshToken);
             localStorage.setItem("profilePicture", profilePicture);
             localStorage.setItem("userID", userId);
             localStorage.setItem("username", username);
+            if (isInitedPassword) {
+              // 提示用户修改密码
+              this.isSHow = true;
+              this.toastMsg = "您尚未设置密码，可在设置中修改密码";
+            }
             // 保存用户凭证，用于指纹登录
             const certificate = res.data.certificate;
             localStorage.setItem("certificate", certificate);
