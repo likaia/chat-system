@@ -319,12 +319,18 @@ export default defineComponent({
               };
             });
             // 判断用户是否设置密码
-            const isInitedPassword = localStorage.getItem("isInitedPassword");
-            if (isInitedPassword) {
-              alert(
-                "检测到您还没有设置密码，如需使用用户名密码登录，请在设置界面修改密码"
-              );
+            let isInitedPassword = localStorage.getItem("isInitedPassword");
+            if (isInitedPassword != null) {
+              // string转boolean
+              isInitedPassword = eval(isInitedPassword);
+              if (isInitedPassword) {
+                alert(
+                  "检测到您还没有设置密码，如需使用用户名密码登录，请在设置界面修改密码"
+                );
+              }
             }
+            // 验证完毕后，将其移除，防止重复检测问题
+            localStorage.removeItem("isInitedPassword");
             // 监听消息接收
             this.$options.sockets.onmessage = (res: { data: string }) => {
               const data = JSON.parse(res.data);
