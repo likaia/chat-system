@@ -170,13 +170,12 @@
         <tr>
           <td>
             <inputBox
-              title="公司"
-              placeholder="填写你的公司"
-              :keyNum="6"
-              :value="userInfo.corporationName"
+              title="修改密码"
+              placeholder="填写新的密码"
+              :keyNum="16"
               @save-info="saveInfo"
-              :maxLength="30"
-              contentValue="公司"
+              :maxLength="16"
+              contentValue="修改密码"
             />
           </td>
           <td>
@@ -246,6 +245,29 @@ export default defineComponent({
     },
     // 更新用户信息
     async saveInfo(val: string, keyNum: number, cityVal: string) {
+      if (keyNum === 16) {
+        // 修改密码
+        this.$api.websiteManageAPI
+          .modifyPassword({ password: val })
+          .then((res: responseDataType) => {
+            if (res.code == 0) {
+              this.toastMsg = res.data;
+              this.isShow = true;
+              setTimeout(() => {
+                this.toastMsg = "";
+                this.isShow = false;
+              }, 2000);
+            } else {
+              this.toastMsg = res.msg;
+              this.isShow = true;
+              setTimeout(() => {
+                this.toastMsg = "";
+                this.isShow = false;
+              }, 2000);
+            }
+          });
+        return;
+      }
       const userObj = this.switchInfo(val, keyNum, cityVal);
       const { data } = await this.$api.websiteManageAPI.updateUserInfo({
         userId: this.$store.state.userID,

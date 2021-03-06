@@ -18,6 +18,11 @@ const websiteManageAPI = {
   registered<T>(params: paramsType<T>) {
     return services.post(`${base.lk}/user/registered`, params);
   },
+  // 修改密码
+  modifyPassword(params: { password: string }) {
+    return services.post(`${base.develop}/user/modifyPassword`, params);
+  },
+  // 修改密码
   // 获取用户头像
   getUserAvatar<T>(params: paramsType<T>) {
     return services.post(`${base.lk}/user/getUserAvatarSrc`, params);
