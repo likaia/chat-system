@@ -12,8 +12,6 @@ export type loginDataType<T> = {
   confirmPassword: string; // 注册时的确认登录密码
   state: string; // 第三方登录时服务端返回的状态码
   platform: string; // 第三方登录时的平台名称
-  isShow: boolean; // toast显示状态
-  toastMsg: string; // toast内容
   isLoginStatus: number; // 登录状态：0.未登录 1.登录中 2.注册
   loginStatusEnum: Record<string, any>; // 登录状态枚举
   isDefaultAvatar: boolean; // 头像是否为默认头像
