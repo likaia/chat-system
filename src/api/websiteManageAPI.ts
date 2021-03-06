@@ -20,7 +20,7 @@ const websiteManageAPI = {
   },
   // 修改密码
   modifyPassword(params: { password: string }) {
-    return services.post(`${base.develop}/user/modifyPassword`, params);
+    return services.post(`${base.lk}/user/modifyPassword`, params);
   },
   // 修改密码
   // 获取用户头像
