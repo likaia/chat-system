@@ -16,7 +16,7 @@
                 <img :src="userInfo.avatarSrc" alt="头像" />
               </div>
               <div class="btn-area">
-                <p class="tips">支持jipg、png、 jpeg格式大小5M以内的图片</p>
+                <p class="tips">支持jipg、png、 jpeg格式大小2M以内的图片</p>
                 <div class="up-btn">
                   点击上传
                   <input
