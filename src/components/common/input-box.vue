@@ -2,8 +2,18 @@
   <div class="input-box">
     <span class="title">{{ title }}</span>
     <input
+      v-if="keyNum !== 16"
       type="text"
       @focus="onFocus"
+      :placeholder="placeholder"
+      v-model="inputVal"
+      ref="inputText"
+    />
+    <input
+      v-else
+      type="password"
+      @focus="onFocus"
+      maxlength="16"
       :placeholder="placeholder"
       v-model="inputVal"
       ref="inputText"
