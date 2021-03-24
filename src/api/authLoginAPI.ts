@@ -3,9 +3,9 @@ import base from "@/api/base";
 
 // 定义参数类型
 type paramsType = {
-  code: string;
-  platform: string;
-  state: string;
+  code: string; // 授权回调码
+  platform: string; // 平台名称
+  state: string; // 授权链接状态码
 };
 
 /**

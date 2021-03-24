@@ -9653,10 +9653,10 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
 
-vue-web-screen-shot@^1.1.6:
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/vue-web-screen-shot/-/vue-web-screen-shot-1.1.6.tgz#ab07f5e80316c328a276ba8ea9de94ff4e790bad"
-  integrity sha512-6WAEn4+BPER8+wVKbniq9NCCHSsodI7TfrBZYNeCBvgzjlhet0oSvJ1b4u4rqynGEPQc1e4oslexWwA6p4wq8Q==
+vue-web-screen-shot@^1.1.8:
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/vue-web-screen-shot/-/vue-web-screen-shot-1.1.8.tgz#e10fdc69ecc8ee7bcf8b10d2a204c5acff4b1023"
+  integrity sha512-3ZtScJINrYsSsADCSZ7sDi2Yj3bC/02rYv8LP0flt/eUobgyaAK5dznCN3QRRoAB69QWXOUGsYTi5ozybRT76A==
   dependencies:
     "@types/lodash" "^4.14.161"
     webrtc-adapter "^7.7.0"

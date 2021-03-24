@@ -17,7 +17,7 @@ app
   .use(store)
   .use(router)
   .use(vueRightMenu)
-  .use(screenShot)
+  .use(screenShot, { enableWebRtc: true })
   .mount("#app");
 // 使用VueNativeSock插件，并进行相关配置
 app.use(
