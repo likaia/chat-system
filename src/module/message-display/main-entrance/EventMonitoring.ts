@@ -68,9 +68,7 @@ export default function eventMonitoring(
     document.body.addEventListener("paste", readPasteData);
     document.body.addEventListener("click", globalClick);
     // 监听消息推送
-    (currentInstance?.appContext.config.globalProperties.sockets).onmessage = (res: {
-      data: string;
-    }) => {
+    proxy.$socket.onmessage = (res: { data: string }) => {
       const ResponseData = JSON.parse(res.data);
       if (ResponseData.code !== 200 && ResponseData.code !== -1) {
         // 获取服务端推送的消息
