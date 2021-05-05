@@ -43,6 +43,6 @@ yarn build
 ## 写在最后
 ![](./JetBrains.png)
 
-感谢 **[JetBrains](https://www.jetbrains.com/?from=chat-system)** 公司提供的的 **[软件开源许可证](https://www.jetbrains.com/shop/eform/opensource)** 。
+感谢 **[JetBrains](https://www.jetbrains.com/?from=chat-system)** 公司提供的 **[软件开源许可证](https://www.jetbrains.com/shop/eform/opensource)** 。
 * 项目遵守 [MIT](https://choosealicense.com/licenses/mit/) 开源协议
 * 本项目仅用于学习使用，切勿用于商业用途，否则产生的法律后果与作者无关。
