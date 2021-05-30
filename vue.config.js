@@ -4,7 +4,7 @@ const CompressionWebpackPlugin = require("compression-webpack-plugin");
 
 module.exports = {
   // 项目打包生成目录
-  outputDir: "/usr/local/Cellar/tomcat/9.0.41/libexec/webapps/chat-system/",
+  outputDir: "dist",
   // 静态资源生成目录（相对于outputDir
   assetsDir: "static",
   // 关闭线上源码
