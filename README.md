@@ -11,6 +11,17 @@
 * scss
 * TypeScript
 
+## 注意事项
+项目未开放注册通道，全面采用第三方平台登录机制。本地启动项目时，需要通过用户名和密码进行登录，因为第三方登录的授权回调地址是线上地址。
+
+### 用户名和密码获取通道
+[线上环境](https://www.kaisir.cn/chat-system/index.html#/)使用第三方平台登录后：
+* 进入设置面板，如下图所示：
+![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c15893bbe5c3429ca2a8d9908b8cf425~tplv-k3u1fbpfcp-watermark.image)
+  
+* 在打开的面板中（上图所示），用户名就是你登录所需的用户名
+* 修改密码选项，需要自己设置密码（因为注册时系统会随机生成一个密码）
+
 ## 加入此项目
 项目采用`Forking`工作流，如果想加入本项目的开发，需将项目fork到自己的仓库下，功能开发完成后，提PR即可。
 
