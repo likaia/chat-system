@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
+import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Login from "@/views/Login.vue";
 import MainContent from "@/components/main-content.vue";
 import store from "@/store/index.ts";
@@ -34,7 +34,7 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(process.env.BASE_URL), // 地址栏不带#
   routes
 });
 router.beforeEach((to, from, next) => {

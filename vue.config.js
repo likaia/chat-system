@@ -19,7 +19,7 @@ module.exports = {
       .tap(options => Object.assign(options, { limit: 10240 }));
   },
   // 部署应用包时的基本 URL(解决build打包后资源文件404问题) :https://cli.vuejs.org/zh/config/#baseurl
-  publicPath: "./",
+  publicPath: process.env.NODE_ENV === "development" ? "./" : "/chat-system",
   devServer: {
     open: true,
     compress: true,
