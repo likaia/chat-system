@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@types/lodash": "^4.14.161",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "better-scroll": "^2.0.5",
     "compression-webpack-plugin": "^5.0.1",
     "core-js": "^3.6.5",
