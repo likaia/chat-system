@@ -7,9 +7,10 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     component: MainContent,
+    redirect: "index.html",
     children: [
       {
-        path: "/",
+        path: "/index|index.html/", // 使用正则表达式匹配路径
         name: "message",
         component: () => import("@/views/msg-list.vue")
       },
