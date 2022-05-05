@@ -540,6 +540,7 @@ export default defineComponent({
     touchIDLogin: async function(certificate: string, touchId: string) {
       // 校验设备是否支持touchID
       const hasTouchID = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      debugger;
       if (hasTouchID) {
         // 更新登录凭证
         this.touchIDLoginOptions.publicKey.challenge = this.base64ToArrayBuffer(
