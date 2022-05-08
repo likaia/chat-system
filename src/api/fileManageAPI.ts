@@ -12,9 +12,13 @@ type paramsType<T> = {
 const fileManageAPI = {
   // 文件上传接口
   upload(file: File | FormData) {
-    return services.post(`${base.lkBaseURL}/uploads/singleFileUpload`, file, {
-      headers: { "Content-Type": "multipart/form-data" }
-    });
+    return services.post(
+      `${base.lkBaseURL}/uploadFile/singleFileUpload`,
+      file,
+      {
+        headers: { "Content-Type": "multipart/form-data" }
+      }
+    );
   },
   // 文件列表
   getUserFileList<T>(params: paramsType<T>) {
