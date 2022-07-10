@@ -327,7 +327,7 @@ export default defineComponent({
                   localStorage.setItem("username", res.data.username);
                   // 跳转消息组件
                   this.$router.push({
-                    name: "message"
+                    path: "/"
                   });
                 } else {
                   // 返回登录界面
@@ -494,14 +494,14 @@ export default defineComponent({
                   localStorage.setItem("touchId", res.data);
                   // 跳转消息组件
                   await this.$router.push({
-                    name: "message"
+                    path: "/"
                   });
                 });
               return;
             }
             // 跳转消息组件
             await this.$router.push({
-              name: "message"
+              path: "/"
             });
             return;
           }
@@ -570,7 +570,7 @@ export default defineComponent({
               localStorage.setItem("certificate", certificate);
               // 跳转消息组件
               this.$router.push({
-                name: "message"
+                path: "/"
               });
               return;
             }

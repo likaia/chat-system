@@ -10,7 +10,7 @@ const routes: Array<RouteRecordRaw> = [
     redirect: "index",
     children: [
       {
-        path: "index", // 使用正则表达式匹配路径
+        path: "/:index|index.html", // 使用正则表达式匹配路径
         name: "message",
         component: () => import("@/views/msg-list.vue")
       },
