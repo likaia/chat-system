@@ -62,7 +62,7 @@
       <div class="right-panel">
         <!--功能切换 路由入口-->
         <div class="function-switching-panel">
-          <router-link :to="{ name: 'message' }" custom v-slot="{ navigate }">
+          <router-link :to="{ path: '/' }" custom v-slot="{ navigate }">
             <div
               class="main-ico-area"
               @click="navigate"
