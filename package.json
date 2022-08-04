@@ -22,9 +22,9 @@
   },
   "homepage": "https://github.com/likaia/chat-system#readme",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
+    "serve": "vite --open",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "commit": "git-cz"
   },
@@ -35,26 +35,23 @@
     "compression-webpack-plugin": "^5.0.1",
     "core-js": "^3.6.5",
     "html2canvas": "^1.0.0-rc.7",
-    "vue": "^3.0.0-0",
-    "vue-class-component": "^8.0.0-0",
     "vue-native-websocket-vue3": "^3.1.0",
     "vue-right-click-menu-next": "^1.1.0",
-    "vue-router": "^4.0.0-0",
     "vue-solar-lunar": "^1.0.3",
     "vue-web-screen-shot": "^1.3.2",
-    "vuex": "^4.0.0-0"
+    "vue": "^3.2.37",
+    "vue-router": "^4.1.3",
+    "vuex": "^4.0.2",
+    "@vueuse/components": "^8.9.2",
+    "@vueuse/core": "^8.9.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-angular": "^11.0.0",
+    "@types/node": "^18.6.3",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
-    "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-plugin-eslint": "~4.5.0",
-    "@vue/cli-plugin-router": "~4.5.0",
-    "@vue/cli-plugin-typescript": "~4.5.0",
-    "@vue/cli-plugin-vuex": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
+    "@vitejs/plugin-vue": "^3.0.0",
     "@vue/compiler-sfc": "^3.0.0-0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^5.0.2",
@@ -67,11 +64,22 @@
     "prettier": "^1.19.1",
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
-    "typescript": "~3.9.3"
+    "typescript": "~3.9.3",
+    "vite": "^3.0.0",
+    "vue-tsc": "^0.38.4"
   },
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
+  },
+  "volta": {
+    "node": "14.18.0",
+    "yarn": "1.22.17"
+  },
+  "engines": {
+    "npm": "please-use-yarn",
+    "yarn": ">= 1.0.0",
+    "node": ">= 14.18.0"
   }
 }
