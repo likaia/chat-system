@@ -6,6 +6,7 @@
     "jsx": "preserve",
     "importHelpers": true,
     "moduleResolution": "node",
+    "isolatedModules": true,
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,

@@ -42,7 +42,7 @@
             <label>
               <input
                 type="text"
-                @focus="hideSearchImg"
+                @focus="searchImg = 'none'"
                 @blur="showSearchImg"
                 v-model="searchContent"
               />
@@ -129,128 +129,86 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
+import { computed, onMounted, shallowRef } from "vue";
+import {
+  messageIco,
+  messageIcoActive,
+  contactIco,
+  contactIcoActive,
+  moreIco,
+  moreIcoActive
+} from "@/resource/MainContentResponse";
 import _ from "lodash";
-import { mainContentDateType } from "@/type/ComponentDataType";
-import { defineComponent } from "vue";
+import { useStore } from "vuex";
 import base from "@/api/base";
+import createdCheck from "@/module/main-content/components-metords/createdCheck";
+import useCurrentInstance from "@/type/global/UseCurrentInstance";
 
-export default defineComponent({
-  name: "MainContent",
-  data<T>(): mainContentDateType<T> {
-    return {
-      searchImg: "block",
-      searchContent: "",
-      addBackground: "#ffffff",
-      leftIco: "none",
-      messageIco: require("../assets/img/menu-message-normal@2x.png"),
-      messageIcoActive: require("../assets/img/menu-message-down@2x.png"),
-      contactIco: require("../assets/img/menu-contact-normal@2x.png"),
-      contactIcoActive: require("../assets/img/menu-contact-down@2x.png"),
-      moreIco: require("../assets/img/menu-more-normal@2x.png"),
-      moreIcoActive: require("../assets/img/menu-more-down@2x.png")
-    };
-  },
-  created() {
-    // 从本地存储中获取token
-    const token = localStorage.getItem("token");
-    const refreshToken = localStorage.getItem("refreshToken");
-    const username = localStorage.getItem("username");
-    if (this.isMobile()) {
-      if (!window.location.href.includes("8020")) {
-        // 跳转至生产环境404页面
-        window.location.href = "/chat-system/404-page/index.html";
-      } else {
-        // 跳转至开发环境404页面
-        window.location.href = "/404-page/index.html";
-      }
-    }
-    if (_.isEmpty(token) || _.isEmpty(username) || _.isEmpty(refreshToken)) {
-      // 跳转登录路由
-      localStorage.removeItem("msgArray");
-      this.$router.push({ name: "login" });
-    } else {
-      // 更新vuex中的token
-      this.$store.commit("updateUserInfo", {
-        token: token,
-        refreshToken: refreshToken,
-        profilePicture: localStorage.getItem("profilePicture"),
-        userID: localStorage.getItem("userID"),
-        username: localStorage.getItem("username")
-      });
-    }
-  },
-  mounted() {
-    // 判断websocket是否连接: 当前为未连接状态并且本地存储中有userID
-    if (
-      !this.$store.state.socket.isConnected &&
-      localStorage.getItem("userID") !== null
-    ) {
-      // 连接websocket服务器
-      this.$connect(
-        `${base.lkWebSocket}/${localStorage.getItem(
-          "userID"
-        )}/${localStorage.getItem("token")}`
-      );
-    }
-    // 监听全局点击事件
-    document.addEventListener("click", () => {
-      // 隐藏右键菜单
-      this.$store.commit("updateRightMenuStatus", {
-        status: "none",
-        left: "0px",
-        top: "0px"
-      });
-    });
-  },
-  methods: {
-    // 显示搜索图标
-    showSearchImg: function() {
-      // 判断当前输入框是否有数据
-      if (_.isEmpty(this.searchContent)) {
-        this.searchImg = "block";
-      } else {
-        this.searchImg = "none";
-      }
-    },
-    // 隐藏搜索图标
-    hideSearchImg: function() {
-      this.searchImg = "none";
-    },
-    // 创建群聊
-    createGroupChat: function(status: boolean) {
-      if (status) {
-        this.addBackground = "#E1E3E5";
-      } else {
-        this.addBackground = "#ffffff";
-      }
-    },
-    // 显示左上角图标
-    showLeftIco: function(status: boolean) {
-      if (status) {
-        this.leftIco = "block";
-      } else {
-        this.leftIco = "none";
-      }
-    },
-    getThisWindowHeight: () => window.innerHeight,
-    getThisWindowWidth: () => window.innerWidth,
-    isMobile: () => {
-      return !!navigator.userAgent.match(
-        /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
-      );
-    }
-  },
-  computed: {
-    // 当前组件名
-    currentComponentName(): string {
-      return this.$store.state.currentComponentName;
-    },
-    // 用户头像
-    profilePicture(): string {
-      return this.$store.state.profilePicture;
-    }
+const store = useStore();
+// 登录校验
+createdCheck();
+
+const searchImg = shallowRef("block");
+const searchContent = shallowRef("");
+const addBackground = shallowRef("#ffffff");
+const leftIco = shallowRef("none");
+
+const currentComponentName = computed(() => {
+  return store.state.currentComponentName;
+});
+const profilePicture = computed(() => {
+  return store.state.profilePicture;
+});
+
+const showLeftIco = (status: boolean) => {
+  if (status) {
+    leftIco.value = "block";
+    return;
   }
+  leftIco.value = "none";
+};
+
+const showSearchImg = () => {
+  // 判断当前输入框是否有数据
+  if (_.isEmpty(searchContent.value)) {
+    searchImg.value = "block";
+    return;
+  }
+  searchImg.value = "none";
+};
+
+const createGroupChat = (status: boolean) => {
+  if (status) {
+    addBackground.value = "#E1E3E5";
+    return;
+  }
+  addBackground.value = "#ffffff";
+};
+
+onMounted(() => {
+  const { proxy } = useCurrentInstance();
+  // 判断websocket是否连接: 当前为未连接状态并且本地存储中有userID
+  if (
+    !store.state.socket.isConnected &&
+    localStorage.getItem("userID") != null
+  ) {
+    // 连接websocket服务器
+    proxy.$connect(
+      `${base.lkWebSocket}/${localStorage.getItem(
+        "userID"
+      )}/${localStorage.getItem("token")}`
+    );
+  }
+  // 监听全局点击事件
+  document.addEventListener("click", () => {
+    // 隐藏右键菜单
+    store.commit("updateRightMenuStatus", {
+      status: "none",
+      left: "0px",
+      top: "0px"
+    });
+  });
 });
 </script>
 

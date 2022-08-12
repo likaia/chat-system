@@ -19,7 +19,8 @@ module.exports = {
     "prettier"
   ],
   globals: {
-    PublicKeyCredential: true
+    PublicKeyCredential: true,
+    NodeJS: true
   },
   parser: "vue-eslint-parser",
   rules: {
@@ -27,6 +28,7 @@ module.exports = {
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     "prettier/prettier": "error", // prettier标记的地方抛出错误信息
     "spaced-comment": [2, "always"], // 注释后面必须写两个空格
-    "@typescript-eslint/no-explicit-any": ["off"] // 关闭any校验
+    "@typescript-eslint/no-explicit-any": ["off"], // 关闭any校验
+    "@typescript-eslint/no-use-before-define": ["off"] // 关闭使用前定义
   }
 };
