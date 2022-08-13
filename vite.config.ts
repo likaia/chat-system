@@ -18,9 +18,6 @@ export default defineConfig({
     }
   },
   base: IS_PRODUCTION ? "/chat-system" : "./",
-  define: {
-    "process.env": {}
-  },
   build: {
     outDir: resolve(__dirname, "dist")
   }

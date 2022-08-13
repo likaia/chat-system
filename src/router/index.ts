@@ -35,7 +35,7 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL), // 地址栏不带#
+  history: createWebHistory(import.meta.env.BASE_URL), // 地址栏不带#
   routes
 });
 router.beforeEach((to, from, next) => {
