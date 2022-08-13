@@ -606,7 +606,7 @@ export default defineComponent({
         .then((res: responseDataType) => {
           if (res.code == 0) {
             this.$router.push({
-              name: "message",
+              path: "/index",
               params: { userId: params.buddyId }
             });
           }

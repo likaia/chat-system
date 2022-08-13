@@ -46,7 +46,7 @@ export default createStore({
       main.config.globalProperties.$socket = event.currentTarget;
       state.socket.isConnected = true;
       // 连接成功时启动定时发送心跳消息，避免被服务器断开连接
-      state.socket.heartBeatTimer = setInterval(() => {
+      state.socket.heartBeatTimer = window.setInterval(() => {
         const message = "心跳消息";
         state.socket.isConnected &&
           main.config.globalProperties.$socket.sendObj({
