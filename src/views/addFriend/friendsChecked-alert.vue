@@ -321,6 +321,9 @@ export default defineComponent({
         this.$refs.Schedule.src = this.Schedule[0];
       }
     },
+    getImageUrl(fileName: string) {
+      return new URL(`/src/assets/img/list/${fileName}`, import.meta.url).href;
+    },
     // 判断关闭与最小化图标是否出现
     showLeftIco: function(status: boolean) {
       if (status) {
@@ -355,8 +358,8 @@ export default defineComponent({
         state: false
       },
       Schedule: [
-        require("@/assets/img/list/Schedule_delete@2x.png"),
-        require("@/assets/img/list/Schedule_delete_hover@2x.png")
+        this.getImageUrl("Schedule_delete@2x.png"),
+        this.getImageUrl("Schedule_delete_hover@2x.png")
       ]
     };
   },

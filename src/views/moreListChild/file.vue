@@ -93,17 +93,17 @@ export default defineComponent({
     return {
       currentIndex: 0,
       suffix: {
-        zip: require("@/assets/img/more/large_zip-rar@2x.png"),
-        music: require("@/assets/img/more/large_music@2x.png"),
-        doc: require("@/assets/img/more/large_doc@2x.png"),
-        psd: require("@/assets/img/more/large_psd@2x.png"),
-        pdf: require("@/assets/img/more/large_pdf@2x.png"),
-        pic: require("@/assets/img/more/large_pic@2x.png"),
-        ppt: require("@/assets/img/more/large_ppt@2x.png"),
-        word: require("@/assets/img/more/large_word@2x.png"),
-        txt: require("@/assets/img/more/large_txt@2x.png"),
-        ai: require("@/assets/img/more/large_ai@2x.png"),
-        other: require("@/assets/img/more/large_other@2x.png")
+        zip: this.getImageUrl("large_zip-rar@2x.png"),
+        music: this.getImageUrl("large_music@2x.png"),
+        doc: this.getImageUrl("large_doc@2x.png"),
+        psd: this.getImageUrl("large_psd@2x.png"),
+        pdf: this.getImageUrl("large_pdf@2x.png"),
+        pic: this.getImageUrl("large_pic@2x.png"),
+        ppt: this.getImageUrl("large_ppt@2x.png"),
+        word: this.getImageUrl("large_word@2x.png"),
+        txt: this.getImageUrl("large_txt@2x.png"),
+        ai: this.getImageUrl("large_ai@2x.png"),
+        other: this.getImageUrl("large_other@2x.png")
       },
       dataInfoList: {},
       loadMore: {
@@ -113,7 +113,7 @@ export default defineComponent({
       },
       closeRequestFileList: false,
       itemHeight: 62,
-      loading: require("@/assets/img/more/loading.gif"),
+      loading: this.getImageUrl("loading.gif"),
       typeShape: {
         searchList: [],
         selectList: [],
@@ -133,6 +133,9 @@ export default defineComponent({
         userId: this.$store.state.userID
       };
       await this.$api.fileManageAPI.getAddFileInfo(a);
+    },
+    getImageUrl(fileName: string) {
+      return new URL(`/src/assets/img/more/${fileName}`, import.meta.url).href;
     },
     getUserFileList(page: any) {
       // 上拉加载效果
