@@ -7,6 +7,7 @@
 
 ## 项目技术栈
 本项目使用到的技术栈如下：
+* vite
 * vue3及其周边
 * scss
 * TypeScript
