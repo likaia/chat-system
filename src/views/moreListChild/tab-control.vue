@@ -29,7 +29,7 @@ export default defineComponent({
   },
   data() {
     return {
-      currentIndex: -1,
+      currentIndex: 2,
       classList: ["activeIcon0", "activeIcon1", "activeIcon2"]
     };
   },

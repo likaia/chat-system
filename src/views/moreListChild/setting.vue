@@ -194,6 +194,7 @@ import inputBox from "@/components/common/input-box.vue";
 import toast from "@/components/common/toast.vue";
 import { responseDataType } from "@/type/ComponentDataType";
 import base from "../../api/base";
+import provinces from "@/assets/json/provinces.json";
 
 export default defineComponent({
   name: "setting",
@@ -206,7 +207,7 @@ export default defineComponent({
     return {
       userInfo: "",
       currentIndex: 0,
-      list: require("@/assets/json/provinces.json"), // 导入省市数据
+      list: provinces, // 导入省市数据
       province: "", // 省份
       city: [], // 城市
       cityVal: "",

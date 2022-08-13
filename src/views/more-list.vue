@@ -92,7 +92,7 @@ export default defineComponent({
   data() {
     return {
       currentDate: "", // 当前时间
-      tabIndex: -1,
+      tabIndex: 2,
       serverTime: "",
       lunarObj: {},
       fileContentData: {
