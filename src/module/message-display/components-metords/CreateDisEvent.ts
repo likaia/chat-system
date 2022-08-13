@@ -1,4 +1,5 @@
 import initData from "@/module/message-display/main-entrance/InitData";
+import getImageUrl from "@/module/message-display/components-metords/GetImageUrl";
 
 /**
  *  创建群聊
@@ -7,9 +8,9 @@ import initData from "@/module/message-display/main-entrance/InitData";
 export default function createDisEvent(status: string) {
   // 创建群聊各状态图标路径
   const resourceObj: Record<string, string> = {
-    createDisNormal: require("@/assets/img/titlebar_function_createDis_normal@2x.png"),
-    createDisHover: require("@/assets/img/titlebar_function_createDis_hover@2x.png"),
-    createDisClick: require("@/assets/img/titlebar_function_createDis_normal_p@2x.png")
+    createDisNormal: getImageUrl("titlebar_function_createDis_normal@2x.png"),
+    createDisHover: getImageUrl("titlebar_function_createDis_hover@2x.png"),
+    createDisClick: getImageUrl("titlebar_function_createDis_normal_p@2x.png")
   };
   const data = initData();
   const createDisSrc = data.createDisSrc;

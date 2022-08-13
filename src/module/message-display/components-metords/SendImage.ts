@@ -1,6 +1,8 @@
 import { responseDataType } from "@/type/ComponentDataType";
 import _ from "lodash";
 import initData from "@/module/message-display/main-entrance/InitData";
+import fileManageAPI from "@/api/fileManageAPI";
+import useCurrentInstance from "@/type/global/UseCurrentInstance";
 
 /**
  * 发送图片函数
@@ -12,8 +14,7 @@ export default function sendImage(e: { target: { files: FileList } }) {
   const listId = data.listId;
   const messageStatus = data.messageStatus;
   const buddyId = data.buddyId;
-  // 获取当前实例，替代this
-  const internalInstance = data.currentInstance;
+  const { proxy } = useCurrentInstance();
   const $store = data.$store;
   // 获取File对象
   const file = e.target.files[0];
@@ -36,26 +37,24 @@ export default function sendImage(e: { target: { files: FileList } }) {
       // 后台取值字段 | blob文件数据 | 文件名称
       formData.append("file", file, "chatImg" + file.name);
       // 调用上传api
-      internalInstance?.proxy.$api.fileManageAPI
-        .upload(formData)
-        .then((res: responseDataType) => {
-          // 文件上传失败
-          if (!_.isEqual(res.code, 0)) {
-            alert(res.msg);
-            return false;
-          }
-          const fileName = `/${res.fileName}?width=${imgWidth}&height=${imgHeight}/`;
-          // 消息发送: 发送图片
-          internalInstance?.proxy.$socket.sendObj({
-            msg: fileName,
-            buddyId: buddyId.value,
-            messageStatus: messageStatus.value,
-            code: 0,
-            avatarSrc: $store.state.profilePicture,
-            token: $store.state.refreshToken,
-            msgId: listId.value
-          });
+      fileManageAPI.upload(formData).then((res: responseDataType) => {
+        // 文件上传失败
+        if (!_.isEqual(res.code, 0)) {
+          alert(res.msg);
+          return false;
+        }
+        const fileName = `/${res.fileName}?width=${imgWidth}&height=${imgHeight}/`;
+        // 消息发送: 发送图片
+        proxy.$socket.sendObj({
+          msg: fileName,
+          buddyId: buddyId.value,
+          messageStatus: messageStatus.value,
+          code: 0,
+          avatarSrc: $store.state.profilePicture,
+          token: $store.state.refreshToken,
+          msgId: listId.value
         });
+      });
     };
   };
 }

@@ -2,6 +2,7 @@ import _ from "lodash";
 import toolbarEventHandling from "@/module/message-display/split-method/ToolbarEventHandling";
 import getEditableDivFocus from "@/module/message-display/components-metords/GetEditableDivFocus";
 import initData from "@/module/message-display/main-entrance/InitData";
+import getImageUrl from "@/module/message-display/components-metords/GetImageUrl";
 
 export default function toolbarSwitch(
   status: string,
@@ -22,28 +23,28 @@ export default function toolbarSwitch(
     case "hover" || "up":
       // 选择图片单独处理
       if (_.isEqual(toolItemName, "selectImg")) {
-        selectImg.value.src = require(`@/assets/img/${hoverPath}`);
+        selectImg.value.src = getImageUrl(hoverPath);
         break;
       }
-      (event.target as HTMLImageElement).src = require(`@/assets/img/${hoverPath}`);
+      (event.target as HTMLImageElement).src = getImageUrl(hoverPath);
       break;
     case "leave":
       // 选择图片单独处理
       if (_.isEqual(toolItemName, "selectImg")) {
-        selectImg.value.src = require(`@/assets/img/${path}`);
+        selectImg.value.src = getImageUrl(path);
         break;
       }
-      (event.target as HTMLImageElement).src = require(`@/assets/img/${path}`);
+      (event.target as HTMLImageElement).src = getImageUrl(path);
       break;
     case "down":
       // 可编辑div获取焦点
       getEditableDivFocus();
       // 选择图片单独处理
       if (_.isEqual(toolItemName, "selectImg")) {
-        selectImg.value.src = require(`@/assets/img/${downPath}`);
+        selectImg.value.src = getImageUrl(downPath);
         break;
       }
-      (event.target as HTMLImageElement).src = require(`@/assets/img/${downPath}`);
+      (event.target as HTMLImageElement).src = getImageUrl(downPath);
       // 根据点击项执行对应的事件处理
       toolbarEventHandling(toolItemName);
       break;

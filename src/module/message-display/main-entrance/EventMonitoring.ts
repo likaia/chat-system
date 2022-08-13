@@ -5,8 +5,7 @@ import {
   onUnmounted,
   watch,
   getCurrentInstance,
-  toRefs,
-  ComponentInternalInstance
+  toRefs
 } from "vue";
 import { useStore } from "vuex";
 import getMessageTextList from "@/module/message-display/split-method/GetMessageTextList";
@@ -15,19 +14,23 @@ import globalClick from "@/module/message-display/split-method/GlobalClick";
 import initData from "@/module/message-display/main-entrance/InitData";
 import containerScroll from "@/module/message-display/split-method/ContainerScroll";
 import { messageDisplayPropsType, msgListType } from "@/type/ComponentDataType";
-import { SetupContext } from "@vue/runtime-core";
 import _ from "lodash";
 import playSound from "@/module/message-display/split-method/PlaySound";
 import renderPage from "@/module/message-display/split-method/RenderPage";
+import useCurrentInstance from "@/type/global/UseCurrentInstance";
 
 export default function eventMonitoring(
   props: messageDisplayPropsType,
-  context: SetupContext<any>
+  emit: (
+    e: "update-last-message",
+    msgObj: { text: string; id: string; time: string }
+  ) => void
 ): {
   userID: ComputedRef<string>;
   onlineUsers: ComputedRef<number>;
 } | void {
   const $store = useStore();
+  const { proxy } = useCurrentInstance();
   const currentInstance = getCurrentInstance();
   // 获取传递的参数
   const data = initData();
@@ -40,13 +43,12 @@ export default function eventMonitoring(
     prop.buddyId,
     prop.buddyName,
     prop.serverTime,
-    context.emit
+    emit
   );
   // 设置data中的实例属性
   data.setProperty($store, currentInstance);
 
   onMounted(() => {
-    const { proxy } = getCurrentInstance() as ComponentInternalInstance;
     proxy.$socket.sendObj({
       code: 200,
       token: $store.state.token,

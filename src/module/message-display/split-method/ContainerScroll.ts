@@ -15,9 +15,9 @@ export default function containerScroll() {
   const pageStart = data.pageStart;
   const pageEnd = data.pageEnd;
   // 加载消息定时器
-  let loadingtime = 0;
+  let loadingtime: NodeJS.Timeout;
   // 滚动时显示滚动条，不滚动时隐藏滚动条
-  let scrollTimer = 0;
+  let scrollTimer: NodeJS.Timeout;
   // 横向滚动条起始位置
   let levelPosition = messagesContainer.value.scrollLeft;
   // 监听messagesContainer容器滚动

@@ -2,6 +2,7 @@ import _ from "lodash";
 import uploadImage from "@/module/message-display/split-method/UploadImage";
 import convertBase64UrlToImgFile from "@/module/message-display/common-methords/ConvertBase64UrlToImgFile";
 import initData from "@/module/message-display/main-entrance/InitData";
+import useCurrentInstance from "@/type/global/UseCurrentInstance";
 
 export default async function sendMessage(event?: KeyboardEvent) {
   if (event == null) {
@@ -14,7 +15,7 @@ export default async function sendMessage(event?: KeyboardEvent) {
   const buddyId = data.buddyId;
   const $store = data.$store;
   // 获取当前实例，替代this
-  const internalInstance = data.currentInstance;
+  const { proxy } = useCurrentInstance();
   // 阻止编辑框默认生成div事件
   event.preventDefault();
   // 获取输入框的内容
@@ -70,7 +71,7 @@ export default async function sendMessage(event?: KeyboardEvent) {
     // 标识当前消息为发送端
     data.isSendMessages.value = true;
     // 获取$socket
-    internalInstance?.proxy.$socket.sendObj({
+    proxy.$socket.sendObj({
       msg: msgText,
       buddyId: buddyId.value,
       messageStatus: messageStatus.value,

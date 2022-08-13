@@ -8,6 +8,7 @@ import getImageInfo from "@/module/message-display/common-methords/GetImageInfo"
 import { nextTick, Ref } from "vue";
 import initData from "@/module/message-display/main-entrance/InitData";
 import { showImg } from "@/module/message-display/components-metords/ShowImg";
+import getImageUrl from "@/module/message-display/components-metords/GetImageUrl";
 
 const bottomScrollBar = (
   scrollHeight: number,
@@ -110,7 +111,7 @@ export default async function messageParsing(
       for (const emojiItem of emojiList) {
         // 判断捕获到的字符串与配置文件中的字符串是否相同
         if (emojiItem.info === item) {
-          const imgSrc = require(`@/assets/img/emoji/${emojiItem.hover}`) as string;
+          const imgSrc = getImageUrl(emojiItem.hover, true) as string;
           const imgTag = `<img src="${imgSrc}" width="28" height="28" alt="${item}">`;
           // 替换匹配的字符串为img标签:全局替换
           msgText = msgText.replace(new RegExp(`/${item}/`, "g"), imgTag);
@@ -187,13 +188,13 @@ export default async function messageParsing(
       emit("update-last-message", {
         text: senderName + "[图片消息]",
         id: listId.value,
-        time: msgObj.createTime
+        time: msgObj.createTime as string
       });
     } else {
       emit("update-last-message", {
         text: senderName + msgObj.msgText,
         id: listId.value,
-        time: msgObj.createTime
+        time: msgObj.createTime as string
       });
     }
     // 向数组尾部添加消息对象

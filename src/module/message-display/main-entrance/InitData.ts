@@ -5,13 +5,20 @@ import {
   getCurrentInstance,
   ComponentInternalInstance
 } from "vue";
-import {
-  emojiObj,
-  messageDisplayDataType,
-  msgListType,
-  toolbarObj
-} from "@/type/ComponentDataType";
+import { messageDisplayDataType, msgListType } from "@/type/ComponentDataType";
 import { Store, useStore } from "vuex";
+import {
+  avatarImg,
+  createDisClick,
+  createDisHover,
+  createDisNormal,
+  emojiList,
+  groupMsgImg,
+  msgImgTest,
+  msgImgTestB,
+  phoneNormal,
+  toolbarList
+} from "@/resource/MessageDisplayResource";
 
 // DOM操作,必须return否则不会生效
 let messagesContainer = ref<HTMLDivElement | null>(null);
@@ -19,11 +26,6 @@ let msgInputContainer = ref<HTMLDivElement | null>(null);
 let selectImg = ref<HTMLImageElement | null>(null);
 
 // 静态变量
-const createDisSrc = ref<string>(
-  require("@/assets/img/titlebar_function_createDis_normal@2x.png") as string
-);
-const emojiList = require("@/assets/json/emoji.json") as Array<emojiObj>;
-const toolbarList = require("@/assets/json/toolbar.json") as Array<toolbarObj>;
 const arrFrequency: number[] = [
   196.0,
   220.0,
@@ -47,15 +49,17 @@ const arrFrequency: number[] = [
 
 // 响应式Data变量
 let resourceObj = reactive<Record<string, string>>({
-  createDisNormal: require("@/assets/img/titlebar_function_createDis_normal@2x.png"),
-  createDisHover: require("@/assets/img/titlebar_function_createDis_hover@2x.png"),
-  createDisClick: require("@/assets/img/titlebar_function_createDis_normal_p@2x.png"),
-  phoneNormal: require("@/assets/img/phone_normal_ap@2x.png"),
-  groupMsgImg: require("@/assets/img/group-msg-img.png"),
-  avatarImg: require("@/assets/img/avatar.jpg"),
-  msgImgTest: require("@/assets/img/msg-img-test.gif"),
-  msgImgTestB: require("@/assets/img/msg-img-testB.gif")
+  createDisNormal,
+  createDisHover,
+  createDisClick,
+  phoneNormal,
+  groupMsgImg,
+  avatarImg,
+  msgImgTest,
+  msgImgTestB
 });
+// 静态变量
+const createDisSrc = ref<string>(createDisNormal);
 let messageContent = ref<string>("");
 let emoticonShowStatus = ref<string>("none");
 let senderMessageList = reactive([]);
@@ -83,9 +87,10 @@ let isSendMessages = ref<boolean>(false);
 let msgShowStatus = ref<string>("");
 
 // 事件处理
-let emit: (event: string, ...args: any[]) => void = () => {
-  return 0;
-};
+let emit: (
+  e: "update-last-message",
+  msgObj: { text: string; id: string; time: string }
+) => void;
 // store与当前实例
 let $store = useStore();
 let currentInstance = getCurrentInstance();
@@ -101,7 +106,10 @@ export default function initData(): messageDisplayDataType {
     buddyIdParam: Ref<string>,
     buddyNameParam: Ref<string>,
     serverTimeParam: Ref<string>,
-    emitParam: (event: string, ...args: any[]) => void
+    emitParam: (
+      e: "update-last-message",
+      msgObj: { text: string; id: string; time: string }
+    ) => void
   ) => {
     listId = listIdParam;
     messageStatus = messageStatusParam;
@@ -128,14 +136,14 @@ export default function initData(): messageDisplayDataType {
     selectImg = ref<HTMLImageElement | null>(null);
     // 响应式Data变量
     resourceObj = reactive<Record<string, string>>({
-      createDisNormal: require("@/assets/img/titlebar_function_createDis_normal@2x.png"),
-      createDisHover: require("@/assets/img/titlebar_function_createDis_hover@2x.png"),
-      createDisClick: require("@/assets/img/titlebar_function_createDis_normal_p@2x.png"),
-      phoneNormal: require("@/assets/img/phone_normal_ap@2x.png"),
-      groupMsgImg: require("@/assets/img/group-msg-img.png"),
-      avatarImg: require("@/assets/img/avatar.jpg"),
-      msgImgTest: require("@/assets/img/msg-img-test.gif"),
-      msgImgTestB: require("@/assets/img/msg-img-testB.gif")
+      createDisNormal,
+      createDisHover,
+      createDisClick,
+      phoneNormal,
+      groupMsgImg,
+      avatarImg,
+      msgImgTest,
+      msgImgTestB
     });
     messageContent = ref<string>("");
     emoticonShowStatus = ref<string>("none");

@@ -37,7 +37,7 @@
         class="row-panel"
         v-for="(item, index) in senderMessageList"
         :style="{ visibility: msgShowStatus }"
-        :key="item.id"
+        :key="item.msgId"
       >
         <!--消息发送时间:当前发送消息为第一条显示时间-->
         <div class="sender-time-panel" v-if="index === 0">
@@ -135,7 +135,7 @@
             <img
               class="emoticon"
               ref="selectImg"
-              :src="require(`../assets/img/${item.src}`)"
+              :src="getImageUrl(item.src)"
               :alt="item.info"
               draggable="false"
             />
@@ -190,7 +190,7 @@
           <img
             v-else
             class="emoticon"
-            :src="require(`../assets/img/${item.src}`)"
+            :src="getImageUrl(item.src)"
             draggable="false"
             @mouseenter="
               toolbarSwitch(
@@ -254,7 +254,7 @@
           <div class="row-panel">
             <div class="item-panel" v-for="item in emojiList" :key="item.info">
               <img
-                :src="require(`../assets/img/emoji/${item.src}`)"
+                :src="getImageUrl(item.src, true)"
                 :alt="item.info"
                 draggable="false"
                 @mouseover="
@@ -306,97 +306,60 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ComputedRef } from "vue";
-import _ from "lodash";
-import { messageDisplayPropsType } from "@/type/ComponentDataType";
-import { SetupContext } from "@vue/runtime-core";
+<script lang="ts" setup>
+import { ComputedRef } from "vue";
 import initData from "@/module/message-display/main-entrance/InitData";
 import eventMonitoring from "@/module/message-display/main-entrance/EventMonitoring";
 import createDisEvent from "@/module/message-display/components-metords/CreateDisEvent";
 import getEditableDivFocus from "@/module/message-display/components-metords/GetEditableDivFocus";
 import toolbarSwitch from "@/module/message-display/components-metords/ToolbarSwitch";
 import sendImage from "@/module/message-display/components-metords/SendImage";
+import getImageUrl from "@/module/message-display/components-metords/GetImageUrl";
 import sendMessage from "@/module/message-display/components-metords/SendMessage";
 import emojiConversion from "@/module/message-display/components-metords/EmojiConversion";
 import destroyComponent from "@/module/message-display/components-metords/DestroyComponent";
 import getImg from "@/module/message-display/split-method/GetImg";
 import ShowImg from "@/views/teleport/show-img.vue";
 import { destroyShowImg } from "@/module/message-display/components-metords/DestroyShowImg";
-export default defineComponent({
-  name: "message-display",
-  components: { ShowImg },
-  props: {
-    listId: String, // 消息id
-    messageStatus: Number, // 消息类型
-    buddyId: String, // 好友id
-    buddyName: String, // 好友昵称
-    serverTime: String // 服务器时间
-  },
-  setup(props, context) {
-    // 事件监听函数
-    const { userID, onlineUsers } = eventMonitoring(
-      props as messageDisplayPropsType,
-      context as SetupContext<any>
-    ) as {
-      userID: ComputedRef<string>;
-      onlineUsers: ComputedRef<number>;
-    };
 
-    // 返回组件需要用到的方法
-    return {
-      createDisSrc: initData().createDisSrc,
-      resourceObj: initData().resourceObj,
-      messageContent: initData().messageContent,
-      emoticonShowStatus: initData().emoticonShowStatus,
-      emojiList: initData().emojiList,
-      toolbarList: initData().toolbarList,
-      senderMessageList: initData().senderMessageList,
-      isBottomOut: initData().isBottomOut,
-      audioCtx: initData().audioCtx,
-      arrFrequency: initData().arrFrequency,
-      pageStart: initData().pageStart,
-      pageEnd: initData().pageEnd,
-      pageNo: initData().pageNo,
-      pageSize: initData().pageSize,
-      sessionMessageData: initData().sessionMessageData,
-      msgListPanelHeight: initData().msgListPanelHeight,
-      isLoading: initData().isLoading,
-      isLastPage: initData().isLastPage,
-      msgTotals: initData().msgTotals,
-      isFirstLoading: initData().isFirstLoading,
-      screenshortStatus: initData().screenshortStatus,
-      showImgStatus: initData().showImgStatus,
-      imgSrc: initData().imgSrc,
-      messagesContainer: initData().messagesContainer,
-      msgInputContainer: initData().msgInputContainer,
-      selectImg: initData().selectImg,
-      msgShowStatus: initData().msgShowStatus,
-      userID: userID,
-      onlineUsers: onlineUsers,
-      createDisEvent: createDisEvent,
-      getEditableDivFocus: getEditableDivFocus,
-      toolbarSwitch: toolbarSwitch,
-      sendImage: sendImage,
-      sendMessage: sendMessage,
-      emojiConversion: emojiConversion,
-      destroyComponent: destroyComponent,
-      getImg: getImg,
-      destroyShowImg: destroyShowImg
-    };
-  },
-  emits: {
-    // vue3中建议对所有emit事件进行验证
-    "update-last-message": (val: {
-      id: string;
+// 获取父组件传递值
+const props = defineProps<{
+  listId: string; // 消息id
+  messageStatus: number; // 消息类型
+  buddyId: string; // 好友id
+  buddyName: string; // 好友昵称
+  serverTime: string; // 服务器时间
+}>();
+const emit = defineEmits<{
+  (
+    e: "update-last-message",
+    msgObj: {
       text: string;
+      id: string;
       time: string;
-      isPush: boolean;
-    }) => {
-      return !_.isEmpty(val);
     }
-  }
-});
+  ): void;
+}>();
+
+// 事件监听函数
+const { userID, onlineUsers } = eventMonitoring(props, emit) as {
+  userID: ComputedRef<string>;
+  onlineUsers: ComputedRef<number>;
+};
+
+const createDisSrc = initData().createDisSrc;
+const emoticonShowStatus = initData().emoticonShowStatus;
+const emojiList = initData().emojiList;
+const toolbarList = initData().toolbarList;
+const senderMessageList = initData().senderMessageList;
+const screenshortStatus = initData().screenshortStatus;
+const showImgStatus = initData().showImgStatus;
+const isLoading = initData().isLoading;
+const imgSrc = initData().imgSrc;
+const messagesContainer = initData().messagesContainer;
+const msgInputContainer = initData().msgInputContainer;
+const selectImg = initData().selectImg;
+const msgShowStatus = initData().msgShowStatus;
 </script>
 
 <style lang="scss" src="../assets/scss/message-display.scss" scoped></style>

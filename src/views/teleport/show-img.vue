@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { SetupContext } from "@vue/runtime-core";
+import { SetupContext } from "vue";
 import InitData from "@/module/show-img/main-entrance/InitData";
 import EventMonitoring from "@/module/show-img/main-entrance/EventMonitoring";
 import { imgPropsType } from "@/module/show-img/type/ShowImgDataType";

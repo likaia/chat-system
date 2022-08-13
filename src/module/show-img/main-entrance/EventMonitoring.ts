@@ -1,4 +1,4 @@
-import { SetupContext } from "@vue/runtime-core";
+import { SetupContext } from "vue";
 import { onMounted, Ref, toRefs } from "vue";
 import { imgPropsType } from "@/module/show-img/type/ShowImgDataType";
 import InitData from "@/module/show-img/main-entrance/InitData";

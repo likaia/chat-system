@@ -94,9 +94,15 @@ export type messageDisplayDataType = {
     buddyIdParam: Ref<string>,
     buddyNameParam: Ref<string>,
     serverTimeParam: Ref<string>,
-    emitParam: (event: string, ...args: any[]) => void
+    emitParam: (
+      e: "update-last-message",
+      msgObj: { text: string; id: string; time: string }
+    ) => void
   ) => void;
-  emit: (event: string, ...args: any[]) => void;
+  emit: (
+    e: "update-last-message",
+    msgObj: { text: string; id: string; time: string }
+  ) => void;
   $store: Store<any>;
   currentInstance: ComponentInternalInstance | null;
   setProperty: (
