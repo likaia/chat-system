@@ -130,7 +130,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, shallowRef } from "vue";
+import { computed, onMounted, shallowRef, watch } from "vue";
 import {
   messageIco,
   messageIcoActive,
@@ -186,6 +186,11 @@ const createGroupChat = (status: boolean) => {
   addBackground.value = "#ffffff";
 };
 
+// token刷新状态
+const tokenRefreshStatus = computed(() => {
+  return store.state.tokenRefreshStatus;
+});
+
 onMounted(() => {
   const { proxy } = useCurrentInstance();
   // 判断websocket是否连接: 当前为未连接状态并且本地存储中有userID
@@ -208,6 +213,16 @@ onMounted(() => {
       left: "0px",
       top: "0px"
     });
+  });
+  watch(tokenRefreshStatus, value => {
+    if (value) {
+      // token被刷新，需要重新连接websocket
+      proxy.$connect(
+        `${base.lkWebSocket}/${localStorage.getItem(
+          "userID"
+        )}/${localStorage.getItem("token")}`
+      );
+    }
   });
 });
 </script>

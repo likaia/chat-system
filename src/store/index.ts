@@ -38,7 +38,9 @@ export default createStore({
     // 关闭分组管理弹框
     closeManageGroupsAlert: false,
     // 关闭好友管理弹框
-    closeManageFriendAlert: false
+    closeManageFriendAlert: false,
+    // token是否过期的刷新状态
+    tokenRefreshStatus: false
   },
   mutations: {
     // 连接打开
@@ -105,6 +107,14 @@ export default createStore({
       state.token = token;
       // 更新本地存储中的token
       localStorage.setItem("token", token);
+    },
+    // 更新token的刷新状态
+    updateTokenRefreshStatus(state) {
+      state.tokenRefreshStatus = true;
+      // 300ms后重置状态
+      setTimeout(() => {
+        state.tokenRefreshStatus = false;
+      }, 300);
     },
     // 更新右键菜单数据
     updateRightMenuStatus(state, menuObj: rightMenuAttribute) {

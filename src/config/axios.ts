@@ -88,6 +88,8 @@ _axios.interceptors.response.use(
               config.baseURL = "";
               // 更新vuex中的token
               store.commit("updateToken", token);
+              // 更新token的刷新状态
+              store.commit("updateTokenRefreshStatus");
               // 执行队列中的请求
               requests.forEach((cb: pendingRequest) => cb(token));
               // 清空队列
