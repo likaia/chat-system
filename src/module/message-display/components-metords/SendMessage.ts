@@ -63,7 +63,10 @@ export default async function sendMessage(event?: KeyboardEvent) {
         msgText += item.nodeValue;
         break;
       default:
-        throw "不支持的元素类型" + item;
+        // 换行符
+        if (item instanceof HTMLBRElement) {
+          msgText += "<br/>";
+        }
     }
   }
   // 消息发送: 发送文字，为空则不发送
