@@ -3325,10 +3325,10 @@ vue-tsc@^0.38.4:
   dependencies:
     "@volar/vue-typescript" "0.38.9"
 
-vue-web-screen-shot@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/vue-web-screen-shot/-/vue-web-screen-shot-1.4.2.tgz#85a3254f8352c4eaa1547b1007158cd3e4a4f31a"
-  integrity sha512-hQDXkT1SwbAAIWcPdF0iCF7KHPFQzVnzGy+71JeC58xRn1jrMSlv7+3d3Y0Zr7XaTb/LAlPibXa39iVdlSWFsA==
+vue-web-screen-shot@^1.4.5:
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/vue-web-screen-shot/-/vue-web-screen-shot-1.4.5.tgz#808abe840bd0ec011bfcb6e68c05affda2ba1582"
+  integrity sha512-2tAUZ1PmconAwXHDSByidi/ckFUmPNrg3fXyQKy58VB9/Fmy4F9s/Ptmr3/zlPQ8haa2fMIoqJdWcEhIIgYGlw==
   dependencies:
     "@types/lodash" "^4.14.161"
     html2canvas "^1.4.1"
