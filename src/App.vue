@@ -1,5 +1,5 @@
 <template>
-  <div id="app" :style="appStyleObj">
+  <div id="appContent" :style="appStyleObj">
     <router-view />
   </div>
 </template>
@@ -123,7 +123,7 @@ body {
     "JetBrainsMono-Italic", "JetBrainsMono-Bold", "JetBrainsMono-BoldItalic",
     sans-serif;
 }
-#app {
+#appContent {
   width: 100%;
   height: 100vh;
 }
