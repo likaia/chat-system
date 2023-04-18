@@ -3325,10 +3325,10 @@ vue-tsc@^0.38.4:
   dependencies:
     "@volar/vue-typescript" "0.38.9"
 
-vue-web-screen-shot@^1.4.6:
-  version "1.4.6"
-  resolved "https://registry.yarnpkg.com/vue-web-screen-shot/-/vue-web-screen-shot-1.4.6.tgz#137dc70437a8a9026b4144c445fa1fe67403089b"
-  integrity sha512-CNIZT2czV4W3DV605Jtt+gTr88GmW7LIe65l0hXZOVNJZmu5uyqp3N2uOWR5+AkyOCluvwjQg/EHRPjH9ab03Q==
+vue-web-screen-shot@^1.4.8:
+  version "1.4.8"
+  resolved "https://registry.yarnpkg.com/vue-web-screen-shot/-/vue-web-screen-shot-1.4.8.tgz#2d7125aa9811079411a33051d63dc0cb45b29de1"
+  integrity sha512-hiqyVLUADaUTg/ZSGDArshP64p+lJ8i7Aeuzije09pwoHMAedjDqOfgzA6rbrEwlXgSesXmo2sagCEEcbXXn6Q==
   dependencies:
     html2canvas "^1.4.1"
     webrtc-adapter "^7.7.0"
