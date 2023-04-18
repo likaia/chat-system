@@ -12,12 +12,14 @@ export default defineComponent({
   data() {
     return {
       appStyleObj: {
-        background: "#0C9A9A"
+        background: "#0C9A9A",
+        height: window.innerHeight + "px"
       },
       getCurrentComponentName: ""
     };
   },
   created() {
+    document.body.style.height = window.innerHeight + "px";
     // 用户离开或返回时切换登录状态
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState == "hidden") {
@@ -125,7 +127,6 @@ body {
 }
 #appContent {
   width: 100%;
-  height: 100vh;
 }
 .icon {
   width: 1em;

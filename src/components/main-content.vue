@@ -130,7 +130,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, shallowRef, watch } from "vue";
+import { computed, onMounted, shallowRef, watch, ref } from "vue";
 import {
   messageIco,
   messageIcoActive,
@@ -177,6 +177,7 @@ const showSearchImg = () => {
   }
   searchImg.value = "none";
 };
+const mainContent = ref<HTMLDivElement | null>(null);
 
 const createGroupChat = (status: boolean) => {
   if (status) {
@@ -193,6 +194,10 @@ const tokenRefreshStatus = computed(() => {
 
 onMounted(() => {
   const { proxy } = useCurrentInstance();
+  if (mainContent.value != null) {
+    mainContent.value.style.height = window.innerHeight - 200 + "px";
+  }
+
   // 判断websocket是否连接: 当前为未连接状态并且本地存储中有userID
   if (
     !store.state.socket.isConnected &&
