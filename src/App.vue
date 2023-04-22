@@ -12,14 +12,12 @@ export default defineComponent({
   data() {
     return {
       appStyleObj: {
-        background: "#0C9A9A",
-        height: window.innerHeight + "px"
+        background: "#0C9A9A"
       },
       getCurrentComponentName: ""
     };
   },
   created() {
-    document.body.style.height = window.innerHeight + "px";
     // 用户离开或返回时切换登录状态
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState == "hidden") {
@@ -125,9 +123,12 @@ body {
     "JetBrainsMono-Italic", "JetBrainsMono-Bold", "JetBrainsMono-BoldItalic",
     sans-serif;
 }
+#app,
 #appContent {
   width: 100%;
+  height: 100vh;
 }
+
 .icon {
   width: 1em;
   height: 1em;

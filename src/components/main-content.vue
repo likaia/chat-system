@@ -194,9 +194,9 @@ const tokenRefreshStatus = computed(() => {
 
 onMounted(() => {
   const { proxy } = useCurrentInstance();
-  if (mainContent.value != null) {
-    mainContent.value.style.height = window.innerHeight - 200 + "px";
-  }
+  // if (mainContent.value != null) {
+  //   mainContent.value.style.height = window.innerHeight - 200 + "px";
+  // }
 
   // 判断websocket是否连接: 当前为未连接状态并且本地存储中有userID
   if (

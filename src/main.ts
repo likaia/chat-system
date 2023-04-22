@@ -17,7 +17,13 @@ app
   .use(store)
   .use(router)
   .use(vueRightMenu)
-  .use(screenShot, { enableWebRtc: true })
+  .use(screenShot, {
+    enableWebRtc: true,
+    hiddenScrollBar: {
+      state: true,
+      color: "#0D9A9A"
+    }
+  })
   .mount("#app");
 // 使用VueNativeSock插件，并进行相关配置
 app.use(

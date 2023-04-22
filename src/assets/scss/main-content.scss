@@ -42,6 +42,7 @@ $rightWidth: 85%;
 
 #main-content {
   width: 75%;
+  height: calc(100% - 180px);
   background: #FDFCFC;
   position: absolute;
   top: 0;
